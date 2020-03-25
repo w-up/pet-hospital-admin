@@ -15,7 +15,25 @@ module.exports = {
     runtimeCompiler: true,
     productionSourceMap: false,
     devServer: {
-        publicPath: Setting.publicPath
+        publicPath: Setting.publicPath,
+        proxy: {
+            '/server/sso': {
+                // target: 'http://hospital.jw.iisu.cn',
+                target: 'http://202.120.29.19:8181',
+                ws: true,
+                changeOrigin: true
+            },
+            '/server/data': {
+                // target: 'http://hospital.jw.iisu.cn',
+                target: 'http://202.120.29.19:8181',
+                ws: true,
+                changeOrigin: true
+                // 代理本地时需要使用pathRewrite替换/server/data
+                // pathRewrite: {
+                //     '^/server/data': '/'
+                // }
+            }
+        }
     },
     css: {
         loaderOptions: {
@@ -42,7 +60,7 @@ module.exports = {
             // 开发环境
             .when(process.env.NODE_ENV === 'development',
                   // sourcemap不包含列信息
-                  config => config.devtool('cheap-source-map')
+                  config => config.devtool('cheap-module-eval-source-map')
             )
             // 非开发环境
             .when(process.env.NODE_ENV !== 'development', config => {

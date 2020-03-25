@@ -8,7 +8,7 @@
                 <div class="page-account-top-logo">
                     <img src="@/assets/images/logo.png" alt="logo">
                 </div>
-                <div class="page-account-top-desc">佳雯管理端</div>
+                <div class="page-account-top-desc">佳雯宠物医院</div>
             </div>
             <Login ref="form" @on-submit="handleSubmit">
                 <Email name="mail" />

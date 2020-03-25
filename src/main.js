@@ -38,6 +38,8 @@ import iLink from '@/components/link';
 import './styles/index.less';
 import './libs/iview-pro/iview-pro.css';
 
+import api from './api'
+
 if (window) window.$t = (key, value) => i18n.t(key, value);
 
 Vue.use(plugins);
@@ -47,6 +49,12 @@ Vue.use(ViewUI, {
 });
 Vue.use(iViewPro);
 Vue.component('i-link', iLink);
+
+/**
+ * @description 全局注册应用配置
+ */
+Vue.prototype.$get = api.get;
+Vue.prototype.$post = api.post;
 
 new Vue({
     mixins: [mixinApp],

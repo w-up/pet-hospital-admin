@@ -1,10 +1,14 @@
 // 菜单，侧边栏
-import dashboard from './modules/dashboard';
-
-// 系统
-import log from './modules/log';
+import hospital from './modules/hospital';
+import personnel from './modules/personnel';
+// import marketing from './modules/marketing';
+import general from './modules/general';
+import feedback from './modules/feedback';
 
 export default [
-    dashboard,
-    log
+    hospital,
+    personnel,
+    // marketing,
+    general,
+    feedback
 ];

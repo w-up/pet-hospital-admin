@@ -41,3 +41,12 @@
         }
     }
 </script>
+<style lang="less">
+//使所有页面的表格的td和th都居中
+.ivu-table-wrapper td {
+  text-align: center!important;
+}
+.ivu-table-wrapper th {
+  text-align: center!important;
+}
+</style>

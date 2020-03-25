@@ -1,0 +1,450 @@
+<template>
+  <div>
+    <Row :gutter="16">
+      <Col span="6">
+        <Card class="ptb0">
+          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+            <Col span="24">
+              <span class="module-title">医院列表</span>
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mt15">
+            <Col span="24">
+              <Input prefix="ios-search" placeholder="姓名/电话/职位" />
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end">
+            <Col span="24">
+              <List class="hospital-list">
+                <ListItem v-for="(item, index) in hospitalListData" :key="index">
+                  <div>
+                    <p>
+                      医院名称：{{ item.hospitalName }}
+                      <span style="margin-left: 7px;">
+                        <Button size="small" type="success">启用</Button>
+                      </span>
+                    </p>
+                    <p>院长：{{ item.dean }}</p>
+                    <p>电话：{{ item.cellphone }}</p>
+                  </div>
+                </ListItem>
+              </List>
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="8" class="ivu-text-center">
+              <Button type="info">+新增医院</Button>
+            </Col>
+            <Col span="8" class="ivu-text-center">
+              <Button type="error">删除</Button>
+            </Col>
+            <Col span="8" class="ivu-text-center">
+              <Button type="warning">停用</Button>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+      <Col span="18">
+        <Card class="ptb0">
+          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+            <Col span="24">
+              <span class="module-title">医院信息</span>
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="24">
+              <Card :bordered="false" dis-hover class="ivu-mt">
+                <Form
+                  ref="form"
+                  :model="data"
+                  :rules="rules"
+                  :label-width="labelWidth"
+                  :label-position="labelPosition"
+                >
+                  <Row :gutter="24">
+                    <Col span="20">
+                      <Row :gutter="24" type="flex" justify="end">
+                        <Col v-bind="grid">
+                          <FormItem label="医院名称" prop="name">
+                            <Input v-width="'100%'" v-model="data.name" placeholder="请输入" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="联系人" prop="contactor">
+                            <Input v-width="'100%'" v-model="data.contactor" placeholder="请输入" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="联系电话" prop="tel">
+                            <Input v-width="'100%'" v-model="data.tel" placeholder="请输入" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="院长" prop="manager">
+                            <Input v-width="'100%'" v-model="data.manager" placeholder="请输入" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="院长电话">
+                            <Input v-width="'100%'" v-model="data.managerTel" placeholder="请输入" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="登录密码">
+                            <Input v-width="'100%'" v-model="data.password" placeholder="请输入" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="短信医院名称">
+                            <Input
+                              v-width="'100%'"
+                              v-model="data.shortMessageName"
+                              placeholder="请输入"
+                            />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="gridForTip" class="ivu-text-left">
+                          <Checkbox v-model="data.ifShortMessage">签名</Checkbox>
+                          <span>
+                            <code style="color:red">*</code>用于医院短信签名,方便顾客知晓短信发送方
+                          </span>
+                        </Col>
+                        <Col span="7">
+                          <FormItem label="地址" prop="country">
+                            <Select v-model="data.country" placeholder="请选择">
+                              <Option value="0">中国</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="5">
+                          <FormItem label prop="province" :label-width="0">
+                            <Select v-model="data.province" placeholder="请选择">
+                              <Option value="0">上海市</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="6">
+                          <FormItem label prop="city" :label-width="0">
+                            <Select v-model="data.city" placeholder="请选择">
+                              <Option value="0">上海市</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="6">
+                          <FormItem label prop="district" :label-width="0">
+                            <Select v-model="data.district" placeholder="请选择">
+                              <Option value="0">黄浦区</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="24">
+                          <FormItem label="详细地址" label-for="addressDetail">
+                            <Input
+                              v-width="'100%'"
+                              type="textarea"
+                              :rows="4"
+                              v-model="data.addressDetail"
+                              placeholder="请输入"
+                            />
+                          </FormItem>
+                        </Col>
+                        <Col span="24" class="mb20">
+                          <span>
+                            <code style="color:red">*</code>以下信息用于授权认证管理,用于确保医院证实有效,请您务必上传真实营业执照等信息
+                          </span>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="*营业执照" prop="licenseUrl" class="hospital-img">
+                            <Upload
+                              ref="licenseUrl"
+                              v-model="data.licenseUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :format="[ 'png', 'jpg', 'jpeg']"
+                              :max-size="1024*10"
+                              :on-success="handleLicenseUrlSuccess"
+                              :on-format-error="handleFileFormatErr"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :before-upload="handleBeforeLicenseUrlUpload"
+                            >
+                              <img :src="data.licenseUrl||defaultImg" alt />
+                            </Upload>
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="*身份证正面" prop="idCardFrontUrl" class="hospital-img">
+                            <Upload
+                              ref="idCardFrontUrl"
+                              v-model="data.idCardFrontUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :format="[ 'png', 'jpg', 'jpeg']"
+                              :max-size="1024*10"
+                              :on-success="handleIdCardFrontUrlSuccess"
+                              :on-format-error="handleFileFormatErr"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :before-upload="handleBeforeIdCardFrontUrlUpload"
+                            >
+                              <img :src="data.idCardFrontUrl||defaultImg" alt />
+                            </Upload>
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="*身份证反面" prop="idCardBackUrl" class="hospital-img">
+                            <Upload
+                              ref="idCardBackUrl"
+                              v-model="data.idCardBackUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :format="[ 'png', 'jpg', 'jpeg']"
+                              :max-size="1024*10"
+                              :on-success="handleIdCardBackUrlSuccess"
+                              :on-format-error="handleFileFormatErr"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :before-upload="handleBeforeIdCardBackUrlUpload"
+                            >
+                              <img :src="data.idCardBackUrl||defaultImg" alt />
+                            </Upload>
+                          </FormItem>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span="4" class="ivu-text-center">
+                      <span>LOGO</span>
+                      <Upload
+                        ref="logoUrl"
+                        v-model="data.logoUrl"
+                        :action="resource"
+                        :headers="headers"
+                        :format="[ 'png', 'jpg', 'jpeg']"
+                        :max-size="1024*10"
+                        :on-success="handleLogoUrlSuccess"
+                        :on-format-error="handleFileFormatErr"
+                        :on-exceeded-size="handleFileSizeErr"
+                        :before-upload="handleBeforeLogoUrlUpload"
+                      >
+                        <img width="100%" :src="data.logoUrl||defauLtLogo" alt />
+                      </Upload>
+                    </Col>
+                    <Col span="12" class="ivu-text-left">
+                      <Button type="default" @click="handleReset">刷新</Button>
+                    </Col>
+                    <Col span="10" class="ivu-text-right">
+                      <Button type="info" :loading="loading">进入医院管理</Button>
+                    </Col>
+                    <Col span="2" class="ivu-text-left">
+                      <Button type="primary" :loading="loading" @click="handleSubmit">编辑</Button>
+                    </Col>
+                  </Row>
+                </Form>
+              </Card>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+    </Row>
+  </div>
+</template>
+<script>
+    import util from '@/libs/util';
+    export default {
+        name: 'list-table-list',
+        data () {
+            return {
+                hospitalListData: [
+                    {
+                        hospitalName: '幽梦宠物医院',
+                        dean: '张三',
+                        cellphone: '14533434257'
+                    },
+                    {
+                        hospitalName: '幽梦宠物医院',
+                        dean: '张三',
+                        cellphone: '14533434257'
+                    },
+                    {
+                        hospitalName: '幽梦宠物医院',
+                        dean: '张三',
+                        cellphone: '14533434257'
+                    },
+                    {
+                        hospitalName: '幽梦宠物医院',
+                        dean: '张三',
+                        cellphone: '14533434257'
+                    }
+                ],
+                resource: this.$store.state.admin.user.resource,
+                headers: this.$store.state.admin.user.headers,
+                defaultImg: require('../../../assets/images/default.png'),
+                defauLtLogo: require('../../../assets/images/upload-logo.png'),
+                status: '已授权',
+                grid: {
+                    xl: 8,
+                    lg: 8,
+                    md: 12,
+                    sm: 24,
+                    xs: 24
+                },
+                gridForTip: {
+                    xl: 16,
+                    lg: 16,
+                    md: 12,
+                    sm: 24,
+                    xs: 24
+                },
+                collapse: false,
+                data: {
+                    name: '',
+                    contactor: '',
+                    tel: '',
+                    manager: '',
+                    managerTel: '',
+                    password: '',
+                    addressDetail: '',
+                    country: '',
+                    province: '',
+                    city: '',
+                    district: '',
+                    licenseUrl: '',
+                    idCardFrontUrl: '',
+                    idCardBackUrl: '',
+                    logoUrl: ''
+                },
+                loading: false,
+                rules: {
+                    name: [
+                        { required: true, message: '请输入医院的名称', trigger: 'blur' }
+                    ],
+                    contactor: [
+                        { required: true, message: '请输入联系人', trigger: 'blur' }
+                    ],
+                    tel: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
+                    manager: [
+                        { required: true, message: '请输入院长名称', trigger: 'blur' }
+                    ]
+                }
+            };
+        },
+        computed: {
+            labelWidth () {
+                return this.isMobile ? undefined : 100;
+            },
+            labelPosition () {
+                return this.isMobile ? 'top' : 'right';
+            }
+        },
+        methods: {
+            getHispitalDetail () {
+                this.$get('/admin/hospital/myhospital', {}, response => {
+                    console.log(response);
+                    this.data = response.data;
+                });
+            },
+            handleSubmit () {
+                this.$refs.form.validate(valid => {
+                    this.loading = true;
+                    if (valid) {
+                        this.$post('/admin/hospital/save', this.data, response => {
+                            console.log(response);
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                            }
+                            this.loading = false;
+                        });
+                    } else {
+                        this.loading = false;
+                    }
+                });
+            },
+            handleReset () {
+                this.$refs.form.resetFields();
+                this.getHispitalDetail();
+            },
+            handleFileFormatErr (file) {
+                this.$Notice.warning({
+                    title: '文件类型错误',
+                    desc:
+                        '文件  ' + file.name + ' 文件类型错误,请上传png, jpg, jpeg等格式图片.'
+                });
+            },
+            handleFileSizeErr (file) {
+                this.$Notice.warning({
+                    title: '文件过大',
+                    desc: '文件  ' + file.name + ' 过大,不得超过10M.'
+                });
+            },
+            handleLicenseUrlSuccess (response, file, fileList) {
+                this.data.licenseUrl = response.data;
+                console.log(this.data.licenseUrl);
+            },
+            handleBeforeLicenseUrlUpload () {
+                this.$refs.licenseUrl.clearFiles();
+            },
+            handleLogoUrlSuccess (response, file, fileList) {
+                this.data.logoUrl = response.data;
+                console.log(this.data.logoUrl);
+            },
+            handleBeforeLogoUrlUpload () {
+                this.$refs.logoUrl.clearFiles();
+            },
+            handleIdCardFrontUrlSuccess (response, file, fileList) {
+                this.data.idCardFrontUrl = response.data;
+                console.log(this.data.idCardFrontUrl);
+            },
+            handleBeforeIdCardFrontUrlUpload () {
+                this.$refs.idCardFrontUrl.clearFiles();
+            },
+            handleIdCardBackUrlSuccess (response, file, fileList) {
+                this.data.idCardBackUrl = response.data;
+                console.log(this.data.idCardBackUrl);
+            },
+            handleBeforeIdCardBackUrlUpload () {
+                this.$refs.idCardBackUrl.clearFiles();
+            }
+        },
+        created () {
+            this.token = util.cookies.get('token');
+            console.log(this.token);
+            console.log(this.$store.state.admin.user.resource);
+            console.log(this.$store.state.admin.user.headers);
+        },
+        mounted () {
+            this.getHispitalDetail();
+        }
+    };
+</script>
+<style lang="less" scoped>
+.mb20 {
+  margin-bottom: 20px;
+}
+.hospital-img img {
+  width: 100%;
+}
+/*模块标题*/
+.module-title-wrapper {
+  height: 48px;
+  line-height: 48px;
+  border-bottom: 1px solid #e9eaec;
+  font-weight: 700;
+  background-color: #fff;
+}
+.mtb15 {
+  margin: 15px 0;
+}
+.mt15 {
+  margin: 15px 0 0;
+}
+.hospital-list {
+  height: 570px;
+  overflow: auto;
+}
+</style>
+<style lang="less">
+.ptb0 .ivu-card-body {
+  padding: 0 16px;
+}
+</style>

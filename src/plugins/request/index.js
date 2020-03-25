@@ -5,6 +5,8 @@ import Setting from '@/setting';
 
 import { Message, Notice } from 'view-design';
 
+const Qs = require('qs')
+
 // 创建一个错误
 function errorCreate (msg) {
     const err = new Error(msg);
@@ -51,10 +53,14 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
     config => {
+        // post请求的参数需要用qs.stringify序列化
+        config.data = config.method === 'post' ? Qs.stringify(config.data, { indices: false }) : null
         // 在请求发送之前做一些处理
         const token = util.cookies.get('token');
         // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-        config.headers['X-Token'] = token;
+        // config.headers['X-Token'] = token;
+        config.headers['X-TENANT-ID'] = 'jiawen:pethos@2020';
+        config.headers['authorization'] = 'Bearer ' + token;
         return config;
     },
     error => {
@@ -81,6 +87,9 @@ service.interceptors.response.use(
             case 0:
                 // [ 示例 ] code === 0 代表没有错误
                 return dataAxios.data;
+            case 'successful':
+                // [ 示例 ] code === successful 代表没有错误
+                return dataAxios.data;
             case 'xxx':
                 // [ 示例 ] 其它和后台约定的 code
                 errorCreate(`[ code: xxx ] ${dataAxios.msg}: ${response.config.url}`);
@@ -96,7 +105,10 @@ service.interceptors.response.use(
         if (error && error.response) {
             switch (error.response.status) {
             case 400: error.message = '请求错误'; break;
-            case 401: error.message = '未授权，请登录'; break;
+            case 401: error.message = '未授权，请登录';
+                      alert('未授权，请登录')
+                      location.href = '/login'
+                      break;
             case 403: error.message = '拒绝访问'; break;
             case 404: error.message = `请求地址出错: ${error.response.config.url}`; break;
             case 408: error.message = '请求超时'; break;
