@@ -18,14 +18,14 @@ module.exports = {
         publicPath: Setting.publicPath,
         proxy: {
             '/server/sso': {
-                // target: 'http://hospital.jw.iisu.cn',
-                target: 'http://202.120.29.19:8181',
+                target: 'http://hospital.jw.iisu.cn',
+                // target: 'http://202.120.29.19:8181',
                 ws: true,
                 changeOrigin: true
             },
             '/server/data': {
-                // target: 'http://hospital.jw.iisu.cn',
-                target: 'http://202.120.29.19:8181',
+                target: 'http://hospital.jw.iisu.cn',
+                // target: 'http://202.120.29.19:8181',
                 ws: true,
                 changeOrigin: true
                 // 代理本地时需要使用pathRewrite替换/server/data
