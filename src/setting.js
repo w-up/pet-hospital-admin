@@ -1,5 +1,5 @@
 /**
- * Pet Hospital Admin 业务配置
+ * Pet Hospital 业务配置
  * */
 
 const env = process.env.NODE_ENV;
@@ -9,7 +9,7 @@ const Setting = {
      * 基础配置
      * */
     // 网页标题的后缀
-    titleSuffix: 'Pet Hospital Admin',
+    titleSuffix: 'Pet Hospital',
     // 路由模式，可选值为 history 或 hash
     routerMode: 'history',
     // 应用的基路径
@@ -61,7 +61,7 @@ const Setting = {
         headerHide: false,
         // 是否显示顶部菜单栏
         // 一般来说，侧边的菜单栏足以满足大部分业务，如需动态切换侧边栏，可开启此选项启用顶部一级菜单，此时侧边栏将作为二级菜单
-        headerMenu: false,
+        headerMenu: true,
         // 侧边菜单栏是否开启手风琴模式
         menuAccordion: true,
         // 是否显示折叠侧边栏按钮，移动端下会自动强制开启

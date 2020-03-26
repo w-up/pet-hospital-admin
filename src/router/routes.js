@@ -1,5 +1,9 @@
-import dashboard from './modules/dashboard';
+import hospital from './modules/hospital';
+import personnel from './modules/personnel';
 import BasicLayout from '@/layouts/basic-layout';
+import marketing from './modules/marketing';
+import general from './modules/general';
+// import feedback from './modules/feedback';
 
 /**
  * 在主框架内显示
@@ -9,7 +13,7 @@ const frameIn = [
     {
         path: '/',
         redirect: {
-            name: 'dashboard-console'
+            name: 'hospital-index'
         },
         component: BasicLayout,
         children: [
@@ -17,7 +21,7 @@ const frameIn = [
                 path: 'index',
                 name: 'index',
                 redirect: {
-                    name: 'dashboard-console'
+                    name: 'hospital-index'
                 }
             },
             {
@@ -55,7 +59,11 @@ const frameIn = [
             }
         ]
     },
-    dashboard
+    hospital,
+    personnel,
+    marketing,
+    general
+    // feedback
 ];
 
 /**

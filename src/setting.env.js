@@ -1,5 +1,5 @@
 /**
- * Pet Hospital Admin 开发配置
+ * Pet Hospital 开发配置
  * */
 
 const env = process.env.NODE_ENV;

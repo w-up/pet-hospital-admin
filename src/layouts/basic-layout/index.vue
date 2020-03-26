@@ -1,48 +1,63 @@
 <template>
-    <Layout class="i-layout">
-        <Sider v-if="!isMobile && !hideSider" class="i-layout-sider" :class="siderClasses" :width="menuSideWidth">
-            <i-menu-side :hide-logo="isHeaderStick && headerFix && showHeader" />
-        </Sider>
-        <Layout class="i-layout-inside" :class="insideClasses">
-            <transition name="fade-quick">
-                <Header class="i-layout-header" :class="headerClasses" :style="headerStyle" v-show="showHeader" v-resize="handleHeaderWidthChange">
-                    <i-header-logo v-if="isMobile && showMobileLogo" />
-                    <i-header-logo v-if="!isMobile && isHeaderStick && headerFix" />
-                    <i-header-collapse v-if="(isMobile || showSiderCollapse) && !hideSider" @on-toggle-drawer="handleToggleDrawer" />
-                    <i-header-reload v-if="!isMobile && showReload" @on-reload="handleReload" />
-                    <i-menu-head v-if="headerMenu && !isMobile" ref="menuHead" />
-                    <i-header-breadcrumb v-if="showBreadcrumb && !headerMenu && !isMobile" ref="breadcrumb" />
-                    <i-header-search v-if="showSearch && !headerMenu && !isMobile && !showBreadcrumb" />
-                    <div class="i-layout-header-right">
-                        <i-header-search v-if="(showSearch && isMobile) || (showSearch && (headerMenu || showBreadcrumb))" />
-                        <i-menu-head v-if="headerMenu && isMobile" />
-                        <i-header-log v-if="isDesktop && showLog" />
-                        <i-header-fullscreen v-if="isDesktop && showFullscreen" />
-                        <i-header-notice v-if="showNotice" />
-                        <i-header-user />
-                        <i-header-i18n v-if="showI18n" />
-                        <i-header-setting v-if="enableSetting && !isMobile" />
-                    </div>
-                </Header>
-            </transition>
-            <Content class="i-layout-content" :class="contentClasses">
-                <transition name="fade-quick">
-                    <i-tabs v-if="tabs" v-show="showHeader" @on-reload="handleReload" />
-                </transition>
-                <div class="i-layout-content-main">
-                    <keep-alive :include="keepAlive">
-                        <router-view v-if="loadRouter" />
-                    </keep-alive>
-                </div>
-            </Content>
-            <i-copyright />
-        </Layout>
-        <div v-if="isMobile && !hideSider">
-            <Drawer v-model="showDrawer" placement="left" :closable="false" :class-name="drawerClasses">
-                <i-menu-side />
-            </Drawer>
+  <Layout class="i-layout">
+    <Sider
+      v-if="!isMobile && !hideSider"
+      class="i-layout-sider"
+      :class="siderClasses"
+      :width="menuSideWidth"
+    >
+      <i-menu-side :hide-logo="isHeaderStick && headerFix && showHeader" />
+    </Sider>
+    <Layout class="i-layout-inside" :class="insideClasses">
+      <transition name="fade-quick">
+        <Header
+          class="i-layout-header"
+          :class="headerClasses"
+          :style="headerStyle"
+          v-show="showHeader"
+          v-resize="handleHeaderWidthChange"
+        >
+          <i-header-logo v-if="isMobile && showMobileLogo" />
+          <i-header-logo v-if="!isMobile && isHeaderStick && headerFix" />
+          <i-header-collapse
+            v-if="(isMobile || showSiderCollapse) && !hideSider"
+            @on-toggle-drawer="handleToggleDrawer"
+          />
+          <i-header-reload v-if="!isMobile && showReload" @on-reload="handleReload" />
+          <i-menu-head v-if="headerMenu && !isMobile" ref="menuHead" />
+          <i-header-breadcrumb v-if="showBreadcrumb && !headerMenu && !isMobile" ref="breadcrumb" />
+          <!-- <i-header-search v-if="showSearch && !headerMenu && !isMobile && !showBreadcrumb" /> -->
+          <div class="i-layout-header-right">
+            <!-- <i-header-search v-if="(showSearch && isMobile) || (showSearch && (headerMenu || showBreadcrumb))" /> -->
+            <i-menu-head v-if="headerMenu && isMobile" />
+            <i-header-more />
+            <i-header-log v-if="isDesktop && showLog" />
+            <i-header-fullscreen v-if="isDesktop && showFullscreen" />
+            <i-header-notice v-if="showNotice" />
+            <!-- <i-header-user /> -->
+            <i-header-i18n v-if="showI18n" />
+            <i-header-setting v-if="enableSetting && !isMobile" />
+          </div>
+        </Header>
+      </transition>
+      <Content class="i-layout-content" :class="contentClasses">
+        <transition name="fade-quick">
+          <i-tabs v-if="tabs" v-show="showHeader" @on-reload="handleReload" />
+        </transition>
+        <div class="i-layout-content-main">
+          <keep-alive :include="keepAlive">
+            <router-view v-if="loadRouter" />
+          </keep-alive>
         </div>
+      </Content>
+      <i-copyright />
     </Layout>
+    <div v-if="isMobile && !hideSider">
+      <Drawer v-model="showDrawer" placement="left" :closable="false" :class-name="drawerClasses">
+        <i-menu-side />
+      </Drawer>
+    </div>
+  </Layout>
 </template>
 <script>
     import iMenuHead from './menu-head';
@@ -55,6 +70,7 @@
     import iHeaderLog from './header-log';
     import iHeaderFullscreen from './header-fullscreen';
     import iHeaderNotice from './header-notice';
+    import iHeaderMore from './header-more';
     import iHeaderUser from './header-user';
     import iHeaderI18n from './header-i18n';
     import iHeaderSetting from './header-setting';
@@ -68,7 +84,24 @@
 
     export default {
         name: 'BasicLayout',
-        components: { iMenuHead, iMenuSide, iCopyright, iHeaderLogo, iHeaderCollapse, iHeaderReload, iHeaderBreadcrumb, iHeaderSearch, iHeaderUser, iHeaderI18n, iHeaderLog, iHeaderFullscreen, iHeaderSetting, iHeaderNotice, iTabs },
+        components: {
+            iMenuHead,
+            iMenuSide,
+            iCopyright,
+            iHeaderLogo,
+            iHeaderCollapse,
+            iHeaderReload,
+            iHeaderBreadcrumb,
+            iHeaderSearch,
+            iHeaderUser,
+            iHeaderI18n,
+            iHeaderLog,
+            iHeaderFullscreen,
+            iHeaderSetting,
+            iHeaderNotice,
+            iHeaderMore,
+            iTabs
+        },
         data () {
             return {
                 showDrawer: false,
@@ -77,7 +110,7 @@
                 oldScrollTop: 0,
                 isDelayHideSider: false, // hack，当从隐藏侧边栏的 header 切换到正常 header 时，防止 Logo 抖动
                 loadRouter: true
-            }
+            };
         },
         computed: {
             ...mapState('admin/layout', [
@@ -105,12 +138,8 @@
                 'showReload',
                 'enableSetting'
             ]),
-            ...mapState('admin/page', [
-                'keepAlive'
-            ]),
-            ...mapGetters('admin/menu', [
-                'hideSider'
-            ]),
+            ...mapState('admin/page', ['keepAlive']),
+            ...mapGetters('admin/menu', ['hideSider']),
             // 如果开启 headerMenu，且当前 header 的 hideSider 为 true，则将顶部按 headerStick 处理
             // 这时，即使没有开启 headerStick，仍然按开启处理
             isHeaderStick () {
@@ -120,7 +149,7 @@
             },
             showHeader () {
                 let visible = true;
-                if (this.headerFix && this.headerHide && !this.headerVisible) visible = false;
+                if (this.headerFix && this.headerHide && !this.headerVisible) { visible = false; }
                 return visible;
             },
             headerClasses () {
@@ -132,14 +161,21 @@
                         'i-layout-header-mobile': this.isMobile,
                         'i-layout-header-stick': this.isHeaderStick && !this.isMobile,
                         'i-layout-header-with-menu': this.headerMenu,
-                        'i-layout-header-with-hide-sider': this.hideSider || this.isDelayHideSider
+                        'i-layout-header-with-hide-sider':
+                            this.hideSider || this.isDelayHideSider
                     }
                 ];
             },
             headerStyle () {
-                const menuWidth = this.isHeaderStick ? 0 : this.menuCollapse ? 80 : Setting.menuSideWidth;
-                return this.isMobile || !this.headerFix ? {} : {
-                    width: `calc(100% - ${menuWidth}px)`
+                const menuWidth = this.isHeaderStick
+                    ? 0
+                    : this.menuCollapse
+                        ? 80
+                        : Setting.menuSideWidth;
+                return this.isMobile || !this.headerFix
+                    ? {}
+                    : {
+                        width: `calc(100% - ${menuWidth}px)`
                 };
             },
             siderClasses () {
@@ -158,7 +194,8 @@
             insideClasses () {
                 return {
                     'i-layout-inside-fix-with-sider': this.siderFix,
-                    'i-layout-inside-fix-with-sider-collapse': this.siderFix && this.menuCollapse,
+                    'i-layout-inside-fix-with-sider-collapse':
+                        this.siderFix && this.menuCollapse,
                     'i-layout-inside-with-hide-sider': this.hideSider,
                     'i-layout-inside-mobile': this.isMobile
                 };
@@ -179,7 +216,7 @@
                     this.isDelayHideSider = false;
                 }, 0);
             },
-            '$route' (to, from) {
+            $route (to, from) {
                 if (to.name === from.name) {
                     // 相同路由，不同参数，跳转时，重载页面
                     if (Setting.sameRouteForceUpdate) {
@@ -189,13 +226,8 @@
             }
         },
         methods: {
-            ...mapMutations('admin/layout', [
-                'updateMenuCollapse'
-            ]),
-            ...mapMutations('admin/page', [
-                'keepAlivePush',
-                'keepAliveRemove'
-            ]),
+            ...mapMutations('admin/layout', ['updateMenuCollapse']),
+            ...mapMutations('admin/page', ['keepAlivePush', 'keepAliveRemove']),
             handleToggleDrawer (state) {
                 if (typeof state === 'boolean') {
                     this.showDrawer = state;
@@ -206,7 +238,8 @@
             handleScroll () {
                 if (!this.headerHide) return;
 
-                const scrollTop = document.body.scrollTop + document.documentElement.scrollTop;
+                const scrollTop =
+                    document.body.scrollTop + document.documentElement.scrollTop;
 
                 if (!this.ticking) {
                     this.ticking = true;
@@ -259,5 +292,5 @@
         created () {
             if (this.isTablet && this.showSiderCollapse) this.updateMenuCollapse(true);
         }
-    }
+    };
 </script>

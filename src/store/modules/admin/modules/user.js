@@ -1,11 +1,14 @@
 /**
  * 用户信息
  * */
+import util from '@/libs/util';
 export default {
     namespaced: true,
     state: {
         // 用户信息
-        info: {}
+        info: {},
+        resource: '/server/data/admin/common/upload',
+        headers: { 'X-TENANT-ID': 'jiawen:pethos@2020', 'authorization': 'Bearer ' + util.cookies.get('token') }
     },
     actions: {
         /**

@@ -1,0 +1,851 @@
+<template>
+  <div>
+    <Tabs value="name1">
+      <TabPane label="挂号" name="name1"></TabPane>
+      <TabPane label="处方" name="name2"></TabPane>
+      <TabPane label="检验" name="name3"></TabPane>
+      <TabPane label="处置" name="name4"></TabPane>
+      <TabPane label="手术" name="name5"></TabPane>
+      <TabPane label="住院" name="name6"></TabPane>
+      <TabPane label="疫苗驱虫" name="name7"></TabPane>
+      <TabPane label="美容" name="name8"></TabPane>
+      <TabPane label="商品" name="name9"></TabPane>
+      <TabPane label="寄养" name="name10"></TabPane>
+      <TabPane label="影像检验" name="name11"></TabPane>
+    </Tabs>
+    <Row>
+      <Col span="6">
+        <Card class="ptb0">
+          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+            <Col span="15">
+              <span class="module-title">目录</span>
+            </Col>
+            <Col span="4">
+              <Button type="warning">剪切</Button>
+            </Col>
+            <Col span="4" offset="1">
+              <Button type="info">粘贴</Button>
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="24">
+              <Input prefix="ios-search" />
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="24">
+              <Tree :data="tableOfContentsData" class="set-width"></Tree>
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="8" class="ivu-text-center">
+              <Button type="success" @click="showAddTypeModal">+类别</Button>
+            </Col>
+            <Col span="8" class="ivu-text-center">
+              <Button type="error">删除</Button>
+            </Col>
+            <Col span="8" class="ivu-text-center">
+              <Button type="primary">修改</Button>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+      <Col span="18" class="box">
+        <Card class="ptb0">
+          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+            <Col span="18">
+              <span class="module-title">全部挂号</span>
+            </Col>
+            <Col span="6">
+              <Input prefix="ios-search" placeholder="名称/编码/条形码" />
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="24">
+              <Table border :columns="registeredListColumns" :data="registeredListData"></Table>
+              <div class="ivu-mt ivu-text-right">
+                <Page :total="registeredListData.length" :current.sync="current" />
+              </div>
+            </Col>
+          </Row>
+          <Row type="flex" justify="end" class="mtb15">
+            <Col span="14" class="ivu-text-left">
+              <Button type="success" class="mr10" @click="showAddProjectModal">项目</Button>
+              <Button type="error" class="mr10">删除</Button>
+              <Button type="primary" class="mr10">修改</Button>
+              <Button type="warning" class="mr10">剪切</Button>
+              <Button type="info" class="mr10">粘贴</Button>
+              <Button class="mr10">批量设置</Button>
+            </Col>
+            <Col span="10" class="ivu-text-right">
+              <Button type="success" class="mr10" @click="importData">导入明细</Button>
+              <Button type="info" class="mr10">导出明细</Button>
+              <Button type="primary" @click="showSystemHint">初始化成本</Button>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+    </Row>
+    <Modal v-model="addType" title="添加分类">
+      <Form :label-width="187">
+        <FormItem label="类别名称">
+          <Input style="width: 150px" placeholder="必填" />
+        </FormItem>
+        <FormItem label="夜间调价">
+          <Col span="6">
+            <Checkbox>按比例</Checkbox>
+          </Col>
+          <Col span="6">
+            <Checkbox>按金额</Checkbox>
+          </Col>
+        </FormItem>
+        <FormItem label>
+          <Col span="3">上调</Col>
+          <Col span="6">
+            <Input style="width: 150px" />
+          </Col>
+        </FormItem>
+        <FormItem label>
+          <Col span="3">下调</Col>
+          <Col span="6">
+            <Input style="width: 150px" />
+          </Col>
+        </FormItem>
+      </Form>
+    </Modal>
+    <Modal v-model="changePrice" title="夜间经营-调整">
+      <Form :label-width="187">
+        <FormItem label="类别名称">
+          <span>全部挂号</span>
+        </FormItem>
+        <FormItem label="夜间调价">
+          <Col span="6">
+            <Checkbox>按比例</Checkbox>
+          </Col>
+          <Col span="6">
+            <Checkbox>按金额</Checkbox>
+          </Col>
+        </FormItem>
+        <FormItem label>
+          <Col span="3">上调</Col>
+          <Col span="6">
+            <Input style="width: 150px">
+              <span slot="append">%</span>
+            </Input>
+          </Col>
+        </FormItem>
+        <FormItem label>
+          <Col span="3">下调</Col>
+          <Col span="6">
+            <Input style="width: 150px">
+              <span slot="append">%</span>
+            </Input>
+          </Col>
+        </FormItem>
+      </Form>
+    </Modal>
+    <Modal v-model="addProject" title="添加项目" width="800">
+      <Tabs value="name3" :animated="false" name="addProjectTabs">
+        <TabPane label="添加商品" name="name3" tab="addProjectTabs">
+          <Row>
+            <Form>
+              <Col span="12">
+                <FormItem label="商品名称">
+                  <Input style="width: 200px" placeholder="必填"></Input>
+                </FormItem>
+                <FormItem label="拼音搜索">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+                <FormItem label="商品编号">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+                <FormItem label="生产厂家">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+                <FormItem label="库存下限">
+                  <Row>
+                    <Col span="6">
+                      <Input style="width: 100px"></Input>
+                    </Col>
+                    <Col span="13" style="padding:0 0 0 12px">
+                      <span>库存量低于下限，系统自动提醒</span>
+                    </Col>
+                  </Row>
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label>
+                  <Col span="6">
+                    <Checkbox>设置别名</Checkbox>
+                  </Col>
+                  <Col span="6">
+                    <Input style="width: 200px" placeholder="显示、打印都显示别名"></Input>
+                  </Col>
+                </FormItem>
+                <FormItem label="商品条码">
+                  <Input style="width: 200px" />
+                </FormItem>
+                <FormItem label="商品单位">
+                  <Input style="width: 200px" />
+                </FormItem>
+                <FormItem label="商品规格">
+                  <Input style="width: 200px" />
+                </FormItem>
+              </Col>
+            </Form>
+          </Row>
+          <Row class="topBorder">
+            <CheckboxGroup>
+              <Checkbox label="参与打折"></Checkbox>
+              <Checkbox label="计算库存"></Checkbox>
+              <Checkbox label="有批号商品"></Checkbox>
+              <Checkbox label="(勾选后，将置顶单品并加推荐符号，提醒员工优先销售)"></Checkbox>
+            </CheckboxGroup>
+          </Row>
+          <Tabs value="name5" :animated="false" name="settingTabs">
+            <TabPane label="价格设置" name="name5" tab="settingTabs"></TabPane>
+            <TabPane label="用法设置" name="name6" tab="settingTabs"></TabPane>
+            <TabPane label="商品来源" name="name7" tab="settingTabs"></TabPane>
+            <TabPane label="积分兑换" name="name8" tab="settingTabs"></TabPane>
+            <TabPane label="商品说明" name="name9" tab="settingTabs"></TabPane>
+            <TabPane label="有效期管理" name="name19" tab="settingTabs"></TabPane>
+          </Tabs>
+          <Row>
+            <Form>
+              <Col span="12">
+                <FormItem label="销售单价">
+                  <Input style="width: 200px" placeholder="￥0.00"></Input>
+                </FormItem>
+                <FormItem label="商品进价">
+                  <Input style="width: 200px" placeholder="￥0.00"></Input>
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="最低售价">
+                  <Input style="width: 200px" placeholder="￥0.00"></Input>
+                </FormItem>
+                <FormItem label="批发价格">
+                  <Input style="width: 200px" placeholder="￥0.00"></Input>
+                </FormItem>
+              </Col>
+            </Form>
+          </Row>
+          <Row :gutter="16">
+            <Form>
+              <Col span="24">
+                <FormItem label>
+                  <Col span="3">
+                    <Checkbox>会员价</Checkbox>
+                  </Col>
+                  <Col span="7">
+                    <Input style="width: 200px" placeholder="￥0.00"></Input>
+                  </Col>
+                  <Col span="13">
+                    <span>会员卡用户结算时,以会员价结算,不参与折扣</span>
+                  </Col>
+                </FormItem>
+              </Col>
+            </Form>
+          </Row>
+        </TabPane>
+        <TabPane label="添加套餐" name="name4" tab="addProjectTabs">
+          <Row>
+            <Form>
+              <Col span="12">
+                <FormItem label="套餐名称">
+                  <Input style="width: 200px" placeholder="必填"></Input>
+                </FormItem>
+                <FormItem label="套餐条码">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+                <FormItem label="套餐单位">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="套餐编号">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+                <FormItem label="套餐规格">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+                <FormItem label="套餐说明">
+                  <Input style="width: 200px"></Input>
+                </FormItem>
+              </Col>
+            </Form>
+          </Row>
+          <Row>
+            <Form>
+              <Col span="3">
+                <FormItem label="套餐商品"></FormItem>
+              </Col>
+              <Col span="17">
+                <span>
+                  <div style="height: 17px;border-bottom: 2px solid #ddd;"></div>
+                </span>
+              </Col>
+              <Col span="3" offset="1">
+                <Button type="warning" @click="addPackage">添加套餐</Button>
+              </Col>
+            </Form>
+          </Row>
+          <Row>
+            <Table border :columns="goodsColumns" :data="goodsListData"></Table>
+          </Row>
+          <Row style="margin-top:15px">
+            <Col span="24" class="ivu-text-right">
+              <span style="font-size:16px">合计：</span>0.00
+            </Col>
+          </Row>
+        </TabPane>
+      </Tabs>
+      <div slot="footer">
+        <Button type="default" @click="addProject=false">关闭</Button>
+        <Button type="success" @click="addProject=false">保存</Button>
+        <Button type="info">保存并继续</Button>
+      </div>
+    </Modal>
+    <Modal v-model="addPackageModal" title="添加套餐" @on-ok="handleCreate" width="80%">
+      <Row>
+        <Col span="5">
+          <Card class="ptb0">
+            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+              <Col span="24">
+                <span class="module-title">商品分类列表</span>
+              </Col>
+            </Row>
+            <Row :gutter="24" type="flex" justify="end">
+              <Col span="24">
+                <Tree :data="goodsTypeModalData"></Tree>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+        <Col span="19" class="box">
+          <Card class="ptb0">
+            <Row
+              type="flex"
+              justify="center"
+              :gutter="1"
+              align="top"
+              class-name="module-title-wrapper"
+            >
+              <Col span="15">
+                <span class="module-title">商品列表</span>
+              </Col>
+              <Col span="4" class="ivu-text-right">
+                <Button type="warning" class="mr10">快速添加</Button>
+              </Col>
+              <Col span="5" class="ivu-text-right">
+                <Input prefix="ios-search" placeholder="名称，编号，条形码" />
+              </Col>
+            </Row>
+            <Row :gutter="24" type="flex" justify="end" class="mtb15">
+              <Col span="24">
+                <Table border :columns="goodsListModalColumns" :data="goodsListModalData"></Table>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+      <Row class="mtb15">
+        <Col span="24">
+          <Card class="ptb0">
+            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+              <Col span="20">
+                <span class="module-title">已选商品列表</span>
+              </Col>
+              <Col span="4" class="ivu-text-right">
+                <Button type="error" class="mr10">删除</Button>
+              </Col>
+            </Row>
+            <Row :gutter="24" type="flex" justify="end" class="mtb15">
+              <Col span="24">
+                <Table border :columns="hasGoodsListColumns" :data="hasGoodsListData"></Table>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+    </Modal>
+       <Modal v-model="importDataModal" title="导入数据">
+      <Form :label-width="100" >
+        <FormItem label="导入类型" class="importDataFormItem">
+         <Col span="6">
+            <Checkbox>新增消费</Checkbox>
+          </Col>
+         <Col span="6">
+            <a href="javascript:;" style="text-decoration:underline;">下载空模版</a>
+          </Col>
+        </FormItem>
+        <FormItem label="" class="importDataFormItem">
+         <span>在空模板中维护好商品信息,课直接导入对应分类</span>
+        </FormItem>
+        <FormItem label="" class="importDataFormItem">
+         <Checkbox>修改消费</Checkbox>
+        </FormItem>
+          <FormItem label="">
+         <span>在空模板中维护好商品信息,课直接导入对应分类</span>
+        </FormItem>
+          <FormItem label="文件路径">
+         <Upload :action="resource" :headers="headers">
+        <Button icon="ios-cloud-upload-outline">点此选择文件</Button>
+    </Upload>
+        </FormItem>
+      </Form>
+    </Modal>
+     <Modal
+        v-model="systemHintModal"
+        title="系统提示"
+       >
+       <Row>
+         <Col span="22" offset="1" class="ivu-text-left">初始化成本会将所有商品的进价保存为商品的成本(已有成本的商品不再处理).是否现在开始初始化流程</Col>
+       </Row>
+     <div slot="footer">
+        <Button type="default" @click="systemHintModal=false">否</Button>
+        <Button type="success">是</Button>
+      </div>
+    </Modal>
+  </div>
+</template>
+<script>
+    export default {
+        data () {
+            return {
+                resource: this.$store.state.admin.user.resource,
+                headers: this.$store.state.admin.user.headers,
+                registeredListColumns: [
+                    {
+                        type: 'selection',
+                        align: 'center',
+                        minWidth: 60
+                    },
+                    {
+                        title: '编号',
+                        key: 'code',
+                        minWidth: 95
+                    },
+                    {
+                        title: '条形码',
+                        key: 'barCode',
+                        minWidth: 80
+                    },
+                    {
+                        title: '名称',
+                        key: 'name',
+                        minWidth: 125
+                    },
+                    {
+                        title: '规格',
+                        key: 'size',
+                        minWidth: 70
+                    },
+                    {
+                        title: '单位',
+                        key: 'unti',
+                        minWidth: 70
+                    },
+                    {
+                        title: '有效期',
+                        key: 'expirationDate',
+                        minWidth: 80
+                    },
+                    {
+                        title: '单价',
+                        key: 'price',
+                        minWidth: 75
+                    },
+                    {
+                        title: '最低售价',
+                        key: 'lowPrice',
+                        minWidth: 95
+                    },
+                    {
+                        title: '说明',
+                        key: 'remark',
+                        minWidth: 70
+                    },
+                    {
+                        title: '参与折扣',
+                        key: 'isDiscount',
+                        minWidth: 95
+                    },
+                    {
+                        title: '计算库存',
+                        key: 'calculateInventory',
+                        minWidth: 95
+                    },
+                    {
+                        title: '当前库存',
+                        key: 'currentInventory',
+                        minWidth: 95
+                    }
+                ],
+                registeredListData: [
+                    {
+                        code: 'P000001',
+                        barCode: '',
+                        name: '住院一级护理',
+                        size: '',
+                        unti: '',
+                        expirationDate: '',
+                        price: '50.00',
+                        lowPrice: '0.00',
+                        remark: '',
+                        isDiscount: '否',
+                        calculateInventory: '否',
+                        currentInventory: '0'
+                    },
+                    {
+                        code: 'P000001',
+                        barCode: '',
+                        name: '住院一级护理',
+                        size: '',
+                        unti: '',
+                        expirationDate: '',
+                        price: '50.00',
+                        lowPrice: '0.00',
+                        remark: '',
+                        isDiscount: '否',
+                        calculateInventory: '否',
+                        currentInventory: '0'
+                    }
+                ],
+                goodsColumns: [
+                    {
+                        title: '商品名称',
+                        key: 'name',
+                        minWidth: 125
+                    },
+                    {
+                        title: '编号',
+                        key: 'code',
+                        minWidth: 95
+                    },
+                    {
+                        title: '规格',
+                        key: 'size',
+                        minWidth: 70
+                    },
+                    {
+                        title: '单位',
+                        key: 'unti',
+                        minWidth: 70
+                    },
+                    {
+                        title: '单价',
+                        key: 'price',
+                        minWidth: 75
+                    },
+                    {
+                        title: '组合数量',
+                        key: 'num',
+                        minWidth: 95,
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        // 将单元格的值给Input
+                                        value: params.row.num
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            // 值改变时
+                                            // 将渲染后的值重新赋值给单元格值
+                                            params.row.num = event.target.value;
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
+                    }
+                ],
+                goodsListData: [
+                    {
+                        name: '',
+                        code: '',
+                        size: '',
+                        unti: '',
+                        price: '',
+                        num: '1'
+                    },
+                    {
+                        name: '',
+                        code: '',
+                        size: '',
+                        unti: '',
+                        price: '',
+                        num: '1'
+                    }
+                ],
+                tableOfContentsData: [
+                    {
+                        title: '全部挂号',
+                        expand: true,
+                        render: (h, { root, node, data }) => {
+                            return h(
+                                'span',
+                                {
+                                    style: {
+                                        display: 'inline-block',
+                                        width: '100%'
+                                    }
+                                },
+                                [
+                                    h('span', data.title),
+                                    h(
+                                        'span',
+                                        {
+                                            style: {
+                                                display: 'inline-block',
+                                                float: 'right'
+                                            }
+                                        },
+                                        [
+                                            h(
+                                                'Button',
+                                                {
+                                                    props: {
+                                                        type: 'primary',
+                                                        size: 'small'
+                                                    },
+                                                    style: {},
+                                                    on: {
+                                                        click: () => {
+                                                            this.showChangePriceModal();
+                                                        }
+                                                    }
+                                                },
+                                                '调价'
+                                            )
+                                        ]
+                                    )
+                                ]
+                            );
+                        },
+                        children: [
+                            {
+                                title: '挂号服务',
+                                expand: false
+                            },
+                            {
+                                title: '住院费用',
+                                expand: false
+                            }
+                        ]
+                    }
+                ],
+                goodsTypeModalData: [
+                    {
+                        title: '检验',
+                        expand: true,
+                        children: [
+                            {
+                                title: '尿常规(犬类)',
+                                expand: false
+                            },
+                            {
+                                title: '尿常规(猫类)',
+                                expand: false
+                            }
+                        ]
+                    }
+                ],
+                goodsListModalColumns: [
+                    {
+                        title: '编号',
+                        key: 'code'
+                    },
+                    {
+                        title: '名称',
+                        key: 'name'
+                    },
+                    {
+                        title: '规格',
+                        key: 'size'
+                    },
+                    {
+                        title: '单位',
+                        key: 'unti'
+                    },
+                    {
+                        title: '单价',
+                        key: 'price'
+                    },
+                    {
+                        title: '条形码',
+                        key: 'barCode'
+                    }
+                ],
+                goodsListModalData: [
+                    {
+                        code: '',
+                        name: '复合维生素B片',
+                        size: '',
+                        unti: '片',
+                        price: '',
+                        barCode: ''
+                    }
+                ],
+                hasGoodsListColumns: [
+                    {
+                        type: 'selection',
+                        minWidth: 30,
+                        align: 'center'
+                    },
+                    {
+                        title: '名称',
+                        minWidth: 80,
+                        key: 'name'
+                    },
+                    {
+                        title: '编号',
+                        minWidth: 70,
+                        key: 'code'
+                    },
+                    {
+                        title: '规格',
+                        minWidth: 60,
+                        key: 'size'
+                    },
+                    {
+                        title: '单位',
+                        minWidth: 50,
+                        key: 'unti'
+                    },
+                    {
+                        title: '单价',
+                        minWidth: 50,
+                        key: 'price'
+                    },
+                    {
+                        title: '组合数量',
+                        minWidth: 50,
+                        key: 'num',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        // 将单元格的值给Input
+                                        value: params.row.num
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            // 值改变时
+                                            // 将渲染后的值重新赋值给单元格值
+                                            params.row.num = event.target.value;
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
+                    }
+                ],
+                hasGoodsListData: [
+                    {
+                        name: '宠物补血膏',
+                        code: '',
+                        size: '20ml',
+                        unti: 'ml',
+                        price: '5',
+                        num: ''
+                    },
+                    {
+                        name: '宠物补血膏',
+                        code: '',
+                        size: '20ml',
+                        unti: 'ml',
+                        price: '5',
+                        num: ''
+                    }
+                ],
+                current: 1,
+                addType: false,
+                changePrice: false,
+                addProject: false,
+                addPackageModal: false,
+                importDataModal: false,
+                systemHintModal: false
+            };
+        },
+        methods: {
+            showAddTypeModal () {
+                this.addType = true;
+            },
+            showChangePriceModal () {
+                this.changePrice = true;
+            },
+            showAddProjectModal () {
+                this.addProject = true;
+            },
+            addPackage () {
+                this.addPackageModal = true;
+            },
+            handleCreate () {},
+            importData () {
+                this.importDataModal = true;
+            },
+            showSystemHint () {
+                this.systemHintModal = true;
+            }
+        },
+        mounted () {}
+    };
+</script>
+<style lang="less" scoped>
+.box {
+  padding-left: 15px;
+}
+/*模块标题*/
+.module-title-wrapper {
+  height: 48px;
+  line-height: 48px;
+  border-bottom: 1px solid #e9eaec;
+  font-weight: 700;
+  background-color: #fff;
+}
+.mtb15 {
+  margin: 15px 0;
+}
+.topBorder {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 15px;
+  margin-bottom: 12px;
+}
+</style>
+<style lang="less">
+.ptb0 .ivu-card-body {
+  padding: 0 16px;
+}
+.good-list {
+  height: 265px;
+  overflow: auto;
+}
+.good-list .ivu-list-item {
+  padding: 0;
+}
+.good-list .ivu-list-item p {
+  padding: 12px 0;
+  width: 100%;
+}
+.good-list .active {
+  background: #69c5d8;
+}
+//使所有页面的表格的td和th都居中
+.ivu-table-wrapper td {
+  text-align: center;
+}
+.ivu-table-wrapper th {
+  text-align: center;
+}
+.set-width .ivu-tree-title {
+  width: calc(100% - 11px);
+  width: -webkit-calc(100% - 11px);
+  width: -moz-calc(100% - 11px);
+  padding: 0;
+}
+.importDataFormItem{
+  margin-bottom: 0;
+}
+</style>

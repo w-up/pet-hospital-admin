@@ -45,6 +45,7 @@ export default {
             const userInfo = rootState.admin.user.info;
             // @权限
             const access = userInfo.access;
+
             if (access && access.length) {
                 return filterMenu(state.sider, access, []);
             } else {
@@ -58,6 +59,7 @@ export default {
             const userInfo = rootState.admin.user.info;
             // @权限
             const access = userInfo.access;
+
             if (access && access.length) {
                 return state.header.filter(item => {
                     let state = true;
