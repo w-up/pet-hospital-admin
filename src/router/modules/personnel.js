@@ -23,7 +23,7 @@ export default {
                 ...meta,
                 title: '员工管理'
             },
-            component: () => import('@/pages/general/user-info')
+            component: () => import('@/pages/personnel/user-info')
         },
         {
             path: 'user-schedule',
@@ -32,7 +32,7 @@ export default {
                 ...meta,
                 title: '员工排班'
             },
-            component: () => import('@/pages/general/user-schedule')
+            component: () => import('@/pages/personnel/user-schedule')
         }
     ]
 };

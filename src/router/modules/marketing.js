@@ -22,7 +22,7 @@ export default {
                 ...meta,
                 title: '营销管理'
             },
-            component: () => import('@/pages/general/marketing-management')
+            component: () => import('@/pages/marketing/marketing-management')
         }
     ]
 };
