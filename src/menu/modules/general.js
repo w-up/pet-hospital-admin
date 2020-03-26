@@ -43,6 +43,16 @@ export default {
             title: '往来单位'
         },
         {
+            path: `${pre}help-center`,
+            title: '帮助中心管理',
+            children: [
+                {
+                    path: `${pre}help-center/common-problem`,
+                    title: '常见问题'
+                }
+            ]
+        },
+        {
             path: `${pre}reminder-setting`,
             title: '提醒设置'
         }

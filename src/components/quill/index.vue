@@ -49,7 +49,7 @@
                             [{ 'align': [] }],
                             [{ 'direction': 'rtl' }],
                             // [{ 'font': [] }],
-                            ['clean'],
+                            // ['clean'],
                             ['link', 'image']
                         ]
                     },

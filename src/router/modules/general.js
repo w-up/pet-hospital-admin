@@ -1,4 +1,5 @@
 import BasicLayout from '@/layouts/basic-layout';
+import ParentView from '@/components/parent-view';
 
 const meta = {
     auth: true
@@ -95,6 +96,26 @@ export default {
                 title: '往来单位'
             },
             component: () => import('@/pages/general/company')
+        },
+        {
+            path: 'help-center',
+            name: `${pre}help-center`,
+            redirect: {
+                name: `${pre}help-center-common-problem`
+            },
+            meta,
+            component: ParentView,
+            children: [
+                {
+                    path: 'common-problem',
+                    name: `${pre}help-center-common-problem`,
+                    meta: {
+                        ...meta,
+                        title: '常见问题'
+                    },
+                    component: () => import('@/pages/general/help-center/common-problem')
+                }
+            ]
         },
         {
             path: 'reminder-setting',
