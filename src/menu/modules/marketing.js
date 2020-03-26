@@ -1,4 +1,4 @@
-// const pre = '/marketing/';
+const pre = '/marketing/';
 
 export default {
     path: '/marketing',
@@ -6,5 +6,9 @@ export default {
     header: 'marketing',
     icon: 'ios-aperture',
     children: [
+        {
+            path: `${pre}marketing-management`,
+            title: '营销管理'
+        }
     ]
 }

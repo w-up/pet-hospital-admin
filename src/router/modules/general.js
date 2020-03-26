@@ -10,37 +10,73 @@ export default {
     path: '/general',
     name: 'general',
     redirect: {
-        name: `${pre}hospital`
+        name: `${pre}consumption-setting`
     },
     meta,
     component: BasicLayout,
     children: [
         {
-            path: 'hospital',
-            name: `${pre}hospital`,
+            path: 'consumption-setting',
+            name: `${pre}consumption-setting`,
             meta: {
                 ...meta,
-                title: '医院信息'
+                title: '消费设置'
             },
-            component: () => import('@/pages/general/hospital')
+            component: () => import('@/pages/general/consumption-setting')
         },
         {
-            path: 'user-info',
-            name: `${pre}user-info`,
+            path: 'check-setting',
+            name: `${pre}check-setting`,
             meta: {
                 ...meta,
-                title: '员工管理'
+                title: '检验设置'
             },
-            component: () => import('@/pages/general/user-info')
+            component: () => import('@/pages/general/check-setting')
         },
         {
-            path: 'user-schedule',
-            name: `${pre}user-schedule`,
+            path: 'goods-combination',
+            name: `${pre}goods-combination`,
             meta: {
                 ...meta,
-                title: '排班管理'
+                title: '商品组合'
             },
-            component: () => import('@/pages/general/user-schedule')
+            component: () => import('@/pages/general/goods-combination')
+        },
+        {
+            path: 'discount-setting',
+            name: `${pre}discount-setting`,
+            meta: {
+                ...meta,
+                title: '折扣设置'
+            },
+            component: () => import('@/pages/general/discount-setting')
+        },
+        {
+            path: 'card',
+            name: `${pre}card`,
+            meta: {
+                ...meta,
+                title: '卡片管理'
+            },
+            component: () => import('@/pages/general/card')
+        },
+        {
+            path: 'pet',
+            name: `${pre}pet`,
+            meta: {
+                ...meta,
+                title: '宠物设置'
+            },
+            component: () => import('@/pages/general/pet')
+        },
+        {
+            path: 'template',
+            name: `${pre}template`,
+            meta: {
+                ...meta,
+                title: '模板设置'
+            },
+            component: () => import('@/pages/general/template')
         },
         {
             path: 'commission-plan',
@@ -59,78 +95,6 @@ export default {
                 title: '往来单位'
             },
             component: () => import('@/pages/general/company')
-        },
-        {
-            path: 'pet',
-            name: `${pre}pet`,
-            meta: {
-                ...meta,
-                title: '宠物设置'
-            },
-            component: () => import('@/pages/general/pet')
-        },
-        {
-            path: 'consumption-setting',
-            name: `${pre}consumption-setting`,
-            meta: {
-                ...meta,
-                title: '消费设置'
-            },
-            component: () => import('@/pages/general/consumption-setting')
-        },
-        {
-            path: 'card',
-            name: `${pre}card`,
-            meta: {
-                ...meta,
-                title: '卡片管理'
-            },
-            component: () => import('@/pages/general/card')
-        },
-        {
-            path: 'discount-setting',
-            name: `${pre}discount-setting`,
-            meta: {
-                ...meta,
-                title: '折扣设置'
-            },
-            component: () => import('@/pages/general/discount-setting')
-        },
-        {
-            path: 'marketing-management',
-            name: `${pre}marketing-management`,
-            meta: {
-                ...meta,
-                title: '营销管理'
-            },
-            component: () => import('@/pages/general/marketing-management')
-        },
-        {
-            path: 'template',
-            name: `${pre}template`,
-            meta: {
-                ...meta,
-                title: '模板设置'
-            },
-            component: () => import('@/pages/general/template')
-        },
-        {
-            path: 'goods-combination',
-            name: `${pre}goods-combination`,
-            meta: {
-                ...meta,
-                title: '商品组合'
-            },
-            component: () => import('@/pages/general/goods-combination')
-        },
-        {
-            path: 'check-setting',
-            name: `${pre}check-setting`,
-            meta: {
-                ...meta,
-                title: '检验设置'
-            },
-            component: () => import('@/pages/general/check-setting')
         },
         {
             path: 'reminder-setting',

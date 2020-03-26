@@ -1,7 +1,7 @@
 import hospital from './modules/hospital';
 import personnel from './modules/personnel';
 import BasicLayout from '@/layouts/basic-layout';
-// import marketing from './modules/marketing';
+import marketing from './modules/marketing';
 import general from './modules/general';
 // import feedback from './modules/feedback';
 
@@ -61,7 +61,7 @@ const frameIn = [
     },
     hospital,
     personnel,
-    // marketing,
+    marketing,
     general
     // feedback
 ];

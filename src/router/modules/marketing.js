@@ -10,10 +10,19 @@ export default {
     path: '/marketing',
     name: 'marketing',
     redirect: {
-        name: `${pre}purchase-settlement`
+        name: `${pre}marketing-management`
     },
     meta,
     component: BasicLayout,
     children: [
+        {
+            path: 'marketing-management',
+            name: `${pre}marketing-management`,
+            meta: {
+                ...meta,
+                title: '营销管理'
+            },
+            component: () => import('@/pages/general/marketing-management')
+        }
     ]
 };
