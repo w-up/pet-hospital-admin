@@ -30,10 +30,10 @@
           <div class="i-layout-header-right">
             <!-- <i-header-search v-if="(showSearch && isMobile) || (showSearch && (headerMenu || showBreadcrumb))" /> -->
             <i-menu-head v-if="headerMenu && isMobile" />
+              <i-header-notice v-if="showNotice" />
             <i-header-more />
             <i-header-log v-if="isDesktop && showLog" />
             <i-header-fullscreen v-if="isDesktop && showFullscreen" />
-            <i-header-notice v-if="showNotice" />
             <!-- <i-header-user /> -->
             <i-header-i18n v-if="showI18n" />
             <i-header-setting v-if="enableSetting && !isMobile" />
