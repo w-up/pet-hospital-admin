@@ -35,6 +35,10 @@ export default {
             title: '模板设置'
         },
         {
+            path: `${pre}system-first-diagnosis`,
+            title: '系统初诊管理'
+        },
+        {
             path: `${pre}commission-plan`,
             title: '医生提成设置'
         },

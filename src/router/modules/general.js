@@ -80,6 +80,15 @@ export default {
             component: () => import('@/pages/general/template')
         },
         {
+            path: 'system-first-diagnosis',
+            name: `${pre}system-first-diagnosis`,
+            meta: {
+                ...meta,
+                title: '系统初诊管理'
+            },
+            component: () => import('@/pages/general/system-first-diagnosis')
+        },
+        {
             path: 'commission-plan',
             name: `${pre}commission-plan`,
             meta: {
