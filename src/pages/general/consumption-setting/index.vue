@@ -144,164 +144,10 @@
         </FormItem>
       </Form>
     </Modal>
-    <Modal v-model="addProject" title="添加项目" width="800">
-      <Tabs value="name3" :animated="false" name="addProjectTabs">
-        <TabPane label="添加商品" name="name3" tab="addProjectTabs">
-          <Row>
-            <Form>
-              <Col span="12">
-                <FormItem label="商品名称">
-                  <Input style="width: 200px" placeholder="必填"></Input>
-                </FormItem>
-                <FormItem label="拼音搜索">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-                <FormItem label="商品编号">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-                <FormItem label="生产厂家">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-                <FormItem label="库存下限">
-                  <Row>
-                    <Col span="6">
-                      <Input style="width: 100px"></Input>
-                    </Col>
-                    <Col span="13" style="padding:0 0 0 12px">
-                      <span>库存量低于下限，系统自动提醒</span>
-                    </Col>
-                  </Row>
-                </FormItem>
-              </Col>
-              <Col span="12">
-                <FormItem label>
-                  <Col span="6">
-                    <Checkbox>设置别名</Checkbox>
-                  </Col>
-                  <Col span="6">
-                    <Input style="width: 200px" placeholder="显示、打印都显示别名"></Input>
-                  </Col>
-                </FormItem>
-                <FormItem label="商品条码">
-                  <Input style="width: 200px" />
-                </FormItem>
-                <FormItem label="商品单位">
-                  <Input style="width: 200px" />
-                </FormItem>
-                <FormItem label="商品规格">
-                  <Input style="width: 200px" />
-                </FormItem>
-              </Col>
-            </Form>
-          </Row>
-          <Row class="topBorder">
-            <CheckboxGroup>
-              <Checkbox label="参与打折"></Checkbox>
-              <Checkbox label="计算库存"></Checkbox>
-              <Checkbox label="有批号商品"></Checkbox>
-              <Checkbox label="(勾选后，将置顶单品并加推荐符号，提醒员工优先销售)"></Checkbox>
-            </CheckboxGroup>
-          </Row>
-          <Tabs value="name5" :animated="false" name="settingTabs">
-            <TabPane label="价格设置" name="name5" tab="settingTabs"></TabPane>
-            <TabPane label="用法设置" name="name6" tab="settingTabs"></TabPane>
-            <TabPane label="商品来源" name="name7" tab="settingTabs"></TabPane>
-            <TabPane label="积分兑换" name="name8" tab="settingTabs"></TabPane>
-            <TabPane label="商品说明" name="name9" tab="settingTabs"></TabPane>
-            <TabPane label="有效期管理" name="name19" tab="settingTabs"></TabPane>
-          </Tabs>
-          <Row>
-            <Form>
-              <Col span="12">
-                <FormItem label="销售单价">
-                  <Input style="width: 200px" placeholder="￥0.00"></Input>
-                </FormItem>
-                <FormItem label="商品进价">
-                  <Input style="width: 200px" placeholder="￥0.00"></Input>
-                </FormItem>
-              </Col>
-              <Col span="12">
-                <FormItem label="最低售价">
-                  <Input style="width: 200px" placeholder="￥0.00"></Input>
-                </FormItem>
-                <FormItem label="批发价格">
-                  <Input style="width: 200px" placeholder="￥0.00"></Input>
-                </FormItem>
-              </Col>
-            </Form>
-          </Row>
-          <Row :gutter="16">
-            <Form>
-              <Col span="24">
-                <FormItem label>
-                  <Col span="3">
-                    <Checkbox>会员价</Checkbox>
-                  </Col>
-                  <Col span="7">
-                    <Input style="width: 200px" placeholder="￥0.00"></Input>
-                  </Col>
-                  <Col span="13">
-                    <span>会员卡用户结算时,以会员价结算,不参与折扣</span>
-                  </Col>
-                </FormItem>
-              </Col>
-            </Form>
-          </Row>
-        </TabPane>
-        <TabPane label="添加套餐" name="name4" tab="addProjectTabs">
-          <Row>
-            <Form>
-              <Col span="12">
-                <FormItem label="套餐名称">
-                  <Input style="width: 200px" placeholder="必填"></Input>
-                </FormItem>
-                <FormItem label="套餐条码">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-                <FormItem label="套餐单位">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-              </Col>
-              <Col span="12">
-                <FormItem label="套餐编号">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-                <FormItem label="套餐规格">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-                <FormItem label="套餐说明">
-                  <Input style="width: 200px"></Input>
-                </FormItem>
-              </Col>
-            </Form>
-          </Row>
-          <Row>
-            <Form>
-              <Col span="3">
-                <FormItem label="套餐商品"></FormItem>
-              </Col>
-              <Col span="17">
-                <span>
-                  <div style="height: 17px;border-bottom: 2px solid #ddd;"></div>
-                </span>
-              </Col>
-              <Col span="3" offset="1">
-                <Button type="warning" @click="addPackage">添加套餐</Button>
-              </Col>
-            </Form>
-          </Row>
-          <Row>
-            <Table border :columns="goodsColumns" :data="goodsListData"></Table>
-          </Row>
-          <Row style="margin-top:15px">
-            <Col span="24" class="ivu-text-right">
-              <span style="font-size:16px">合计：</span>0.00
-            </Col>
-          </Row>
-        </TabPane>
-      </Tabs>
+    <Modal v-model="addProject" title="添加项目" width="60%">
+      <addItem>
+      </addItem>
       <div slot="footer">
-        <Button type="default" @click="addProject=false">关闭</Button>
         <Button type="success" @click="addProject=false">保存</Button>
         <Button type="info">保存并继续</Button>
       </div>
@@ -410,7 +256,9 @@
   </div>
 </template>
 <script>
+    import addItem from '@/components/add-item';
     export default {
+        components: { addItem },
         data () {
             return {
                 resource: this.$store.state.admin.user.resource,
