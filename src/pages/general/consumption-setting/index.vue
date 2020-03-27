@@ -70,7 +70,7 @@
           </Row>
           <Row type="flex" justify="end" class="mtb15">
             <Col span="14" class="ivu-text-left">
-              <Button type="success" class="mr10" @click="showAddProjectModal">项目</Button>
+              <Button type="success" class="mr10" @click="showAddProjectModal">+项目</Button>
               <Button type="error" class="mr10">删除</Button>
               <Button type="primary" class="mr10">修改</Button>
               <Button type="warning" class="mr10">剪切</Button>
