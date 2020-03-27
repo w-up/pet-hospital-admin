@@ -22,13 +22,13 @@
             </Col>
           </Row>
            <Row :gutter="24" type="flex" justify="end" class="mtb15">
-            <Col span="10" class="ivu-text-center">
+            <Col span="8" class="ivu-text-center">
               <Button type="success" @click="showAddPlanModal=true">+方案</Button>
             </Col>
-            <Col span="7" class="ivu-text-center">
+            <Col span="8" class="ivu-text-center">
               <Button type="primary" >修改</Button>
             </Col>
-             <Col span="7" class="ivu-text-center">
+             <Col span="8" class="ivu-text-center">
               <Button type="error" >删除</Button>
             </Col>
           </Row>
