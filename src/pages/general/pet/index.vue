@@ -21,12 +21,15 @@
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
-            <Col span="12" class="ivu-text-left">
-              <Button type="error" >删除</Button>
+           <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="8" class="ivu-text-center">
+              <Button type="success" @click="showAddTypeModal=true">+宠物分类</Button>
             </Col>
-            <Col span="12" class="ivu-text-right">
-              <Button type="primary" >+单位</Button>
+            <Col span="8" class="ivu-text-center">
+              <Button type="primary" >修改</Button>
+            </Col>
+             <Col span="8" class="ivu-text-center">
+              <Button type="error" >删除</Button>
             </Col>
           </Row>
         </Card>
@@ -64,13 +67,21 @@
           0003
         </FormItem>
         <FormItem label="品种名称：" prop="desc">
-          <Input v-model="createData.desc" placeholder="请输入" />
+          <Input v-model="createData.desc" placeholder="必填" />
         </FormItem>
-        <FormItem label="品种拼音：" prop="desc">
-          <Input v-model="createData.desc" placeholder="请输入" />
+        <FormItem label="品种拼音：">
+          <Input v-model="createData.desc" />
         </FormItem>
         <FormItem label="说明：">
-          <Input v-model="createData.desc" placeholder="请输入" />
+          <Input v-model="createData.desc" />
+        </FormItem>
+      </Form>
+    </Modal>
+       </Modal>
+       <Modal v-model="showAddTypeModal" title="添加宠物分类" @on-ok="handleCreateType">
+      <Form ref="create" :label-width="150">
+        <FormItem label="分类名称">
+          <Input style="width:70%" />
         </FormItem>
       </Form>
     </Modal>
@@ -129,7 +140,8 @@
                         { required: true, message: '请输入描述', trigger: 'blur' }
                     ]
                 },
-                creating: true
+                creating: true,
+                showAddTypeModal: false
             };
         },
         methods: {
@@ -137,6 +149,9 @@
                 this.showCreate = true
             },
             handleCreate () {
+
+            },
+            handleCreateType () {
 
             },
             switchList (name) {
