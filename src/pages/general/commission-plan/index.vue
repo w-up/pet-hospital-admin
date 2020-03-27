@@ -21,6 +21,17 @@
               </List>
             </Col>
           </Row>
+           <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="10" class="ivu-text-center">
+              <Button type="success" @click="showAddPlanModal=true">+方案</Button>
+            </Col>
+            <Col span="7" class="ivu-text-center">
+              <Button type="primary" >修改</Button>
+            </Col>
+             <Col span="7" class="ivu-text-center">
+              <Button type="error" >删除</Button>
+            </Col>
+          </Row>
         </Card>
       </Col>
       <Col span="18" class="box">
@@ -197,12 +208,20 @@
         </Col>
       </Row>
     </Modal>
+       <Modal v-model="showAddPlanModal" title="添加方案" @on-ok="handleCreatePlan">
+      <Form ref="create" :label-width="150">
+        <FormItem label="方案名称">
+          <Input style="width:70%" />
+        </FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 <script>
     export default {
         data () {
             return {
+                showAddPlanModal: false,
                 list: [
                     { name: '方案一' },
                     { name: '方案二' },
@@ -410,6 +429,7 @@
                 this.editCombination = true;
             },
             handleCreate () {},
+            handleCreatePlan () {},
             switchList (name) {
                 this.currentName = name;
             }
