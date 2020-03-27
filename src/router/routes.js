@@ -3,7 +3,7 @@ import personnel from './modules/personnel';
 import BasicLayout from '@/layouts/basic-layout';
 import marketing from './modules/marketing';
 import general from './modules/general';
-// import feedback from './modules/feedback';
+import feedback from './modules/feedback';
 
 /**
  * 在主框架内显示
@@ -62,8 +62,8 @@ const frameIn = [
     hospital,
     personnel,
     marketing,
-    general
-    // feedback
+    general,
+    feedback
 ];
 
 /**

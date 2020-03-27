@@ -10,10 +10,19 @@ export default {
     path: '/feedback',
     name: 'feedback',
     redirect: {
-        name: `${pre}purchase-settlement`
+        name: `${pre}feedback`
     },
     meta,
     component: BasicLayout,
     children: [
+        {
+            path: 'feedback',
+            name: `${pre}feedback`,
+            meta: {
+                ...meta,
+                title: '意见反馈'
+            },
+            component: () => import('@/pages/feedback/feedback')
+        }
     ]
 };
