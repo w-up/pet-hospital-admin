@@ -80,6 +80,15 @@ export default {
             component: () => import('@/pages/general/template')
         },
         {
+            path: 'position',
+            name: `${pre}position`,
+            meta: {
+                ...meta,
+                title: '职位设置'
+            },
+            component: () => import('@/pages/general/position')
+        },
+        {
             path: 'system-first-diagnosis',
             name: `${pre}system-first-diagnosis`,
             meta: {

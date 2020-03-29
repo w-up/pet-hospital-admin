@@ -35,6 +35,10 @@ export default {
             title: '模板设置'
         },
         {
+            path: `${pre}position`,
+            title: '职位设置'
+        },
+        {
             path: `${pre}system-first-diagnosis`,
             title: '系统初诊管理'
         },
