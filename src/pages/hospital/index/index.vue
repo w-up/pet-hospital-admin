@@ -66,32 +66,32 @@
                       <Row :gutter="24" type="flex" justify="end">
                         <Col v-bind="grid">
                           <FormItem label="医院名称" prop="name">
-                            <Input v-width="'100%'" v-model="data.name" placeholder="请输入" />
+                            <Input v-width="'100%'" v-model="data.name" placeholder="必填" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
                           <FormItem label="联系人" prop="contactor">
-                            <Input v-width="'100%'" v-model="data.contactor" placeholder="请输入" />
+                            <Input v-width="'100%'" v-model="data.contactor" placeholder="必填" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
                           <FormItem label="联系电话" prop="tel">
-                            <Input v-width="'100%'" v-model="data.tel" placeholder="请输入" />
+                            <Input v-width="'100%'" v-model="data.tel" placeholder="必填" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
                           <FormItem label="院长" prop="manager">
-                            <Input v-width="'100%'" v-model="data.manager" placeholder="请输入" />
+                            <Input v-width="'100%'" v-model="data.manager" placeholder="必填" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
                           <FormItem label="院长电话" prop="managerTel">
-                            <Input v-width="'100%'" v-model="data.managerTel" placeholder="请输入" />
+                            <Input v-width="'100%'" v-model="data.managerTel" placeholder="必填" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
                           <FormItem label="登录密码" prop="password">
-                            <Input v-width="'100%'" v-model="data.password" placeholder="请输入" />
+                            <Input v-width="'100%'" v-model="data.password" placeholder="必填" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
