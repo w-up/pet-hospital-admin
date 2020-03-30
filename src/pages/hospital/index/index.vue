@@ -33,7 +33,7 @@
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
-              <Button type="info">+新增医院</Button>
+              <Button type="info" @click="addHospital">+新增医院</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
               <Button type="error">删除</Button>
@@ -85,12 +85,12 @@
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
-                          <FormItem label="院长电话">
+                          <FormItem label="院长电话" prop="managerTel">
                             <Input v-width="'100%'" v-model="data.managerTel" placeholder="请输入" />
                           </FormItem>
                         </Col>
                         <Col v-bind="grid">
-                          <FormItem label="登录密码">
+                          <FormItem label="登录密码" prop="password">
                             <Input v-width="'100%'" v-model="data.password" placeholder="请输入" />
                           </FormItem>
                         </Col>
@@ -142,7 +142,7 @@
                           </FormItem>
                         </Col>
                         <Col span="24">
-                          <FormItem label="详细地址" label-for="addressDetail">
+                          <FormItem label="详细地址" label-for="addressDetail" prop="addressDetail">
                             <Input
                               v-width="'100%'"
                               type="textarea"
@@ -237,7 +237,7 @@
                       <Button type="info" :loading="loading">进入医院管理</Button>
                     </Col>
                     <Col span="2" class="ivu-text-left">
-                      <Button type="primary" :loading="loading" @click="handleSubmit">编辑</Button>
+                      <Button type="primary" :loading="loading" @click="handleSubmit">{{isAdd?'保存':'编辑'}}</Button>
                     </Col>
                   </Row>
                 </Form>
@@ -255,6 +255,7 @@
         name: 'list-table-list',
         data () {
             return {
+                isAdd: false,
                 hospitalListData: [
                     {
                         hospitalName: '幽梦宠物医院',
@@ -304,11 +305,13 @@
                     manager: '',
                     managerTel: '',
                     password: '',
-                    addressDetail: '',
+                    shortMessageName: '',
+                    ifShortMessage: false,
                     country: '',
                     province: '',
                     city: '',
                     district: '',
+                    addressDetail: '',
                     licenseUrl: '',
                     idCardFrontUrl: '',
                     idCardBackUrl: '',
@@ -322,9 +325,32 @@
                     contactor: [
                         { required: true, message: '请输入联系人', trigger: 'blur' }
                     ],
-                    tel: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
+                    tel: [
+                        { required: true, message: '请输入联系电话', trigger: 'blur' },
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
                     manager: [
                         { required: true, message: '请输入院长名称', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: '请输入登录密码', trigger: 'blur' }
+                    ],
+                    managerTel: [
+                        { required: true, message: '请输入院长电话', trigger: 'blur' },
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    addressDetail: [
+                        { max: 200, message: '详细地址不得超过200个字符', trigger: 'change' }
                     ]
                 }
             };
@@ -338,6 +364,10 @@
             }
         },
         methods: {
+            addHospital () {
+                this.data = {};
+                this.isAdd = true
+            },
             getHispitalDetail () {
                 this.$get('/admin/hospital/myhospital', {}, response => {
                     console.log(response);
@@ -352,6 +382,7 @@
                             console.log(response);
                             if (response.success) {
                                 this.$Message.info('保存成功');
+                                this.getHispitalDetail();
                             }
                             this.loading = false;
                         });
