@@ -234,7 +234,7 @@
                       <Button type="default" @click="handleReset">刷新</Button>
                     </Col>
                     <Col span="10" class="ivu-text-right">
-                      <Button type="info" :loading="loading">进入医院管理</Button>
+                      <Button type="info">进入医院管理</Button>
                     </Col>
                     <Col span="2" class="ivu-text-left">
                       <Button type="primary" :loading="loading" @click="handleSubmit">{{isAdd?'保存':'编辑'}}</Button>
