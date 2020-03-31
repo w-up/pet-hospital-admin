@@ -17,7 +17,7 @@
             <Col span="24">
               <List class="hospital-list">
                 <ListItem v-for="(item, index) in hospitalListData" :key="index">
-                  <div @click="showHospital(item)">
+                  <div @click="showHospital(item)"  style="cursor:pointer">
                     <p>
                       医院名称：{{ item.name }}
                       <span style="margin-left: 7px">
