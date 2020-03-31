@@ -61,9 +61,9 @@
               <Button>更换图片</Button>
             </Col>
             <Col span="12">
-              <Form ref="form" :model="userInfo" :label-width="100">
+              <Form ref="form" :model="userInfo" :rules="rules" :label-width="100">
                 <FormItem label="姓名" prop="name">
-                  <Input v-model="userInfo.name" placeholder="请输入" />
+                  <Input v-model="userInfo.name" placeholder="必填" />
                 </FormItem>
                 <FormItem label="职位" prop="position" label-for="position">
                   <Select v-model="userInfo.position" placeholder="请选择" element-id="position">
@@ -75,13 +75,16 @@
                   <Input v-model="userInfo.mobile" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="执业兽医师号" prop="count" label-for="count">
-                   <Input v-model="userInfo.code" placeholder="请输入" />
+                  <Input v-model="userInfo.code" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="授业恩师" prop="master">
-                   <Input v-model="userInfo.master" placeholder="请输入" />
+                  <Select v-model="userInfo.master" placeholder="请选择" element-id="master">
+                    <Option value="张三">张三</Option>
+                    <Option value="李四">李四</Option>
+                  </Select>
                 </FormItem>
                 <FormItem label="密码" prop="password">
-                 <Input v-model="userInfo.password" placeholder="请输入" />
+                  <Input v-model="userInfo.password" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="备注" prop="count" label-for="count">
                   <Input v-model="userInfo.remark" type="textarea" placeholder="请输入" />
@@ -104,24 +107,33 @@
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="新增员工" @on-ok="handleUserinfoCreate">
-      <Form ref="create" :model="newUserInfo" :label-width="100">
+    <Modal
+      ref="creatUser"
+      v-model="showCreate"
+      title="新增员工"
+      @on-ok="handleUserinfoCreate"
+      :loading="true"
+    >
+      <Form ref="create" :model="newUserInfo" :rules="rules" :label-width="100">
         <FormItem label="姓名：" prop="name">
           <Input v-model="newUserInfo.name" placeholder="请输入" />
         </FormItem>
         <FormItem label="职位：" prop="positionCode">
           <Select v-model="newUserInfo.positionCode">
-        <Option v-for="(it, index) in positionList" :key="index" :value="it.code">{{it.name}}</Option>
-      </Select>
+            <Option v-for="(it, index) in positionList" :key="index" :value="it.code">{{it.name}}</Option>
+          </Select>
         </FormItem>
         <FormItem label="电话：" prop="mobile">
-          <Input v-model="newUserInfo.mobile" placeholder="请输入" />
+          <Input v-model="newUserInfo.mobile" placeholder="必填" />
         </FormItem>
         <FormItem label="执业兽医师号：" prop="code">
-          <Input v-model="newUserInfo.code" placeholder="请输入" />
+          <Input v-model="newUserInfo.code" placeholder="必填" />
         </FormItem>
         <FormItem label="授业恩师：" prop="master">
-          <Input v-model="newUserInfo.master" placeholder="请输入" />
+          <Select v-model="newUserInfo.master" placeholder="请选择" element-id="master">
+            <Option value="张三">张三</Option>
+            <Option value="李四">李四</Option>
+          </Select>
         </FormItem>
         <FormItem label="登录密码：" prop="password">
           <Input v-model="newUserInfo.password" placeholder="请输入" />
@@ -138,22 +150,46 @@
         name: 'list-table-list',
         data () {
             return {
+                rules: {
+                    name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+                    mobile: [
+                        { required: true, message: '请输入电话', trigger: 'blur' },
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    code: [{ required: true, message: '执业兽医师号', trigger: 'blur' }],
+                    remark: [
+                        { max: 200, message: '备注不得超过200个字符', trigger: 'change' }
+                    ]
+                },
                 positionList: [],
                 newUserInfo: {
+                    positionCode: 'finance',
+                    master: '张三'
                 },
                 data: [],
-                userInfo: {},
+                userInfo: {
+                    position: '医生',
+                    master: '张三'
+                },
                 columns1: [
                     {
                         title: '模块',
+                        minWidth: 84,
                         key: 'module'
                     },
                     {
                         title: '项目名称',
+                        minWidth: 84,
                         key: 'project'
                     },
                     {
                         title: '查看权限',
+                        minWidth: 84,
                         key: 'view',
                         render: (h, params) => {
                             return h('div', [
@@ -175,6 +211,7 @@
                     },
                     {
                         title: '操作权限',
+                        minWidth: 84,
                         key: 'edit',
                         render: (h, params) => {
                             return h('div', [
@@ -232,60 +269,39 @@
         },
         methods: {
             getUserinfoList () {
-                this.loading = true;
-                this.$get(
-                    '/admin/user/page',
-                    {
-                        // start: this.current - 1,
-                        // size: this.size
-                    },
-                    response => {
-                        this.loading = false;
-                        this.total = response.data.totalElements;
-                        this.data = response.data.data;
-                    }
-                );
+                this.$get('/admin/user/page', {}, response => {
+                    this.data = response.data.data;
+                });
             },
-            // getData () {
-            //     setTimeout(() => {
-            //         this.data = listData;
-            //         this.userInfo = listData[0];
-            //     }, 1000);
-            // },
             handleOpenCreate () {
-                this.showCreate = true
+                this.showCreate = true;
+                this.$refs.create.resetFields()
             },
             handleUserinfoCreate () {
-                // this.$create.form.validate(valid => {
-                // console.log(valid);
-                // if (valid) {
-                this.newUserInfo.type = 'employee';
-                console.log(this.newUserInfo)
-                this.$post('/admin/user/save', this.newUserInfo, response => {
-                    console.log(response);
-                    if (response.success) {
-                        this.$Message.info('保存成功');
+                this.$refs.creatUser.buttonLoading = false;
+                this.$refs.create.validate(valid => {
+                    if (valid) {
+                        this.newUserInfo.type = 'employee';
+                        this.$post('/admin/user/save', this.newUserInfo, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getUserinfoList();
+                                this.showCreate = false
+                            }
+                        });
+                    } else {
                     }
-                    this.loading = false;
                 });
-                //     } else {
-                //         this.loading = false;
-                //     }
-                // });
             },
             getPositonList () {
-                this.$get(
-                    '/admin/user/position/page',
-                    {},
-                    response => {
-                        this.positionList = response.data.data;
-                    }
-                )
+                this.$get('/admin/user/position/page', {}, response => {
+                    this.positionList = response.data.data;
+                });
             }
         },
         mounted () {
             this.getUserinfoList();
-            this.getPositonList()
+            this.getPositonList();
         }
     };
 </script>
