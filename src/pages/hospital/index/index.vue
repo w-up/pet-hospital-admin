@@ -17,15 +17,15 @@
             <Col span="24">
               <List class="hospital-list">
                 <ListItem v-for="(item, index) in hospitalListData" :key="index">
-                  <div>
+                  <div @click="showHospital(item)">
                     <p>
-                      医院名称：{{ item.hospitalName }}
-                      <span style="margin-left: 7px;">
+                      医院名称：{{ item.name }}
+                      <span style="margin-left: 7px">
                         <Button size="small" type="success">启用</Button>
                       </span>
                     </p>
-                    <p>院长：{{ item.dean }}</p>
-                    <p>电话：{{ item.cellphone }}</p>
+                    <p>院长：{{ item.contactor }}</p>
+                    <p>电话：{{ item.tel }}</p>
                   </div>
                 </ListItem>
               </List>
@@ -257,32 +257,11 @@
             return {
                 isAdd: false,
                 hospitalListData: [
-                    {
-                        hospitalName: '幽梦宠物医院',
-                        dean: '张三',
-                        cellphone: '14533434257'
-                    },
-                    {
-                        hospitalName: '幽梦宠物医院',
-                        dean: '张三',
-                        cellphone: '14533434257'
-                    },
-                    {
-                        hospitalName: '幽梦宠物医院',
-                        dean: '张三',
-                        cellphone: '14533434257'
-                    },
-                    {
-                        hospitalName: '幽梦宠物医院',
-                        dean: '张三',
-                        cellphone: '14533434257'
-                    }
                 ],
                 resource: this.$store.state.admin.user.resource,
                 headers: this.$store.state.admin.user.headers,
                 defaultImg: require('../../../assets/images/default.png'),
                 defauLtLogo: require('../../../assets/images/upload-logo.png'),
-                status: '已授权',
                 grid: {
                     xl: 8,
                     lg: 8,
@@ -364,6 +343,14 @@
             }
         },
         methods: {
+            showHospital (item) {
+                this.data = item;
+                this.isAdd = false;
+                this.$refs.licenseUrl.clearFiles();
+                this.$refs.logoUrl.clearFiles();
+                this.$refs.idCardFrontUrl.clearFiles();
+                this.$refs.idCardBackUrl.clearFiles();
+            },
             addHospital () {
                 this.data = {};
                 this.isAdd = true
@@ -374,6 +361,11 @@
                     this.data = response.data;
                 });
             },
+            getHispitalList () {
+                this.$get('/admin/hospital/page', {}, response => {
+                    this.hospitalListData = response.data.data;
+                });
+            },
             handleSubmit () {
                 this.$refs.form.validate(valid => {
                     this.loading = true;
@@ -382,7 +374,7 @@
                             console.log(response);
                             if (response.success) {
                                 this.$Message.info('保存成功');
-                                this.getHispitalDetail();
+                                this.getHispitalList();
                             }
                             this.loading = false;
                         });
@@ -445,6 +437,7 @@
         },
         mounted () {
             this.getHispitalDetail();
+            this.getHispitalList();
         }
     };
 </script>
