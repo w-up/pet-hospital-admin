@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row>
-        <Col span="5">
+      <Col span="5">
         <Card class="ptb0">
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
@@ -11,8 +11,12 @@
           <Row :gutter="24" type="flex" justify="end">
             <Col span="24">
               <List class="shift-list">
-                <ListItem v-for="(item, index) in list" :key="index" :class="item.name===currentName?'active':''">
-                    <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
+                <ListItem
+                  v-for="(item, index) in list"
+                  :key="index"
+                  :class="item.name===currentName?'active':''"
+                >
+                  <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
@@ -22,10 +26,10 @@
               <Button type="success" @click="handleOpenCreate">+添加班次</Button>
             </Col>
             <Col span="7" class="ivu-text-center">
-              <Button type="primary" >编辑</Button>
+              <Button type="primary">编辑</Button>
             </Col>
-             <Col span="7" class="ivu-text-center">
-              <Button type="error" >删除</Button>
+            <Col span="7" class="ivu-text-center">
+              <Button type="error">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -40,105 +44,216 @@
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <table class="table">
-            <thead>
-              <tr>
-                <th>职位</th>
-                <th>人员</th>
-                <th>周一</th>
-                <th>周二</th>
-                <th>周三</th>
-                <th>周四</th>
-                <th>周五</th>
-                <th>周六</th>
-                <th>周日</th>
-              </tr>
-            </thead>
-            <tbody
-            >
-              <tr>
-                <td rowspan="2">护士</td>
-                <td>张三</td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td>李四</td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td rowspan="3">医生</td>
-                <td>张三</td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td>李四</td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td>张三</td>
-                  <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td rowspan="3">助理</td>
-                <td>张三</td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td>李四</td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-                <td><Icon type="md-close-circle" size="25"/></td>
-              </tr>
-              <tr>
-                <td>张三</td>
-                  <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-                <td><Icon type="md-checkmark-circle" size="25"/></td>
-              </tr>
-              </tbody>
+                <thead>
+                  <tr>
+                    <th>职位</th>
+                    <th>人员</th>
+                    <th>周一</th>
+                    <th>周二</th>
+                    <th>周三</th>
+                    <th>周四</th>
+                    <th>周五</th>
+                    <th>周六</th>
+                    <th>周日</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="2">护士</td>
+                    <td>张三</td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>李四</td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3">医生</td>
+                    <td>张三</td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>李四</td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>张三</td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3">助理</td>
+                    <td>张三</td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>李四</td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-close-circle" size="25" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>张三</td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                    <td>
+                      <Icon type="md-checkmark-circle" size="25" />
+                    </td>
+                  </tr>
+                </tbody>
               </table>
               <div class="ivu-mt ivu-text-right">
                 <Page :total="data1.length" :current.sync="current" />
@@ -153,16 +268,16 @@
         </Card>
       </Col>
     </Row>
-        <Modal v-model="showCreate" title="添加班次" @on-ok="handleCreate">
-      <Form ref="create" :label-width="100">
+    <Modal v-model="showCreate" title="添加班次" @on-ok="handleCreate">
+      <Form ref="create" :label-width="170">
         <FormItem label="班次名称：">
-          <Input />
+          <Input style="width:216px" />
         </FormItem>
         <FormItem label="上班时间：">
-          <Input />
+          <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
         </FormItem>
         <FormItem label="下班时间：">
-          <Input />
+          <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
         </FormItem>
       </Form>
     </Modal>
@@ -258,13 +373,11 @@
         },
         methods: {
             handleOpenCreate () {
-                this.showCreate = true
+                this.showCreate = true;
             },
-            handleCreate () {
-
-            },
+            handleCreate () {},
             switchList (name) {
-                this.currentName = name
+                this.currentName = name;
             }
         },
         mounted () {}
@@ -327,10 +440,10 @@
   height: 265px;
   overflow: auto;
 }
-.shift-list .ivu-list-item{
+.shift-list .ivu-list-item {
   padding: 0;
 }
-.shift-list .ivu-list-item p{
+.shift-list .ivu-list-item p {
   padding: 12px 0;
   width: 100%;
 }
