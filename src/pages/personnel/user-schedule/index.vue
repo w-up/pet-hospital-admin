@@ -57,212 +57,82 @@
                     <th>周日</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody v-for="(item, index) in memberList" :key="index">
                   <tr>
-                    <td rowspan="2">护士</td>
-                    <td>张三</td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td :rowspan="item.list.length">{{item.position}}</td>
+                    <td>{{item.list[0].name}}</td>
+                    <td @click="item.list[0].monday=!item.list[0].monday">
+                      <Icon v-if="item.list[0].monday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td @click="item.list[0].tuesday=!item.list[0].tuesday">
+                      <Icon v-if="item.list[0].tuesday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td @click="item.list[0].wednesday=!item.list[0].wednesday">
+                      <Icon v-if="item.list[0].wednesday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td @click="item.list[0].thursday=!item.list[0].thursday">
+                      <Icon v-if="item.list[0].thursday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td @click="item.list[0].friday=!item.list[0].friday">
+                      <Icon v-if="item.list[0].friday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td @click="item.list[0].saturday=!item.list[0].saturday">
+                      <Icon v-if="item.list[0].saturday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
+                    <td @click="item.list[0].sunday=!item.list[0].sunday">
+                      <Icon v-if="item.list[0].sunday" type="md-checkmark-circle" size="25" />
+                      <Icon v-else type="md-close-circle" size="25" />
                     </td>
                   </tr>
-                  <tr>
-                    <td>李四</td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td rowspan="3">医生</td>
-                    <td>张三</td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>李四</td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>张三</td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td rowspan="3">助理</td>
-                    <td>张三</td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>李四</td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-close-circle" size="25" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>张三</td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                    <td>
-                      <Icon type="md-checkmark-circle" size="25" />
-                    </td>
-                  </tr>
+                  <template v-if="item.list.length>1" v-for="(item2,index2) in item.list">
+                    <tr v-if="index2>0" :key="index2">
+                      <td>{{item2.name}}</td>
+                      <td @click="item2.monday=!item2.monday">
+                        <Icon v-if="item2.monday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                      <td @click="item2.tuesday=!item2.tuesday">
+                        <Icon v-if="item2.tuesday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                      <td @click="item2.wednesday=!item2.wednesday">
+                        <Icon v-if="item2.wednesday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                      <td @click="item2.thursday=!item2.thursday">
+                        <Icon v-if="item2.thursday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                      <td @click="item2.friday=!item2.friday">
+                        <Icon v-if="item2.friday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                      <td @click="item2.saturday=!item2.saturday">
+                        <Icon v-if="item2.saturday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                      <td @click="item2.sunday=!item2.sunday">
+                        <Icon v-if="item2.sunday" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                    </tr>
+                  </template>
                 </tbody>
               </table>
               <div class="ivu-mt ivu-text-right">
-                <Page :total="data1.length" :current.sync="current" />
+                <Page :total="memberList.length" :current.sync="current" />
               </div>
             </Col>
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="warning" class="mr10">保存</Button>
+              <Button type="warning">保存</Button>
             </Col>
           </Row>
         </Card>
@@ -271,7 +141,7 @@
     <Modal v-model="showCreate" title="添加班次" @on-ok="handleCreate">
       <Form ref="create" :label-width="170">
         <FormItem label="班次名称：">
-          <Input style="width:216px" />
+          <Input style="width:194px" />
         </FormItem>
         <FormItem label="上班时间：">
           <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
@@ -294,77 +164,136 @@
                     { name: '夜班（20:00~4:00）' }
                 ],
                 currentName: '早班（8:00~14:00）',
-                columns1: [
+                memberList: [
                     {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
+                        position: '护士',
+                        list: [
+                            {
+                                name: '张三',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '李四',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            }
+                        ]
                     },
                     {
-                        title: '编号',
-                        key: 'code'
+                        position: '医生',
+                        list: [
+                            {
+                                name: '张三',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '李四',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '张三',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            }
+                        ]
                     },
                     {
-                        title: '名称',
-                        key: 'name'
+                        position: '医生',
+                        list: [
+                            {
+                                name: '张三',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '李四',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '张三',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            }
+                        ]
                     },
                     {
-                        title: '规格',
-                        key: 'size'
-                    },
-                    {
-                        title: '单位',
-                        key: 'unti'
-                    },
-                    {
-                        title: '单价',
-                        key: 'price'
-                    },
-                    {
-                        title: '数量',
-                        key: 'num'
-                    },
-                    {
-                        title: '用法',
-                        key: 'method'
-                    },
-                    {
-                        title: '用量',
-                        key: 'useNum'
-                    },
-                    {
-                        title: '条形码',
-                        key: 'barCode'
-                    },
-                    {
-                        title: '备注',
-                        key: 'remark'
-                    }
-                ],
-                data1: [
-                    {
-                        code: 'P00001',
-                        name: '痛咖啡',
-                        size: '500mg',
-                        unti: '片',
-                        price: '10.00',
-                        num: '20.00',
-                        method: '',
-                        useNum: '1195.0',
-                        barCode: '',
-                        remark: ''
-                    },
-                    {
-                        code: 'P00002',
-                        name: '止泻药',
-                        size: '500mg',
-                        unti: '片',
-                        price: '10.00',
-                        num: '20.00',
-                        method: '',
-                        useNum: '1195.0',
-                        barCode: '',
-                        remark: ''
+                        position: '助理',
+                        list: [
+                            {
+                                name: '李四',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '张三',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            },
+                            {
+                                name: '李四',
+                                monday: true,
+                                tuesday: true,
+                                wednesday: true,
+                                thursday: true,
+                                friday: true,
+                                saturday: true,
+                                sunday: true
+                            }
+                        ]
                     }
                 ],
                 current: 1,
@@ -387,14 +316,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -433,9 +355,6 @@
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .shift-list {
   height: 265px;
   overflow: auto;
@@ -448,6 +367,7 @@
   width: 100%;
 }
 .shift-list .active {
-  background: #69c5d8;
+  background: #02ada4;
+  color: #fff;
 }
 </style>

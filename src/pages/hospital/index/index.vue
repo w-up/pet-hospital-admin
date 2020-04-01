@@ -1,373 +1,474 @@
 <template>
   <div>
-    <Row>
-      <Col span="5">
+    <Row :gutter="16">
+      <Col span="6">
         <Card class="ptb0">
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
-              <span class="module-title">班次列表</span>
+              <span class="module-title">医院列表</span>
+            </Col>
+          </Row>
+          <Row :gutter="24" type="flex" justify="end" class="mt15">
+            <Col span="24">
+              <Input prefix="ios-search" placeholder="姓名/电话/职位" />
             </Col>
           </Row>
           <Row :gutter="24" type="flex" justify="end">
             <Col span="24">
-              <List class="shift-list">
-                <ListItem
-                  v-for="(item, index) in list"
-                  :key="index"
-                  :class="item.name===currentName?'active':''"
-                >
-                  <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
+              <List class="hospital-list">
+                <ListItem v-for="(item, index) in hospitalListData" :key="index">
+                  <div @click="showHospital(item)"  style="cursor:pointer">
+                    <p>
+                      医院名称：{{ item.name }}
+                      <span style="margin-left: 7px">
+                        <Button size="small" type="success">启用</Button>
+                      </span>
+                    </p>
+                    <p>院长：{{ item.contactor }}</p>
+                    <p>电话：{{ item.tel }}</p>
+                  </div>
                 </ListItem>
               </List>
             </Col>
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
-            <Col span="10" class="ivu-text-center">
-              <Button type="success" @click="handleOpenCreate">+添加班次</Button>
+            <Col span="8" class="ivu-text-center">
+              <Button type="info" @click="addHospital">+新增医院</Button>
             </Col>
-            <Col span="7" class="ivu-text-center">
-              <Button type="primary">编辑</Button>
-            </Col>
-            <Col span="7" class="ivu-text-center">
+            <Col span="8" class="ivu-text-center">
               <Button type="error">删除</Button>
+            </Col>
+            <Col span="8" class="ivu-text-center">
+              <Button type="warning">停用</Button>
             </Col>
           </Row>
         </Card>
       </Col>
-      <Col span="19" class="box">
+      <Col span="18">
         <Card class="ptb0">
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
-              <span class="module-title">排班表</span>
+              <span class="module-title">医院信息</span>
             </Col>
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>职位</th>
-                    <th>人员</th>
-                    <th>周一</th>
-                    <th>周二</th>
-                    <th>周三</th>
-                    <th>周四</th>
-                    <th>周五</th>
-                    <th>周六</th>
-                    <th>周日</th>
-                  </tr>
-                </thead>
-                <tbody v-for="(item, index) in memberList" :key="index">
-                  <tr>
-                    <td :rowspan="item.list.length">{{item.position}}</td>
-                    <td>{{item.list[0].name}}</td>
-                    <td @click="item.list[0].monday=!item.list[0].monday">
-                      <Icon v-if="item.list[0].monday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                    <td @click="item.list[0].tuesday=!item.list[0].tuesday">
-                      <Icon v-if="item.list[0].tuesday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                    <td @click="item.list[0].wednesday=!item.list[0].wednesday">
-                      <Icon v-if="item.list[0].wednesday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                    <td @click="item.list[0].thursday=!item.list[0].thursday">
-                      <Icon v-if="item.list[0].thursday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                    <td @click="item.list[0].friday=!item.list[0].friday">
-                      <Icon v-if="item.list[0].friday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                    <td @click="item.list[0].saturday=!item.list[0].saturday">
-                      <Icon v-if="item.list[0].saturday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                    <td @click="item.list[0].sunday=!item.list[0].sunday">
-                      <Icon v-if="item.list[0].sunday" type="md-checkmark-circle" size="25" />
-                      <Icon v-else type="md-close-circle" size="25" />
-                    </td>
-                  </tr>
-                  <template v-if="item.list.length>1" v-for="(item2,index2) in item.list">
-                    <tr v-if="index2>0" :key="index2">
-                      <td>{{item2.name}}</td>
-                      <td @click="item2.monday=!item2.monday">
-                        <Icon v-if="item2.monday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                      <td @click="item2.tuesday=!item2.tuesday">
-                        <Icon v-if="item2.tuesday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                      <td @click="item2.wednesday=!item2.wednesday">
-                        <Icon v-if="item2.wednesday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                      <td @click="item2.thursday=!item2.thursday">
-                        <Icon v-if="item2.thursday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                      <td @click="item2.friday=!item2.friday">
-                        <Icon v-if="item2.friday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                      <td @click="item2.saturday=!item2.saturday">
-                        <Icon v-if="item2.saturday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                      <td @click="item2.sunday=!item2.sunday">
-                        <Icon v-if="item2.sunday" type="md-checkmark-circle" size="25" />
-                        <Icon v-else type="md-close-circle" size="25" />
-                      </td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
-              <div class="ivu-mt ivu-text-right">
-                <Page :total="memberList.length" :current.sync="current" />
-              </div>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
-            <Col span="24" class="ivu-text-left">
-              <Button type="warning">保存</Button>
+              <Card :bordered="false" dis-hover class="ivu-mt">
+                <Form
+                  ref="form"
+                  :model="data"
+                  :rules="rules"
+                  :label-width="labelWidth"
+                  :label-position="labelPosition"
+                >
+                  <Row :gutter="24">
+                    <Col span="20">
+                      <Row :gutter="24" type="flex" justify="end">
+                        <Col v-bind="grid">
+                          <FormItem label="医院名称" prop="name">
+                            <Input v-width="'100%'" v-model="data.name" placeholder="必填" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="联系人" prop="contactor">
+                            <Input v-width="'100%'" v-model="data.contactor" placeholder="必填" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="联系电话" prop="tel">
+                            <Input v-width="'100%'" v-model="data.tel" placeholder="必填" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="院长" prop="manager">
+                            <Input v-width="'100%'" v-model="data.manager" placeholder="必填" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="院长电话" prop="managerTel">
+                            <Input v-width="'100%'" v-model="data.managerTel" placeholder="必填" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="登录密码" prop="password">
+                            <Input v-width="'100%'" v-model="data.password" placeholder="必填" />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="短信医院名称">
+                            <Input
+                              v-width="'100%'"
+                              v-model="data.shortMessageName"
+                              placeholder="请输入"
+                            />
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="gridForTip" class="ivu-text-left">
+                          <Checkbox v-model="data.ifShortMessage">签名</Checkbox>
+                          <span>
+                            <code style="color:red">*</code>用于医院短信签名,方便顾客知晓短信发送方
+                          </span>
+                        </Col>
+                        <Col span="7">
+                          <FormItem label="地址" prop="country">
+                            <Select v-model="data.country" placeholder="请选择">
+                              <Option value="0">中国</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="5">
+                          <FormItem label prop="province" :label-width="0">
+                            <Select v-model="data.province" placeholder="请选择">
+                              <Option value="0">上海市</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="6">
+                          <FormItem label prop="city" :label-width="0">
+                            <Select v-model="data.city" placeholder="请选择">
+                              <Option value="0">上海市</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="6">
+                          <FormItem label prop="district" :label-width="0">
+                            <Select v-model="data.district" placeholder="请选择">
+                              <Option value="0">黄浦区</Option>
+                              <Option value="1">美国</Option>
+                            </Select>
+                          </FormItem>
+                        </Col>
+                        <Col span="24">
+                          <FormItem label="详细地址" label-for="addressDetail" prop="addressDetail">
+                            <Input
+                              v-width="'100%'"
+                              type="textarea"
+                              :rows="4"
+                              v-model="data.addressDetail"
+                              placeholder="请输入"
+                            />
+                          </FormItem>
+                        </Col>
+                        <Col span="24" class="mb20">
+                          <span>
+                            <code style="color:red">*</code>以下信息用于授权认证管理,用于确保医院证实有效,请您务必上传真实营业执照等信息
+                          </span>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="*营业执照" prop="licenseUrl" class="hospital-img">
+                            <Upload
+                              ref="licenseUrl"
+                              v-model="data.licenseUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :format="[ 'png', 'jpg', 'jpeg']"
+                              :max-size="1024*10"
+                              :on-success="handleLicenseUrlSuccess"
+                              :on-format-error="handleFileFormatErr"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :before-upload="handleBeforeLicenseUrlUpload"
+                            >
+                              <img :src="data.licenseUrl||defaultImg" alt />
+                            </Upload>
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="*身份证正面" prop="idCardFrontUrl" class="hospital-img">
+                            <Upload
+                              ref="idCardFrontUrl"
+                              v-model="data.idCardFrontUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :format="[ 'png', 'jpg', 'jpeg']"
+                              :max-size="1024*10"
+                              :on-success="handleIdCardFrontUrlSuccess"
+                              :on-format-error="handleFileFormatErr"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :before-upload="handleBeforeIdCardFrontUrlUpload"
+                            >
+                              <img :src="data.idCardFrontUrl||defaultImg" alt />
+                            </Upload>
+                          </FormItem>
+                        </Col>
+                        <Col v-bind="grid">
+                          <FormItem label="*身份证反面" prop="idCardBackUrl" class="hospital-img">
+                            <Upload
+                              ref="idCardBackUrl"
+                              v-model="data.idCardBackUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :format="[ 'png', 'jpg', 'jpeg']"
+                              :max-size="1024*10"
+                              :on-success="handleIdCardBackUrlSuccess"
+                              :on-format-error="handleFileFormatErr"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :before-upload="handleBeforeIdCardBackUrlUpload"
+                            >
+                              <img :src="data.idCardBackUrl||defaultImg" alt />
+                            </Upload>
+                          </FormItem>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span="4" class="ivu-text-center">
+                      <span>LOGO</span>
+                      <Upload
+                        ref="logoUrl"
+                        v-model="data.logoUrl"
+                        :action="resource"
+                        :headers="headers"
+                        :format="[ 'png', 'jpg', 'jpeg']"
+                        :max-size="1024*10"
+                        :on-success="handleLogoUrlSuccess"
+                        :on-format-error="handleFileFormatErr"
+                        :on-exceeded-size="handleFileSizeErr"
+                        :before-upload="handleBeforeLogoUrlUpload"
+                      >
+                        <img width="100%" :src="data.logoUrl||defauLtLogo" alt />
+                      </Upload>
+                    </Col>
+                    <Col span="12" class="ivu-text-left">
+                      <Button type="default" @click="handleReset">刷新</Button>
+                    </Col>
+                    <Col span="10" class="ivu-text-right">
+                      <Button type="info">进入医院管理</Button>
+                    </Col>
+                    <Col span="2" class="ivu-text-left">
+                      <Button type="primary" :loading="loading" @click="handleSubmit">{{isAdd?'保存':'编辑'}}</Button>
+                    </Col>
+                  </Row>
+                </Form>
+              </Card>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="添加班次" @on-ok="handleCreate">
-      <Form ref="create" :label-width="170">
-        <FormItem label="班次名称：">
-          <Input style="width:194px" />
-        </FormItem>
-        <FormItem label="上班时间：">
-          <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
-        </FormItem>
-        <FormItem label="下班时间：">
-          <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
-        </FormItem>
-      </Form>
-    </Modal>
   </div>
 </template>
 <script>
+    import util from '@/libs/util';
     export default {
+        name: 'list-table-list',
         data () {
             return {
-                list: [
-                    { name: '早班（8:00~14:00）' },
-                    { name: '中班（8:00~14:00）' },
-                    { name: '晚班（14:00~20:00）' },
-                    { name: '夜班（20:00~4:00）' }
+                isAdd: false,
+                hospitalListData: [
                 ],
-                currentName: '早班（8:00~14:00）',
-                memberList: [
-                    {
-                        position: '护士',
-                        list: [
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    },
-                    {
-                        position: '医生',
-                        list: [
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    },
-                    {
-                        position: '医生',
-                        list: [
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    },
-                    {
-                        position: '助理',
-                        list: [
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    }
-                ],
-                current: 1,
-                showCreate: false
+                resource: this.$store.state.admin.user.resource,
+                headers: this.$store.state.admin.user.headers,
+                defaultImg: require('../../../assets/images/default.png'),
+                defauLtLogo: require('../../../assets/images/upload-logo.png'),
+                grid: {
+                    xl: 8,
+                    lg: 8,
+                    md: 12,
+                    sm: 24,
+                    xs: 24
+                },
+                gridForTip: {
+                    xl: 16,
+                    lg: 16,
+                    md: 12,
+                    sm: 24,
+                    xs: 24
+                },
+                collapse: false,
+                data: {
+                    name: '',
+                    contactor: '',
+                    tel: '',
+                    manager: '',
+                    managerTel: '',
+                    password: '',
+                    shortMessageName: '',
+                    ifShortMessage: false,
+                    country: '',
+                    province: '',
+                    city: '',
+                    district: '',
+                    addressDetail: '',
+                    licenseUrl: '',
+                    idCardFrontUrl: '',
+                    idCardBackUrl: '',
+                    logoUrl: ''
+                },
+                loading: false,
+                rules: {
+                    name: [
+                        { required: true, message: '请输入医院的名称', trigger: 'blur' }
+                    ],
+                    contactor: [
+                        { required: true, message: '请输入联系人', trigger: 'blur' }
+                    ],
+                    tel: [
+                        { required: true, message: '请输入联系电话', trigger: 'blur' },
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    manager: [
+                        { required: true, message: '请输入院长名称', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: '请输入登录密码', trigger: 'blur' }
+                    ],
+                    managerTel: [
+                        { required: true, message: '请输入院长电话', trigger: 'blur' },
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    addressDetail: [
+                        { max: 200, message: '详细地址不得超过200个字符', trigger: 'change' }
+                    ]
+                }
             };
         },
-        methods: {
-            handleOpenCreate () {
-                this.showCreate = true;
+        computed: {
+            labelWidth () {
+                return this.isMobile ? undefined : 100;
             },
-            handleCreate () {},
-            switchList (name) {
-                this.currentName = name;
+            labelPosition () {
+                return this.isMobile ? 'top' : 'right';
             }
         },
-        mounted () {}
+        methods: {
+            showHospital (item) {
+                this.data = item;
+                this.isAdd = false;
+                this.$refs.licenseUrl.clearFiles();
+                this.$refs.logoUrl.clearFiles();
+                this.$refs.idCardFrontUrl.clearFiles();
+                this.$refs.idCardBackUrl.clearFiles();
+            },
+            addHospital () {
+                this.data = {};
+                this.isAdd = true
+            },
+            getHispitalDetail () {
+                this.$get('/admin/hospital/myhospital', {}, response => {
+                    console.log(response);
+                    this.data = response.data;
+                });
+            },
+            getHispitalList () {
+                this.$get('/admin/hospital/page', {}, response => {
+                    this.hospitalListData = response.data.data;
+                });
+            },
+            handleSubmit () {
+                this.$refs.form.validate(valid => {
+                    this.loading = true;
+                    if (valid) {
+                        this.$post('/admin/hospital/save', this.data, response => {
+                            console.log(response);
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getHispitalList();
+                            }
+                            this.loading = false;
+                        });
+                    } else {
+                        this.loading = false;
+                    }
+                });
+            },
+            handleReset () {
+                this.$refs.form.resetFields();
+                this.getHispitalDetail();
+            },
+            handleFileFormatErr (file) {
+                this.$Notice.warning({
+                    title: '文件类型错误',
+                    desc:
+                        '文件  ' + file.name + ' 文件类型错误,请上传png, jpg, jpeg等格式图片.'
+                });
+            },
+            handleFileSizeErr (file) {
+                this.$Notice.warning({
+                    title: '文件过大',
+                    desc: '文件  ' + file.name + ' 过大,不得超过10M.'
+                });
+            },
+            handleLicenseUrlSuccess (response, file, fileList) {
+                this.data.licenseUrl = response.data;
+                console.log(this.data.licenseUrl);
+            },
+            handleBeforeLicenseUrlUpload () {
+                this.$refs.licenseUrl.clearFiles();
+            },
+            handleLogoUrlSuccess (response, file, fileList) {
+                this.data.logoUrl = response.data;
+                console.log(this.data.logoUrl);
+            },
+            handleBeforeLogoUrlUpload () {
+                this.$refs.logoUrl.clearFiles();
+            },
+            handleIdCardFrontUrlSuccess (response, file, fileList) {
+                this.data.idCardFrontUrl = response.data;
+                console.log(this.data.idCardFrontUrl);
+            },
+            handleBeforeIdCardFrontUrlUpload () {
+                this.$refs.idCardFrontUrl.clearFiles();
+            },
+            handleIdCardBackUrlSuccess (response, file, fileList) {
+                this.data.idCardBackUrl = response.data;
+                console.log(this.data.idCardBackUrl);
+            },
+            handleBeforeIdCardBackUrlUpload () {
+                this.$refs.idCardBackUrl.clearFiles();
+            }
+        },
+        created () {
+            this.token = util.cookies.get('token');
+            console.log(this.token);
+            console.log(this.$store.state.admin.user.resource);
+            console.log(this.$store.state.admin.user.headers);
+        },
+        mounted () {
+            this.getHispitalDetail();
+            this.getHispitalList();
+        }
     };
 </script>
 <style lang="less" scoped>
-.box {
-  padding-left: 15px;
+.mb20 {
+  margin-bottom: 20px;
 }
-
+.hospital-img img {
+  width: 100%;
+}
+/*模块标题*/
+.module-title-wrapper {
+  height: 48px;
+  line-height: 48px;
+  border-bottom: 1px solid #e9eaec;
+  font-weight: 700;
+  background-color: #fff;
+}
 .mtb15 {
   margin: 15px 0;
 }
-.table {
-  width: 100%;
-  max-width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  thead tr {
-    background-color: #f8f8f9;
-    background-image: -webkit-gradient(
-      linear,
-      0 0,
-      0 100%,
-      from(#f2f2f2),
-      to(#fafafa)
-    );
-    background-image: -webkit-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
-    background-image: -moz-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
-    background-image: -ms-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
-    background-image: -o-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
-    background-image: -linear-gradient(top, #f2f2f2 0, #fafafa 100%);
-    font-size: 12px;
-  }
-  th,
-  td {
-    padding: 8px 6px;
-    vertical-align: middle;
-    border: 1px solid #ddd;
-    word-break: break-word;
-    word-wrap: break-word;
-    line-height: 1.42857143;
-    font-size: 12px;
-    text-align: center;
-  }
+.mt15 {
+  margin: 15px 0 0;
+}
+.hospital-list {
+  height: 570px;
+  overflow: auto;
 }
 </style>
 <style lang="less">
-.shift-list {
-  height: 265px;
-  overflow: auto;
-}
-.shift-list .ivu-list-item {
-  padding: 0;
-}
-.shift-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.shift-list .active {
-  background: #02ada4;
-  color: #fff;
+.ptb0 .ivu-card-body {
+  padding: 0 16px;
 }
 </style>
