@@ -13,13 +13,13 @@
     </Tabs>
     <Row>
       <Col span="6">
-        <Card class="ptb0 leftRecordCard">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">主诉记录模板列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Tree :data="data1"></Tree>
             </Col>
@@ -27,7 +27,7 @@
               <Button type="info">+添加新主诉</Button>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
               <Button type="success" @click="handleOpenCreate">+分类</Button>
             </Col>
@@ -41,13 +41,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">主诉记录模板内容</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Input type="textarea" :autosize="{minRows: 20,maxRows: 20}" />
             </Col>
@@ -133,14 +133,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -152,16 +145,6 @@
 .item-list {
   height: 265px;
   overflow: auto;
-}
-.item-list .ivu-list-item {
-  padding: 0;
-}
-.item-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.item-list .active {
-  background: #69c5d8;
 }
 
 .leftRecordCard .ivu-card-body {

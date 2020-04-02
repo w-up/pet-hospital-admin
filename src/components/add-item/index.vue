@@ -414,6 +414,7 @@
                     },
                     {
                         title: '往来单位',
+                        minWidth: 84,
                         key: 'name'
                     }
                 ],
@@ -463,15 +464,18 @@
                 columns8: [
                     {
                         title: '供货商名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '供货商价格',
+                        minWidth: 84,
                         key: 'price',
                         slot: 'price'
                     },
                     {
                         title: '操作',
+                        minWidth: 84,
                         render: (h, params) => {
                             return h('div', [
                                 h(
@@ -507,10 +511,12 @@
                     },
                     {
                         title: '用法',
+                        minWidth: 84,
                         key: 'med'
                     },
                     {
                         title: '操作',
+                        minWidth: 84,
                         render: (h, params) => {
                             return h('div', [
                                 h(
@@ -555,10 +561,12 @@
                 columnsHosList: [
                     {
                         title: '医院',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '售价',
+                        minWidth: 84,
                         key: 'price',
                         render: (h, params) => {
                             var flagInput = '';
@@ -601,6 +609,7 @@
                     },
                     {
                         title: '操作',
+                        minWidth: 84,
                         render: (h, params) => {
                             var flagEdit = '';
                             var flagSave = '';
@@ -686,14 +695,17 @@
                 columns10: [
                     {
                         title: '单号',
+                        minWidth: 84,
                         key: 'order'
                     },
                     {
                         title: '有效期',
+                        minWidth: 84,
                         key: 'time'
                     },
                     {
                         title: '操作',
+                        minWidth: 84,
                         render: (h, params) => {
                             return h('div', [
                                 h(
@@ -729,6 +741,7 @@
                     },
                     {
                         title: '名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
@@ -739,6 +752,7 @@
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'unitPrice'
                     },
                     {
@@ -772,10 +786,12 @@
                     },
                     {
                         title: '商品名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '商品编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
@@ -786,10 +802,12 @@
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'unitPrice'
                     },
                     {
                         title: '组合数量',
+                        minWidth: 84,
                         key: 'num',
                         render: (h, params) => {
                             return h('div', [
@@ -813,10 +831,12 @@
                 columns5: [
                     {
                         title: '商品名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '商品编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
@@ -827,10 +847,12 @@
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'unitPrice'
                     },
                     {
                         title: '组合数量',
+                        minWidth: 84,
                         key: 'num',
                         render: (h, params) => {
                             return h('div', [

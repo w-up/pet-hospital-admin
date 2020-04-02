@@ -2,27 +2,27 @@
   <div>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">往来单位列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Input prefix="ios-search" placeholder="名称/住址/联系人/电话" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row class="mt6 noplr">
             <Col span="24">
               <List class="company-list">
                 <ListItem v-for="(item, index) in list" :key="index" :class="item.name===currentName?'active':''">
-                    <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
+                    <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
               <Button type="error" >删除</Button>
             </Col>
@@ -33,13 +33,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">单位列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Form ref="form" :model="data" :label-width="100">
                 <FormItem label="" prop="count" label-for="count">
@@ -76,7 +76,7 @@
               </Form>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
               <Button type="primary" >编辑</Button>
             </Col>
@@ -118,14 +118,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -137,15 +130,5 @@
 .company-list {
   height: 550px;
   overflow: auto;
-}
-.company-list .ivu-list-item{
-  padding: 0;
-}
-.company-list .ivu-list-item p{
-  padding: 12px 0;
-  width: 100%;
-}
-.company-list .active{
-  background: #69C5D8;
 }
 </style>

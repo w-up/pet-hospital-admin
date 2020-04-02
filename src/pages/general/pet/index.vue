@@ -2,13 +2,13 @@
   <div>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">宠物分类</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row class="noplr">
             <Col span="24">
               <List class="pet-list">
                 <ListItem
@@ -16,12 +16,12 @@
                   :key="index"
                   :class="item.name===currentName?'active':''"
                 >
-                  <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ (index+1)+'、'+item.name }}</p>
+                  <p @click="switchList(item.name)" class="list">{{ (index+1)+'、'+item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
-           <Row :gutter="24" type="flex" justify="end" class="mtb15">
+           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
               <Button type="success" @click="showAddTypeModal=true">+宠物分类</Button>
             </Col>
@@ -35,13 +35,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">宠物列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <h4 class="mb10">权限设置列表</h4>
               <Table border :columns="columns1" :data="data1"></Table>
@@ -50,10 +50,10 @@
               </div>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="success" class="mr10" @click="handleOpenCreate">+宠物品种</Button>
-              <Button type="error" class="mr10" >删除</Button>
+              <Button type="success" @click="handleOpenCreate">+宠物品种</Button>
+              <Button type="error">删除</Button>
               <Button type="primary" >修改</Button>
             </Col>
           </Row>
@@ -102,14 +102,17 @@
                     },
                     {
                         title: '编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '拼音',
+                        minWidth: 84,
                         key: 'pinying'
                     }
                 ],
@@ -165,14 +168,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -184,15 +180,5 @@
 .pet-list {
   height: 265px;
   overflow: auto;
-}
-.pet-list .ivu-list-item{
-  padding: 0;
-}
-.pet-list .ivu-list-item p{
-  padding: 12px 0;
-  width: 100%;
-}
-.pet-list .active {
-  background: #69c5d8;
 }
 </style>

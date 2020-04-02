@@ -2,13 +2,13 @@
   <div>
     <Row>
       <Col span="24">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">预约提醒</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="mtb10">微信自动发送通知：</Col>
             <Col span="24">
               <Col span="2">
@@ -22,7 +22,7 @@
               </Col>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="mtb10">短信自动发送通知：</Col>
             <Col span="24">
               <Col span="2">
@@ -41,13 +41,13 @@
     </Row>
     <Row class="mtb15">
       <Col span="24">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">系统只能提醒</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="mtb10">微信自动发送通知：</Col>
             <Col span="24" class="mtb10">
               <Checkbox>负库存提醒(当库存为0时,发生热河消费行为导致库存消耗时报警提醒)</Checkbox>
@@ -75,14 +75,7 @@
     };
 </script>
 <style lang="less" scoped>
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }

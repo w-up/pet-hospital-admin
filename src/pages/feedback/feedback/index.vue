@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card class="ptb0">
+    <Card>
       <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
         <Col span="24">
           <span class="module-title">意见反馈</span>
@@ -41,14 +41,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }

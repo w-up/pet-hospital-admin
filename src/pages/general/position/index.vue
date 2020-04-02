@@ -3,7 +3,7 @@
     <Table class="centerSty" border :columns="positionColumns" :data="positionData">
       <p slot="header" style="padding:0 16px">职位列表</p>
     </Table>
-    <Row :gutter="24" type="flex" class="mtb15">
+    <Row :gutter="16" type="flex" class="mtb15">
       <Col span="24" class="ivu-text-left">
         <Button type="success" @click="addPositionModal=true">+职位</Button>
       </Col>
@@ -25,10 +25,12 @@
                 positionColumns: [
                     {
                         title: '职位名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '操作',
+                        minWidth: 84,
                         render: (h, params) => {
                             return h('div', [
                                 h(

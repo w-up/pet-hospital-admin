@@ -2,22 +2,22 @@
   <div>
     <Row :gutter="16">
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">医院列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mt15">
+          <Row class="mt15">
             <Col span="24">
               <Input prefix="ios-search" placeholder="姓名/电话/职位" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end">
+          <Row class="mt6 noplr">
             <Col span="24">
               <List class="hospital-list">
-                <ListItem v-for="(item, index) in hospitalListData" :key="index">
-                  <div @click="showHospital(item)"  style="cursor:pointer">
+                <ListItem v-for="(item, index) in hospitalListData" :key="index"  :class="currentId==item.id?'active':''">
+                  <div @click="showHospital(item);currentId=item.id" class="list">
                     <p>
                       医院名称：{{ item.name }}
                       <span style="margin-left: 7px">
@@ -31,7 +31,7 @@
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
               <Button type="info" @click="addHospital">+新增医院</Button>
             </Col>
@@ -45,13 +45,13 @@
         </Card>
       </Col>
       <Col span="18">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">医院信息</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Card :bordered="false" dis-hover class="ivu-mt">
                 <Form
@@ -61,9 +61,9 @@
                   :label-width="labelWidth"
                   :label-position="labelPosition"
                 >
-                  <Row :gutter="24">
+                  <Row :gutter="16">
                     <Col span="20">
-                      <Row :gutter="24" type="flex" justify="end">
+                      <Row :gutter="16" type="flex" justify="end">
                         <Col v-bind="grid">
                           <FormItem label="医院名称" prop="name">
                             <Input v-width="'100%'" v-model="data.name" placeholder="必填" />
@@ -256,6 +256,7 @@
         data () {
             return {
                 isAdd: false,
+                currentId: '',
                 hospitalListData: [
                 ],
                 resource: this.$store.state.admin.user.resource,
@@ -364,6 +365,7 @@
             getHispitalList () {
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalListData = response.data.data;
+                    this.currentId = this.hospitalListData && this.hospitalListData[0].id
                 });
             },
             handleSubmit () {
@@ -448,14 +450,7 @@
 .hospital-img img {
   width: 100%;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }

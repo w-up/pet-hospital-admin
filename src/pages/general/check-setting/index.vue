@@ -12,18 +12,18 @@
     </Tabs>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">检查检验类别</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Input prefix="ios-search" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row class="mt6 noplr">
             <Col span="24">
               <List class="check-list">
                 <ListItem
@@ -31,12 +31,12 @@
                   :key="index"
                   :class="item.name===currentName?'active':''"
                 >
-                  <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
+                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-center">
               <Button type="success" @click="handleOpenCreate">+添加分类</Button>
             </Col>
@@ -47,13 +47,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">单项</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" calss="check-set-table">
               <Table border :columns="columns1" :data="data1"></Table>
               <div class="ivu-mt ivu-text-right">
@@ -61,11 +61,11 @@
               </div>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="primary" class="mr10" @click="handleOpenCreateSingle">+单项</Button>
-              <Button type="warning" class="mr10">修改</Button>
-              <Button type="error" class="mr10">删除</Button>
+              <Button type="primary" @click="handleOpenCreateSingle">+单项</Button>
+              <Button type="warning">修改</Button>
+              <Button type="error">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -378,18 +378,22 @@
                     },
                     {
                         title: '指标名称',
+                        minWidth: 84,
                         key: 'zhibiaoName'
                     },
                     {
                         title: '标准名称',
+                        minWidth: 84,
                         key: 'biaozhunName'
                     },
                     {
                         title: '指标单位',
+                        minWidth: 84,
                         key: 'zhibiaoUnit'
                     },
                     {
                         title: '宠物种类',
+                        minWidth: 84,
                         key: 'type',
                         render: (h, params) => {
                             let vm = this;
@@ -422,6 +426,7 @@
                     },
                     {
                         title: '年龄段',
+                        minWidth: 84,
                         key: 'age',
                         render: (h, params) => {
                             let vm = this;
@@ -454,14 +459,17 @@
                     },
                     {
                         title: '参考值下线',
+                        minWidth: 84,
                         key: 'min'
                     },
                     {
                         title: '参考值上线',
+                        minWidth: 84,
                         key: 'max'
                     },
                     {
                         title: '说明',
+                        minWidth: 84,
                         key: 'remark'
                     }
                 ],
@@ -520,14 +528,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -555,16 +556,6 @@
 .check-list {
   height: 265px;
   overflow: auto;
-}
-.check-list .ivu-list-item {
-  padding: 0;
-}
-.check-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.check-list .active {
-  background: #69c5d8;
 }
 .check-set-table .ivu-table-body {
   position: fixed !important;

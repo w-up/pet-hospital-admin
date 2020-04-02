@@ -15,29 +15,27 @@
     </Tabs>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-            <Col span="15">
+            <Col span="12">
               <span class="module-title">目录</span>
             </Col>
-            <Col span="4">
+            <Col span="12" class="ivu-text-right">
               <Button type="warning">剪切</Button>
-            </Col>
-            <Col span="4" offset="1">
               <Button type="info">粘贴</Button>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Input prefix="ios-search" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Tree :data="tableOfContentsData" class="set-width"></Tree>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
               <Button type="success" @click="showAddTypeModal">+类别</Button>
             </Col>
@@ -51,7 +49,7 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="18">
               <span class="module-title">全部挂号</span>
@@ -60,7 +58,7 @@
               <Input prefix="ios-search" placeholder="名称/编码/条形码" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Table border :columns="registeredListColumns" :data="registeredListData"></Table>
               <div class="ivu-mt ivu-text-right">
@@ -70,16 +68,16 @@
           </Row>
           <Row type="flex" justify="end" class="mtb15">
             <Col span="14" class="ivu-text-left">
-              <Button type="success" class="mr10" @click="showAddProjectModal">+项目</Button>
-              <Button type="error" class="mr10">删除</Button>
-              <Button type="primary" class="mr10">修改</Button>
-              <Button type="warning" class="mr10">剪切</Button>
-              <Button type="info" class="mr10">粘贴</Button>
-              <Button class="mr10">批量设置</Button>
+              <Button type="success" @click="showAddProjectModal">+项目</Button>
+              <Button type="error">删除</Button>
+              <Button type="primary">修改</Button>
+              <Button type="warning">剪切</Button>
+              <Button type="info">粘贴</Button>
+              <Button>批量设置</Button>
             </Col>
             <Col span="10" class="ivu-text-right">
-              <Button type="success" class="mr10" @click="importData">导入明细</Button>
-              <Button type="info" class="mr10">导出明细</Button>
+              <Button type="success" @click="importData">导入明细</Button>
+              <Button type="info">导出明细</Button>
               <Button type="primary" @click="showSystemHint">初始化成本</Button>
             </Col>
           </Row>
@@ -155,13 +153,13 @@
     <Modal v-model="addPackageModal" title="添加套餐" @on-ok="handleCreate" width="80%">
       <Row>
         <Col span="5">
-          <Card class="ptb0">
+
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="24">
                 <span class="module-title">商品分类列表</span>
               </Col>
             </Row>
-            <Row :gutter="24" type="flex" justify="end">
+            <Row :gutter="16" type="flex" justify="end">
               <Col span="24">
                 <Tree :data="goodsTypeModalData"></Tree>
               </Col>
@@ -169,7 +167,7 @@
           </Card>
         </Col>
         <Col span="19" class="box">
-          <Card class="ptb0">
+
             <Row
               type="flex"
               justify="center"
@@ -187,7 +185,7 @@
                 <Input prefix="ios-search" placeholder="名称，编号，条形码" />
               </Col>
             </Row>
-            <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
                 <Table border :columns="goodsListModalColumns" :data="goodsListModalData"></Table>
               </Col>
@@ -197,7 +195,7 @@
       </Row>
       <Row class="mtb15">
         <Col span="24">
-          <Card class="ptb0">
+
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="20">
                 <span class="module-title">已选商品列表</span>
@@ -206,7 +204,7 @@
                 <Button type="error" class="mr10">删除</Button>
               </Col>
             </Row>
-            <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
                 <Table border :columns="hasGoodsListColumns" :data="hasGoodsListData"></Table>
               </Col>
@@ -276,8 +274,8 @@
                     },
                     {
                         title: '条形码',
-                        key: 'barCode',
-                        minWidth: 80
+                        minWidth: 84,
+                        key: 'barCode'
                     },
                     {
                         title: '名称',
@@ -286,23 +284,26 @@
                     },
                     {
                         title: '规格',
-                        key: 'size',
-                        minWidth: 70
+                        minWidth: 84,
+                        key: 'size'
                     },
                     {
                         title: '单位',
-                        key: 'unti',
-                        minWidth: 70
+                        minWidth: 84,
+                        key: 'unti'
+
                     },
                     {
                         title: '有效期',
-                        key: 'expirationDate',
-                        minWidth: 80
+                        minWidth: 84,
+                        key: 'expirationDate'
+
                     },
                     {
                         title: '单价',
-                        key: 'price',
-                        minWidth: 75
+                        minWidth: 84,
+                        key: 'price'
+
                     },
                     {
                         title: '最低售价',
@@ -311,8 +312,9 @@
                     },
                     {
                         title: '说明',
-                        key: 'remark',
-                        minWidth: 70
+                        minWidth: 84,
+                        key: 'remark'
+
                     },
                     {
                         title: '参与折扣',
@@ -363,28 +365,31 @@
                 goodsColumns: [
                     {
                         title: '商品名称',
-                        key: 'name',
-                        minWidth: 125
+                        minWidth: 84,
+                        key: 'name'
                     },
                     {
                         title: '编号',
-                        key: 'code',
-                        minWidth: 95
+                        minWidth: 84,
+                        key: 'code'
                     },
                     {
                         title: '规格',
-                        key: 'size',
-                        minWidth: 70
+                        minWidth: 84,
+                        key: 'size'
+
                     },
                     {
                         title: '单位',
-                        key: 'unti',
-                        minWidth: 70
+                        minWidth: 84,
+                        key: 'unti'
+
                     },
                     {
                         title: '单价',
-                        key: 'price',
-                        minWidth: 75
+                        minWidth: 84,
+                        key: 'price'
+
                     },
                     {
                         title: '组合数量',
@@ -431,6 +436,7 @@
                     {
                         title: '全部挂号',
                         expand: true,
+                        minWidth: 84,
                         render: (h, { root, node, data }) => {
                             return h(
                                 'span',
@@ -503,26 +509,32 @@
                 goodsListModalColumns: [
                     {
                         title: '编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '规格',
+                        minWidth: 84,
                         key: 'size'
                     },
                     {
                         title: '单位',
+                        minWidth: 84,
                         key: 'unti'
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'price'
                     },
                     {
                         title: '条形码',
+                        minWidth: 84,
                         key: 'barCode'
                     }
                 ],
@@ -539,37 +551,37 @@
                 hasGoodsListColumns: [
                     {
                         type: 'selection',
-                        minWidth: 30,
+                        minWidth: 84,
                         align: 'center'
                     },
                     {
                         title: '名称',
-                        minWidth: 80,
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '编号',
-                        minWidth: 70,
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '规格',
-                        minWidth: 60,
+                        minWidth: 84,
                         key: 'size'
                     },
                     {
                         title: '单位',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'unti'
                     },
                     {
                         title: '单价',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'price'
                     },
                     {
                         title: '组合数量',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'num',
                         render: (h, params) => {
                             return h('div', [
@@ -645,14 +657,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -669,16 +674,6 @@
 .good-list {
   height: 265px;
   overflow: auto;
-}
-.good-list .ivu-list-item {
-  padding: 0;
-}
-.good-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.good-list .active {
-  background: #69c5d8;
 }
 //使所有页面的表格的td和th都居中
 .ivu-table-wrapper td {

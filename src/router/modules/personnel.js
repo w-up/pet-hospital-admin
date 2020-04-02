@@ -1,5 +1,5 @@
 import BasicLayout from '@/layouts/basic-layout';
-import ParentView from '@/components/parent-view';
+// import ParentView from '@/components/parent-view';
 
 const meta = {
     auth: true

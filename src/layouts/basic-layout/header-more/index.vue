@@ -205,16 +205,6 @@
   height: 265px;
   overflow: auto;
 }
-.news-list .ivu-list-item {
-  padding: 0;
-}
-.news-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.news-list .active {
-  background: #69c5d8;
-}
 .newsModal .ivu-modal-body {
   padding: 0px !important;
 }

@@ -8,14 +8,10 @@
         <Table class="centerSty" border :columns="secondaryCardColumns" :data="secondaryCardData"></Table>
       </TabPane>
     </Tabs>
-    <Row :gutter="24" type="flex" class="mtb15">
-      <Col span="2" class="ivu-text-left">
+    <Row :gutter="16" type="flex" class="mtb15">
+      <Col>
         <Button type="success" @click="handleOpenCreate">+卡片</Button>
-      </Col>
-      <Col span="2" class="ivu-text-left">
         <Button type="error">删除</Button>
-      </Col>
-      <Col span="2" class="ivu-text-left">
         <Button type="primary">修改</Button>
       </Col>
     </Row>
@@ -82,18 +78,22 @@
                     },
                     {
                         title: '会员卡类型',
+                        minWidth: 84,
                         key: 'type'
                     },
                     {
                         title: '会员卡折扣',
+                        minWidth: 84,
                         key: 'discount'
                     },
                     {
                         title: '是否积分',
+                        minWidth: 84,
                         key: 'whetherPoints'
                     },
                     {
                         title: '会员卡积分规则',
+                        minWidth: 84,
                         key: 'unruleti'
                     }
                 ],
@@ -119,14 +119,17 @@
                     },
                     {
                         title: '次卡类型',
+                        minWidth: 84,
                         key: 'type'
                     },
                     {
                         title: '次卡销售提成',
+                        minWidth: 84,
                         key: 'salesCommission'
                     },
                     {
                         title: '次卡服务提成',
+                        minWidth: 84,
                         key: 'serviceCommission'
                     }
                 ],

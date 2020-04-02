@@ -1,14 +1,14 @@
 <template>
   <div>
-    <Row>
+    <Row :gutter="16">
       <Col span="5">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">班次列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end">
+          <Row class="noplr">
             <Col span="24">
               <List class="shift-list">
                 <ListItem
@@ -16,12 +16,12 @@
                   :key="index"
                   :class="item.name===currentName?'active':''"
                 >
-                  <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
+                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="10" class="ivu-text-center">
               <Button type="success" @click="handleOpenCreate">+添加班次</Button>
             </Col>
@@ -34,14 +34,14 @@
           </Row>
         </Card>
       </Col>
-      <Col span="19" class="box">
-        <Card class="ptb0">
+      <Col span="19">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">排班表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <table class="table">
                 <thead>
@@ -130,7 +130,7 @@
               </div>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
               <Button type="warning">保存</Button>
             </Col>
@@ -358,16 +358,5 @@
 .shift-list {
   height: 265px;
   overflow: auto;
-}
-.shift-list .ivu-list-item {
-  padding: 0;
-}
-.shift-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.shift-list .active {
-  background: #02ada4;
-  color: #fff;
 }
 </style>

@@ -12,18 +12,18 @@
     </Tabs>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">商品组合列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="ivu-mt">
             <Col span="24">
               <Input prefix="ios-search" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row class="mt6 noplr">
             <Col span="24">
               <List class="good-list">
                 <ListItem
@@ -31,12 +31,12 @@
                   :key="index"
                   :class="item.name===currentName?'active':''"
                 >
-                  <p @click="switchList(item.name)">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}</p>
+                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
               <Button type="success" @click="handleOpenCreate">+添加</Button>
             </Col>
@@ -50,13 +50,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">处方组合内容</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Table border :columns="columns1" :data="data1"></Table>
               <div class="ivu-mt ivu-text-right">
@@ -64,10 +64,10 @@
               </div>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="warning" class="mr10" @click="handleOpenEditCombination">+组合/修改</Button>
-              <Button type="error" class="mr10">删除</Button>
+              <Button type="warning" @click="handleOpenEditCombination">+组合/修改</Button>
+              <Button type="error">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -83,13 +83,13 @@
     <Modal v-model="editCombination" title="商品组合设置" @on-ok="handleCreate" width="80%">
       <Row>
         <Col span="5">
-          <Card class="ptb0">
+
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="24">
                 <span class="module-title">消费项目分类</span>
               </Col>
             </Row>
-            <Row :gutter="24" type="flex" justify="end">
+            <Row :gutter="16" type="flex" justify="end">
               <Col span="24">
                 <Tree :data="consumptionTypeData"></Tree>
               </Col>
@@ -97,7 +97,7 @@
           </Card>
         </Col>
         <Col span="19" class="box">
-          <Card class="ptb0">
+
             <Row
               type="flex"
               justify="center"
@@ -115,7 +115,7 @@
                 <Input prefix="ios-search" placeholder="名称，编号，条形码" />
               </Col>
             </Row>
-            <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
                 <Table border :columns="consumptionProjectColumns" :data="consumptionProjectData"></Table>
               </Col>
@@ -125,7 +125,7 @@
       </Row>
       <Row class="mtb15">
         <Col span="24">
-          <Card class="ptb0">
+
             <Row
               type="flex"
               justify="center"
@@ -139,7 +139,7 @@
                 <Button type="error" class="mr10">删除</Button>
               </Col>
             </Row>
-            <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
                 <Table border :columns="consumptionOrderColumns" :data="consumptionOrderData"></Table>
               </Col>
@@ -165,42 +165,52 @@
                     },
                     {
                         title: '编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '规格',
+                        minWidth: 84,
                         key: 'size'
                     },
                     {
                         title: '单位',
+                        minWidth: 84,
                         key: 'unti'
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'price'
                     },
                     {
                         title: '数量',
+                        minWidth: 84,
                         key: 'num'
                     },
                     {
                         title: '用法',
+                        minWidth: 84,
                         key: 'method'
                     },
                     {
                         title: '用量',
+                        minWidth: 84,
                         key: 'useNum'
                     },
                     {
                         title: '条形码',
+                        minWidth: 84,
                         key: 'barCode'
                     },
                     {
                         title: '备注',
+                        minWidth: 84,
                         key: 'remark'
                     }
                 ],
@@ -257,34 +267,42 @@
                     },
                     {
                         title: '编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '条形码',
+                        minWidth: 84,
                         key: 'barCode'
                     },
                     {
                         title: '名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '规格',
+                        minWidth: 84,
                         key: 'size'
                     },
                     {
                         title: '单位',
+                        minWidth: 84,
                         key: 'unti'
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'price'
                     },
                     {
                         title: '厂家',
+                        minWidth: 84,
                         key: 'factory'
                     },
                     {
                         title: '备注',
+                        minWidth: 84,
                         key: 'remark'
                     }
                 ],
@@ -303,42 +321,42 @@
                 consumptionOrderColumns: [
                     {
                         type: 'selection',
-                        minWidth: 30,
+                        minWidth: 60,
                         align: 'center'
                     },
                     {
                         title: '编号',
-                        minWidth: 70,
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '条形码',
-                        minWidth: 70,
+                        minWidth: 84,
                         key: 'barCode'
                     },
                     {
                         title: '名称',
-                        minWidth: 80,
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '规格',
-                        minWidth: 60,
+                        minWidth: 84,
                         key: 'size'
                     },
                     {
                         title: '单位',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'unti'
                     },
                     {
                         title: '单价',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'price'
                     },
                     {
                         title: '数量',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'num'
                     },
                     {
@@ -376,12 +394,12 @@
                     },
                     {
                         title: '用量',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'useNum'
                     },
                     {
                         title: '备注',
-                        minWidth: 50,
+                        minWidth: 84,
                         key: 'remark'
                     }
                 ],
@@ -436,14 +454,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
@@ -455,16 +466,6 @@
 .good-list {
   height: 265px;
   overflow: auto;
-}
-.good-list .ivu-list-item {
-  padding: 0;
-}
-.good-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.good-list .active {
-  background: #69c5d8;
 }
 //使所有页面的表格的td和th都居中
 .ivu-table-wrapper td {

@@ -7,13 +7,13 @@
     </Tabs>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">所有商品列表</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Tree :data="dataGoods"></Tree>
             </Col>
@@ -21,13 +21,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">单项目录</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Table class="centerSty" border :columns="columns1" :data="data1"></Table>
               <div class="ivu-mt ivu-text-right">
@@ -35,7 +35,7 @@
               </div>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
               <Button type="warning" class="mr10" @click="handleOpenCreate">修改折扣</Button>
             </Col>
@@ -100,30 +100,37 @@
                     },
                     {
                         title: '编号',
+                        minWidth: 84,
                         key: 'code'
                     },
                     {
                         title: '条形码',
+                        minWidth: 84,
                         key: 'barCode'
                     },
                     {
                         title: '名称',
+                        minWidth: 84,
                         key: 'name'
                     },
                     {
                         title: '规格',
+                        minWidth: 84,
                         key: 'size'
                     },
                     {
                         title: '单位',
+                        minWidth: 84,
                         key: 'unti'
                     },
                     {
                         title: '单价',
+                        minWidth: 84,
                         key: 'price'
                     },
                     {
                         title: '折扣',
+                        minWidth: 84,
                         key: 'discount '
                     }
                 ],
@@ -163,14 +170,7 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }

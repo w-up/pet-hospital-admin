@@ -40,18 +40,19 @@
                 columns: [
                     {
                         title: '时间',
+                        minWidth: 84,
                         key: 'time',
                         width: 180
                     },
                     {
                         title: '信息',
                         key: 'message',
-                        minWidth: 300
+                        minWidth: 840
                     },
                     {
                         title: '触发页面',
                         slot: 'page',
-                        minWidth: 300
+                        minWidth: 840
                     },
                     {
                         title: '类型',

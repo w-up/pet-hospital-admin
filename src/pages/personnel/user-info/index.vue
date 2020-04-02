@@ -2,7 +2,7 @@
   <div>
     <Row>
       <Col span="6">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="16">
               <span class="module-title">员工列表</span>
@@ -11,30 +11,33 @@
               <Button>高级权限</Button>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="ivu-mt">
             <Col span="24">
               <Input prefix="ios-search" placeholder="姓名/电话/职位" />
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row class="mt6 noplr">
             <Col span="24">
-              <List class="ivu-mt user-info-list">
-                <ListItem v-for="(item, index) in data" :key="index">
-                  <div class="user-info-avatar">
-                    <i-link :to="item.userLink" target="_blank" slot="avatar">
-                      <Avatar :src="item.avatar" />
-                    </i-link>
-                  </div>
-                  <div>
-                    <p>姓名：{{ item.name }}</p>
-                    <p>职位：{{ item.position?item.position.name:'' }}</p>
-                    <p>电话：{{ item.mobile }}</p>
+              <List class="user-info-list">
+                <ListItem v-for="(item, index) in data" :key="index" :class="item.id === currentId ? 'active' : ''">
+                  <div class="list" @click="currentId = item.id">
+                    <Col span="8" class="ivu-text-center">
+                      <Avatar
+                        :src="item.avatar"
+                        style="width:64px;height:64px"
+                      />
+                    </Col>
+                    <Col span="16">
+                      <p>姓名：{{ item.name }}</p>
+                      <p>职位：{{ item.position ? item.position.name : "" }}</p>
+                      <p>电话：{{ item.mobile }}</p>
+                    </Col>
                   </div>
                 </ListItem>
               </List>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
               <Button type="error">删除</Button>
             </Col>
@@ -45,13 +48,13 @@
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">员工明细</span>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="6" class="text-center">
               <div class="user-info-detail">
                 <i-link :to="userInfo.userLink" target="_blank" slot="avatar">
@@ -93,13 +96,13 @@
             </Col>
             <Col span="6"></Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <h4 class="mb10">权限设置列表</h4>
               <Table border :columns="columns1" :data="data1"></Table>
             </Col>
           </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
               <Button type="primary">编辑</Button>
             </Col>
@@ -171,6 +174,7 @@
                     positionCode: 'finance',
                     master: '张三'
                 },
+                currentId: '',
                 data: [],
                 userInfo: {
                     position: '医生',
@@ -271,6 +275,7 @@
             getUserinfoList () {
                 this.$get('/admin/user/page', {}, response => {
                     this.data = response.data.data;
+                    this.currentId = this.data && this.data[0].id
                 });
             },
             handleOpenCreate () {
