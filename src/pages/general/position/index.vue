@@ -27,7 +27,8 @@
                 isEdit: false,
                 pisitionForm: {
                     name: '',
-                    code: ''
+                    code: '',
+                    id: ''
                 },
                 rules: {
                     name: [
@@ -123,11 +124,13 @@
                 this.$refs.createPosition.resetFields()
                 this.pisitionForm.name = rowData.name
                 this.pisitionForm.code = rowData.code
+                this.pisitionForm.id = rowData.id
                 this.addPositionModal = true
             },
             handleAdd () {
                 this.isEdit = false
                 this.$refs.createPosition.resetFields()
+                this.pisitionForm.id = ''
                 this.addPositionModal = true
             }
         },
