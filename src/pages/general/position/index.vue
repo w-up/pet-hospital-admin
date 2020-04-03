@@ -5,13 +5,16 @@
     </Table>
     <Row :gutter="16" type="flex" class="mtb15">
       <Col span="24" class="ivu-text-left">
-        <Button type="success" @click="addPositionModal=true">+职位</Button>
+        <Button type="success" @click="handleAdd">+职位</Button>
       </Col>
     </Row>
-    <Modal v-model="addPositionModal" title="添加职位" @on-ok="handleCreate">
-      <Form ref="create" :label-width="187">
-        <FormItem label="职位名称">
-          <Input style="width: 150px" />
+    <Modal ref="createPositionModal" v-model="addPositionModal" :title="isEdit?'编辑职位':'添加职位'" @on-ok="handleSavePosition" :loading="true">
+      <Form ref="createPosition" :label-width="187" :rules="rules" :model="pisitionForm">
+        <FormItem label="职位名称"  prop="name">
+          <Input style="width: 150px" v-model="pisitionForm.name"/>
+        </FormItem>
+        <FormItem label="职位代码" prop="code">
+          <Input style="width: 150px" v-model="pisitionForm.code"/>
         </FormItem>
       </Form>
     </Modal>
@@ -21,6 +24,19 @@
     export default {
         data () {
             return {
+                isEdit: false,
+                pisitionForm: {
+                    name: '',
+                    code: ''
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '请输入职位名称', trigger: 'blur' }
+                    ],
+                    code: [
+                        { required: true, message: '请输入职位代码', trigger: 'blur' }
+                    ]
+                },
                 addPositionModal: false,
                 positionColumns: [
                     {
@@ -29,19 +45,29 @@
                         key: 'name'
                     },
                     {
+                        title: '职位代码',
+                        minWidth: 84,
+                        key: 'code'
+                    },
+                    {
                         title: '操作',
                         minWidth: 84,
                         render: (h, params) => {
+                            var isDisabled = false
+                            isDisabled = params.row.num > 0
                             return h('div', [
                                 h(
                                     'Button',
                                     {
                                         props: {
                                             type: 'info',
-                                            size: 'small'
+                                            size: 'small',
+                                            disabled: isDisabled
                                         },
                                         on: {
-                                            click: () => {}
+                                            click: () => {
+                                                this.handleEdit(params.row)
+                                            }
                                         }
                                     },
                                     '编辑'
@@ -51,7 +77,8 @@
                                     {
                                         props: {
                                             type: 'error',
-                                            size: 'small'
+                                            size: 'small',
+                                            disabled: isDisabled
                                         },
                                         style: {
                                             marginLeft: '10px'
@@ -67,21 +94,46 @@
                     }
                 ],
                 positionData: [
-                    {
-                        name: '护士'
-                    },
-                    {
-                        name: '护士'
-                    }
                 ]
             };
         },
         methods: {
-            handleCreate () {
-
+            getPositionList () {
+                this.$get('/admin/user/position/page', {}, response => {
+                    this.positionData = response.data.data
+                });
+            },
+            handleSavePosition () {
+                this.$refs.createPositionModal.buttonLoading = false;
+                this.$refs.createPosition.validate(valid => {
+                    if (valid) {
+                        this.$post('/admin/user/position/save', this.pisitionForm, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功')
+                                this.getPositionList()
+                                this.addPositionModal = false
+                            }
+                        });
+                    } else {
+                    }
+                });
+            },
+            handleEdit (rowData) {
+                this.isEdit = true
+                this.$refs.createPosition.resetFields()
+                this.pisitionForm.name = rowData.name
+                this.pisitionForm.code = rowData.code
+                this.addPositionModal = true
+            },
+            handleAdd () {
+                this.isEdit = false
+                this.$refs.createPosition.resetFields()
+                this.addPositionModal = true
             }
         },
-        mounted () {}
+        mounted () {
+            this.getPositionList()
+        }
     };
 </script>
 <style lang="less" scoped>
