@@ -175,7 +175,7 @@
                 },
                 scheduleList: [
                 ],
-                currentName: '晚班',
+                currentName: '',
                 memberList: [
                     {
                         position: '护士',
@@ -338,6 +338,7 @@
             getScheduleList () {
                 this.$get('/admin/user/schedule/page', {}, response => {
                     this.scheduleList = response.data.data;
+                    this.currentName = response.data.data && response.data.data[0].name
                 });
             }
         },
