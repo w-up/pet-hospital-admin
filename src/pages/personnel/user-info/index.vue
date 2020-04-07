@@ -3,12 +3,7 @@
     <Row>
       <Col span="6">
         <Card class="ptb0">
-          <Row
-            type="flex"
-            justify="center"
-            align="top"
-            class-name="module-title-wrapper"
-          >
+          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="16">
               <span class="module-title">员工列表</span>
             </Col>
@@ -18,50 +13,25 @@
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="ivu-mt">
             <Col span="24">
-              <Input prefix="ios-search" placeholder="姓名/电话/职位" />
+              <Input
+                prefix="ios-search"
+                placeholder="姓名/电话/职位"
+                v-model="searchKey"
+                @on-change="getUserinfoList"
+                clearable
+              />
             </Col>
           </Row>
           <Row class="mt6 noplr">
-            <Col span="24">
-              <List class="user-info-list">
-                <ListItem v-for="(item, index) in data" :key="index" :class="item.id === currentId ? 'active' : ''">
-                  <div class="list" @click="currentId = item.id">
-                    <Col span="8" class="ivu-text-center">
-                      <Avatar
-                        :src="item.avatar"
-                        style="width:64px;height:64px"
-                      />
-                    </Col>
-                    <Col span="16">
-                      <p>姓名：{{ item.name }}</p>
-                      <p>职位：{{ item.position ? item.position.name : "" }}</p>
-                      <p>电话：{{ item.mobile }}</p>
-                    </Col>
-                  </div>
-                </ListItem>
-              </List>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex" justify="end" class="mtb15">
-            <Col span="12" class="ivu-text-left">
-              <Button type="error">删除</Button>
-            </Col>
-            <Col span="12" class="ivu-text-right">
-              <Button type="primary" @click="handleOpenCreate"
-                >+新增员工</Button
-              >
+            <Col span="23" offset="1">
+              <Tree :data="treeOfUserData" @on-select-change="getChild"></Tree>
             </Col>
           </Row>
         </Card>
       </Col>
       <Col span="18" class="box">
         <Card class="ptb0">
-          <Row
-            type="flex"
-            justify="center"
-            align="top"
-            class-name="module-title-wrapper"
-          >
+          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">员工明细</span>
             </Col>
@@ -69,30 +39,38 @@
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="6" class="text-center">
               <div class="user-info-detail">
-                <i-link :to="userInfo.userLink" target="_blank" slot="avatar">
-                  <Avatar :src="userInfo.avatar" />
+                <i-link target="_blank" slot="avatar">
+                  <Avatar :src="userInfo.portrait" />
                 </i-link>
               </div>
-              <Button>更换图片</Button>
+              <Upload
+                ref="portrait"
+                v-model="userInfo.portrait"
+                :action="resource"
+                :headers="headers"
+                :format="[ 'png', 'jpg', 'jpeg']"
+                :max-size="1024*10"
+                :on-success="handleHeaderUrlSuccess"
+                :on-format-error="handleFileFormatErr"
+                :on-exceeded-size="handleFileSizeErr"
+                :before-upload="handleBeforeLicenseUrlUpload"
+                :show-upload-list="false"
+              >
+                <Button>更换图片</Button>
+              </Upload>
             </Col>
             <Col span="12">
-              <Form
-                ref="form"
-                :model="userInfo"
-                :rules="rules"
-                :label-width="100"
-              >
+              <Form ref="editForm" :model="userInfo" :rules="rules" :label-width="100">
                 <FormItem label="姓名" prop="name">
                   <Input v-model="userInfo.name" placeholder="必填" />
                 </FormItem>
                 <FormItem label="职位" prop="position" label-for="position">
-                  <Select
-                    v-model="userInfo.position"
-                    placeholder="请选择"
-                    element-id="position"
-                  >
-                    <Option value="医生">医生</Option>
-                    <Option value="护士">护士</Option>
+                  <Select v-model="userInfo.position.code" placeholder="请选择" element-id="position">
+                    <Option
+                      v-for="(it, index) in positionList"
+                      :key="index"
+                      :value="it.code"
+                    >{{ it.name }}</Option>
                   </Select>
                 </FormItem>
                 <FormItem label="电话" prop="mobile">
@@ -102,11 +80,7 @@
                   <Input v-model="userInfo.code" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="授业恩师" prop="master">
-                  <Select
-                    v-model="userInfo.master"
-                    placeholder="请选择"
-                    element-id="master"
-                  >
+                  <Select v-model="userInfo.master" placeholder="请选择" element-id="master">
                     <Option value="张三">张三</Option>
                     <Option value="李四">李四</Option>
                   </Select>
@@ -115,11 +89,7 @@
                   <Input v-model="userInfo.password" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="备注" prop="count" label-for="count">
-                  <Input
-                    v-model="userInfo.remark"
-                    type="textarea"
-                    placeholder="请输入"
-                  />
+                  <Input v-model="userInfo.remark" type="textarea" placeholder="请输入" />
                 </FormItem>
               </Form>
             </Col>
@@ -133,64 +103,24 @@
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
-              <Button type="primary">编辑</Button>
+              <Button type="primary" @click="handleUserinfoEdit">编辑</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal
-      ref="creatUser"
-      v-model="showCreate"
-      title="新增员工"
-      @on-ok="handleUserinfoCreate"
-      :loading="true"
-    >
-      <Form ref="create" :model="newUserInfo" :rules="rules" :label-width="100">
-        <FormItem label="姓名：" prop="name">
-          <Input v-model="newUserInfo.name" placeholder="请输入" />
-        </FormItem>
-        <FormItem label="职位：" prop="positionCode">
-          <Select v-model="newUserInfo.positionCode">
-            <Option
-              v-for="(it, index) in positionList"
-              :key="index"
-              :value="it.code"
-              >{{ it.name }}</Option
-            >
-          </Select>
-        </FormItem>
-        <FormItem label="电话：" prop="mobile">
-          <Input v-model="newUserInfo.mobile" placeholder="必填" />
-        </FormItem>
-        <FormItem label="执业兽医师号：" prop="code">
-          <Input v-model="newUserInfo.code" placeholder="必填" />
-        </FormItem>
-        <FormItem label="授业恩师：" prop="master">
-          <Select
-            v-model="newUserInfo.master"
-            placeholder="请选择"
-            element-id="master"
-          >
-            <Option value="张三">张三</Option>
-            <Option value="李四">李四</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="登录密码：" prop="password">
-          <Input v-model="newUserInfo.password" placeholder="请输入" />
-        </FormItem>
-        <FormItem label="备注：" prop="remark">
-          <Input v-model="newUserInfo.remark" placeholder="请输入" />
-        </FormItem>
-      </Form>
-    </Modal>
   </div>
 </template>
 <script>
     export default {
         name: 'list-table-list',
+        inject: ['reload'], // 注入App里的reload方法
         data () {
             return {
+                treeOfUserData: [],
+                resource: this.$store.state.admin.user.resource,
+                headers: this.$store.state.admin.user.headers,
+                searchKey: '',
                 rules: {
                     name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
                     mobile: [
@@ -208,18 +138,12 @@
                     ]
                 },
                 positionList: [],
-                newUserInfo: {
-                    name: '',
-                    mobile: '',
-                    code: '',
-                    remark: '',
-                    positionCode: 'finance',
-                    master: '张三'
-                },
                 currentId: '',
-                data: [],
                 userInfo: {
-                    position: '医生',
+                    portrait: '',
+                    position: {
+                        code: 'caiwu'
+                    },
                     master: '张三'
                 },
                 columns1: [
@@ -309,31 +233,76 @@
                         view: true,
                         edit: false
                     }
-                ],
-                showCreate: false
+                ]
             };
         },
         methods: {
-            getUserinfoList () {
-                this.$get('/admin/user/page', {}, response => {
-                    this.data = response.data.data;
-                    this.currentId = this.data && this.data[0].id
+            getChild (data) {
+                this.userInfo = data[0]
+            },
+            handleHeaderUrlSuccess (response, file, fileList) {
+                this.$set(this.userInfo, 'portrait', response.data);
+            },
+            handleFileFormatErr (file) {
+                this.$Notice.warning({
+                    title: '文件类型错误',
+                    desc:
+                        '文件  ' + file.name + ' 文件类型错误,请上传png, jpg, jpeg等格式图片.'
                 });
             },
-            handleOpenCreate () {
-                this.showCreate = true;
-                this.$refs.create.resetFields();
+            handleFileSizeErr (file) {
+                this.$Notice.warning({
+                    title: '文件过大',
+                    desc: '文件  ' + file.name + ' 过大,不得超过10M.'
+                });
             },
-            handleUserinfoCreate () {
-                this.$refs.creatUser.buttonLoading = false;
-                this.$refs.create.validate(valid => {
+            handleBeforeLicenseUrlUpload () {
+                this.$refs.portrait.clearFiles();
+            },
+            getUserinfoList () {
+                var data = {
+                    searchKey: this.searchKey
+                };
+                this.$get('/admin/user/hospital/page', data, response => {
+                    this.treeOfUserData = []
+                    var rtn = response.data.data;
+                    // 处理左侧树数据
+                    for (var i = 0; i < rtn.length; i++) {
+                        var obj = {};
+                        obj.title = rtn[i].name;
+                        obj.expand = true;
+                        obj.minWidth = 84;
+                        var childrenList = [];
+                        for (var j = 0; j < rtn[i].userBo.data.length; j++) {
+                            var child = {};
+                            child = rtn[i].userBo.data[j]
+                            child.title = rtn[i].userBo.data[j].name +
+                                '(' +
+                                (rtn[i].userBo.data[j].position ? rtn[i].userBo.data[j].position.name : '') +
+                                ')';
+                            childrenList.push(child);
+                        }
+                        obj.children = childrenList;
+                        this.treeOfUserData.push(obj);
+                    }
+                });
+            },
+            handleUserinfoEdit () {
+                if (!this.userInfo.id) {
+                    this.$Message.error('请选择左侧树');
+                    return false
+                }
+                this.$refs.editForm.validate(valid => {
                     if (valid) {
-                        this.newUserInfo.type = 'employee';
-                        this.$post('/admin/user/save', this.newUserInfo, response => {
+                        this.userInfo.type = 'employee';
+                        this.userInfo.positionCode = this.userInfo.position.code;
+                        delete this.userInfo.position;
+                        this.$post('/admin/user/save', this.userInfo, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
-                                this.getUserinfoList();
-                                this.showCreate = false;
+                                this.reload()
+                            } else {
+                                this.$Message.error(response.message);
                             }
                         });
                     } else {
