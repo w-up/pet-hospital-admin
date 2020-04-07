@@ -2,8 +2,13 @@
   <div>
     <Row>
       <Col span="6">
-        <Card>
-          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+        <Card class="ptb0">
+          <Row
+            type="flex"
+            justify="center"
+            align="top"
+            class-name="module-title-wrapper"
+          >
             <Col span="16">
               <span class="module-title">员工列表</span>
             </Col>
@@ -11,7 +16,7 @@
               <Button>高级权限</Button>
             </Col>
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="ivu-mt">
+          <Row :gutter="24" type="flex" justify="end" class="ivu-mt">
             <Col span="24">
               <Input prefix="ios-search" placeholder="姓名/电话/职位" />
             </Col>
@@ -37,24 +42,31 @@
               </List>
             </Col>
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="mtb15">
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
               <Button type="error">删除</Button>
             </Col>
             <Col span="12" class="ivu-text-right">
-              <Button type="primary" @click="handleOpenCreate">+新增员工</Button>
+              <Button type="primary" @click="handleOpenCreate"
+                >+新增员工</Button
+              >
             </Col>
           </Row>
         </Card>
       </Col>
       <Col span="18" class="box">
-        <Card>
-          <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+        <Card class="ptb0">
+          <Row
+            type="flex"
+            justify="center"
+            align="top"
+            class-name="module-title-wrapper"
+          >
             <Col span="24">
               <span class="module-title">员工明细</span>
             </Col>
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="mtb15">
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="6" class="text-center">
               <div class="user-info-detail">
                 <i-link :to="userInfo.userLink" target="_blank" slot="avatar">
@@ -64,12 +76,21 @@
               <Button>更换图片</Button>
             </Col>
             <Col span="12">
-              <Form ref="form" :model="userInfo" :rules="rules" :label-width="100">
+              <Form
+                ref="form"
+                :model="userInfo"
+                :rules="rules"
+                :label-width="100"
+              >
                 <FormItem label="姓名" prop="name">
                   <Input v-model="userInfo.name" placeholder="必填" />
                 </FormItem>
                 <FormItem label="职位" prop="position" label-for="position">
-                  <Select v-model="userInfo.position" placeholder="请选择" element-id="position">
+                  <Select
+                    v-model="userInfo.position"
+                    placeholder="请选择"
+                    element-id="position"
+                  >
                     <Option value="医生">医生</Option>
                     <Option value="护士">护士</Option>
                   </Select>
@@ -81,7 +102,11 @@
                   <Input v-model="userInfo.code" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="授业恩师" prop="master">
-                  <Select v-model="userInfo.master" placeholder="请选择" element-id="master">
+                  <Select
+                    v-model="userInfo.master"
+                    placeholder="请选择"
+                    element-id="master"
+                  >
                     <Option value="张三">张三</Option>
                     <Option value="李四">李四</Option>
                   </Select>
@@ -90,19 +115,23 @@
                   <Input v-model="userInfo.password" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="备注" prop="count" label-for="count">
-                  <Input v-model="userInfo.remark" type="textarea" placeholder="请输入" />
+                  <Input
+                    v-model="userInfo.remark"
+                    type="textarea"
+                    placeholder="请输入"
+                  />
                 </FormItem>
               </Form>
             </Col>
             <Col span="6"></Col>
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="mtb15">
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <h4 class="mb10">权限设置列表</h4>
               <Table border :columns="columns1" :data="data1"></Table>
             </Col>
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="mtb15">
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
               <Button type="primary">编辑</Button>
             </Col>
@@ -123,7 +152,12 @@
         </FormItem>
         <FormItem label="职位：" prop="positionCode">
           <Select v-model="newUserInfo.positionCode">
-            <Option v-for="(it, index) in positionList" :key="index" :value="it.code">{{it.name}}</Option>
+            <Option
+              v-for="(it, index) in positionList"
+              :key="index"
+              :value="it.code"
+              >{{ it.name }}</Option
+            >
           </Select>
         </FormItem>
         <FormItem label="电话：" prop="mobile">
@@ -133,7 +167,11 @@
           <Input v-model="newUserInfo.code" placeholder="必填" />
         </FormItem>
         <FormItem label="授业恩师：" prop="master">
-          <Select v-model="newUserInfo.master" placeholder="请选择" element-id="master">
+          <Select
+            v-model="newUserInfo.master"
+            placeholder="请选择"
+            element-id="master"
+          >
             <Option value="张三">张三</Option>
             <Option value="李四">李四</Option>
           </Select>
@@ -171,6 +209,10 @@
                 },
                 positionList: [],
                 newUserInfo: {
+                    name: '',
+                    mobile: '',
+                    code: '',
+                    remark: '',
                     positionCode: 'finance',
                     master: '张三'
                 },
@@ -280,7 +322,7 @@
             },
             handleOpenCreate () {
                 this.showCreate = true;
-                this.$refs.create.resetFields()
+                this.$refs.create.resetFields();
             },
             handleUserinfoCreate () {
                 this.$refs.creatUser.buttonLoading = false;
@@ -291,7 +333,7 @@
                             if (response.success) {
                                 this.$Message.info('保存成功');
                                 this.getUserinfoList();
-                                this.showCreate = false
+                                this.showCreate = false;
                             }
                         });
                     } else {
@@ -314,22 +356,12 @@
 .box {
   padding-left: 15px;
 }
-/*模块标题*/
-.module-title-wrapper {
-  height: 48px;
-  line-height: 48px;
-  border-bottom: 1px solid #e9eaec;
-  font-weight: 700;
-  background-color: #fff;
-}
+
 .mtb15 {
   margin: 15px 0;
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .user-info-list {
   height: 570px;
   overflow: auto;
