@@ -336,7 +336,7 @@
                 this.currentName = name;
             },
             getScheduleList () {
-                this.$get('/admin/user/schedule/page', {}, response => {
+                this.$get('/admin/schedule/page', {}, response => {
                     this.scheduleList = response.data.data;
                     this.currentName = response.data.data && response.data.data[0].name
                 });
