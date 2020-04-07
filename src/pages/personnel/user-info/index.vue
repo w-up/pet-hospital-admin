@@ -300,7 +300,7 @@
                         this.$post('/admin/user/save', this.userInfo, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
-                                this.reload()
+                                this.reload()// 调用局部刷新方法
                             } else {
                                 this.$Message.error(response.message);
                             }
