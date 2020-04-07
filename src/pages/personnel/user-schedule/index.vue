@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Row :gutter="16">
+    <Row>
       <Col span="5">
-        <Card>
+        <Card class="ptb0">
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">班次列表</span>
@@ -12,11 +12,11 @@
             <Col span="24">
               <List class="shift-list">
                 <ListItem
-                  v-for="(item, index) in list"
+                  v-for="(item, index) in scheduleList"
                   :key="index"
                   :class="item.name===currentName?'active':''"
                 >
-                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
+                  <p @click="switchList(item.name)" class="list">{{ item.name }}({{ item.beginTime }}~{{ item.endTime }})</p>
                 </ListItem>
               </List>
             </Col>
@@ -34,8 +34,8 @@
           </Row>
         </Card>
       </Col>
-      <Col span="19">
-        <Card>
+      <Col span="19" class="box">
+        <Card class="ptb0">
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">排班表</span>
@@ -138,16 +138,16 @@
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="添加班次" @on-ok="handleCreate">
-      <Form ref="create" :label-width="170">
-        <FormItem label="班次名称：">
-          <Input style="width:194px" />
+    <Modal  ref="creatModal" v-model="showCreate" title="添加班次" @on-ok="handleCreate" :loading="true">
+      <Form ref="createForm" :model="scheduleData" :rules="scheduleRules" :label-width="170">
+        <FormItem label="班次名称："  prop="name">
+          <Input style="width:194px" v-model="scheduleData.name"/>
         </FormItem>
-        <FormItem label="上班时间：">
-          <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
+        <FormItem label="上班时间：" prop="beginTime">
+          <TimePicker :steps="[1, 5]" format="HH:mm" v-model="scheduleData.beginTime"></TimePicker>
         </FormItem>
-        <FormItem label="下班时间：">
-          <TimePicker :steps="[1, 5]" format="HH:mm"></TimePicker>
+        <FormItem label="下班时间：" prop="endTime">
+          <TimePicker :steps="[1, 5]" format="HH:mm" v-model="scheduleData.endTime"></TimePicker>
         </FormItem>
       </Form>
     </Modal>
@@ -157,13 +157,25 @@
     export default {
         data () {
             return {
-                list: [
-                    { name: '早班（8:00~14:00）' },
-                    { name: '中班（8:00~14:00）' },
-                    { name: '晚班（14:00~20:00）' },
-                    { name: '夜班（20:00~4:00）' }
+                scheduleData: {
+                    name: '',
+                    beginTime: '',
+                    endTime: ''
+                },
+                scheduleRules: {
+                    name: [
+                        { required: true, message: '请输入班次名称', trigger: 'change' }
+                    ],
+                    beginTime: [
+                        { required: true, message: '请输入上班时间', trigger: 'change' }
+                    ],
+                    endTime: [
+                        { required: true, message: '请输入下班时间', trigger: 'change' }
+                    ]
+                },
+                scheduleList: [
                 ],
-                currentName: '早班（8:00~14:00）',
+                currentName: '晚班',
                 memberList: [
                     {
                         position: '护士',
@@ -302,14 +314,36 @@
         },
         methods: {
             handleOpenCreate () {
-                this.showCreate = true;
+                this.showCreate = true
+                this.$refs.createForm.resetFields()
             },
-            handleCreate () {},
+            handleCreate () {
+                this.$refs.creatModal.buttonLoading = false;
+                this.$refs.createForm.validate(valid => {
+                    if (valid) {
+                        this.$post('/admin/user/schedule/save', this.scheduleData, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getScheduleList();
+                                this.showCreate = false
+                            }
+                        });
+                    } else {
+                    }
+                });
+            },
             switchList (name) {
                 this.currentName = name;
+            },
+            getScheduleList () {
+                this.$get('/admin/user/schedule/page', {}, response => {
+                    this.scheduleList = response.data.data;
+                });
             }
         },
-        mounted () {}
+        mounted () {
+            this.getScheduleList()
+        }
     };
 </script>
 <style lang="less" scoped>
