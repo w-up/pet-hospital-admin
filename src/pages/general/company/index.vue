@@ -10,14 +10,15 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Input prefix="ios-search" placeholder="名称/住址/联系人/电话" />
+              <Input prefix="ios-search" placeholder="名称/住址/联系人/电话" v-model="nameLike"/>
             </Col>
           </Row>
           <Row class="mt6 noplr">
+             <Col v-if="this.list.length==0&&loadingList==false" span="24" class="ivu-text-center">暂无数据</Col>
             <Col span="24">
               <List class="company-list">
                 <ListItem v-for="(item, index) in list" :key="index" :class="item.name===currentName?'active':''">
-                    <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
+                    <p @click="switchList(item)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
@@ -27,7 +28,7 @@
               <Button type="error" >删除</Button>
             </Col>
             <Col span="12" class="ivu-text-right">
-              <Button type="primary" >+单位</Button>
+              <Button type="primary" @click="addUnti">+单位</Button>
             </Col>
           </Row>
         </Card>
@@ -41,36 +42,36 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Form ref="form" :model="data" :label-width="100">
-                <FormItem label="" prop="count" label-for="count">
-                  <Checkbox>是供应商</Checkbox>
-                  <Checkbox class="ml30">是客户</Checkbox>
+              <Form ref="form" :model="data" :label-width="100"  :rules="rules">
+                <FormItem label="">
+                  <Checkbox v-model="data.ifSupplier">是供应商</Checkbox>
+                  <Checkbox class="ml30" v-model="data.ifCustomer">是客户</Checkbox>
                 </FormItem>
-                <FormItem label="名称" prop="count" label-for="count">
-                  <Input v-model="data.name" placeholder="请输入" />
+                <FormItem label="名称" prop="name">
+                  <Input v-model="data.name" placeholder="必填" />
                 </FormItem>
-                <FormItem label="联系人" prop="count" label-for="count">
-                  <Input v-model="data.contactor" placeholder="请输入" />
+                <FormItem label="联系人" prop="contacts">
+                  <Input v-model="data.contacts" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="联系电话" prop="count" label-for="count">
+                <FormItem label="联系电话" prop="cellphone">
                   <Input v-model="data.cellphone" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="地址" prop="count" label-for="count">
+                <FormItem label="地址" prop="address">
                   <Input v-model="data.address" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="开户行" prop="count" label-for="count">
-                  <Input v-model="data.openBank" placeholder="请输入" />
+                <FormItem label="开户行" prop="bank">
+                  <Input v-model="data.bank" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="账号" prop="count" label-for="count">
-                  <Input v-model="data.account" placeholder="请输入" />
+                <FormItem label="账号" prop="bankAccount">
+                  <Input v-model="data.bankAccount" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="欠款" prop="count" label-for="count">
+                <FormItem label="欠款" prop="arrears">
                   <Input v-model="data.arrears" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="欠款额度" prop="count" label-for="count">
-                  <Input v-model="data.amount" placeholder="请输入" />
+                <FormItem label="欠款额度" prop="arrearsLimit">
+                  <Input v-model="data.arrearsLimit" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="备注" prop="count" label-for="count">
+                <FormItem label="备注" prop="remark">
                   <Input v-model="data.remark" type="textarea" placeholder="请输入" />
                 </FormItem>
               </Form>
@@ -78,7 +79,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
-              <Button type="primary" >编辑</Button>
+              <Button type="success" @click="handleSubmit">{{isAdd?'保存':'编辑'}}</Button>
             </Col>
           </Row>
         </Card>
@@ -91,26 +92,98 @@
         name: 'list-table-list',
         data () {
             return {
+                isAdd: false,
+                loadingList: true,
+                nameLike: '',
                 list: [
-                    { name: '青岛宠物有限公司' },
-                    { name: '上海哈哈有限公司' },
-                    { name: '深证腾讯公司' }
                 ],
                 currentName: '青岛宠物有限公司',
                 data: {
-                    name: '青岛宠物有限公司',
-                    contactor: '张三',
-                    cellphone: '18212121233',
-                    arrears: 3323
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '请输入名称', trigger: 'change' }
+                    ],
+                    cellphone: [
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    bankAccount: [
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    arrears: [
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ],
+                    arrearsLimit: [
+                        {
+                            type: 'string',
+                            pattern: /^\d+$/,
+                            message: '请输入数字',
+                            trigger: 'change'
+                        }
+                    ]
                 }
             };
         },
         methods: {
-            switchList (name) {
-                this.currentName = name
+            switchList (item) {
+                this.currentName = item.name
+                this.data = item
+                this.isAdd = false
+            },
+            getUnitList () {
+                var data = {
+                    nameLike: this.nameLike
+                }
+                this.$get('/admin/general/contact/unit/page', data, response => {
+                    if (response.data.data.length > 0) {
+                        this.list = response.data.data;
+                        this.currentName = response.data.data[0].name
+                        this.data = response.data.data[0]
+                    } else {
+                        this.list = [];
+                        this.currentName = ''
+                        this.data = {}
+                    }
+                    this.isAdd = false
+                    this.loadingList = false
+                });
+            },
+            addUnti () {
+                this.$refs.form.resetFields()
+                this.data = {};
+                this.isAdd = true
+            },
+            handleSubmit () {
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        this.$post('/admin/general/contact/unit/save', this.data, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getUnitList();
+                            }
+                        });
+                    } else {
+                    }
+                });
             }
         },
         mounted () {
+            this.getUnitList()
         }
     };
 </script>
