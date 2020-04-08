@@ -20,18 +20,19 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Input prefix="ios-search" />
+              <Input prefix="ios-search" v-model="nameLike" @on-change="getCheckList" clearable/>
             </Col>
           </Row>
           <Row class="mt6 noplr">
+            <Col v-if="this.list.length==0&&loadingList==false" span="24" class="ivu-text-center">暂无数据</Col>
             <Col span="24">
               <List class="check-list">
                 <ListItem
                   v-for="(item, index) in list"
                   :key="index"
-                  :class="item.name===currentName?'active':''"
+                  :class="item.id===currentId?'active':''"
                 >
-                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
+                  <p @click="switchList(item)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
@@ -71,10 +72,10 @@
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="添加分类" @on-ok="handleCreate">
-      <Form ref="create" :label-width="180">
-        <FormItem label="分类名称">
-          <Input style="width: 150px" />
+    <Modal ref="addCheckModal" v-model="showCreate"  :loading="true" title="添加分类" @on-ok="addCheckItem">
+      <Form ref="addCheckForm" :label-width="180" :model="checkItem" :rules="rules">
+        <FormItem label="分类名称" prop="name">
+          <Input style="width: 150px" v-model="checkItem.name"/>
         </FormItem>
         <FormItem label="结果类型" style="margin-bottom: 0px;">
           <Checkbox>有参考值范围结果类型</Checkbox>
@@ -361,15 +362,20 @@
         name: 'list-table-list',
         data () {
             return {
+                checkItem: {
+                    name: ''
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '请输入名称', trigger: 'change' }
+                    ]
+                },
+                nameLike: '',
+                loadingList: true,
                 tabActiveKey: 'goods-combination',
                 list: [
-                    { name: '血常规' },
-                    { name: '尿常规' },
-                    { name: '生化检验' },
-                    { name: '内分泌及快速检测' },
-                    { name: '电解质及血液气体分析' }
                 ],
-                currentName: '电解质及血液气体分析',
+                currentId: '',
                 columns1: [
                     {
                         type: 'selection',
@@ -502,6 +508,31 @@
             };
         },
         methods: {
+            getCheckList () {
+                var data = {
+                    // nameLike: this.nameLike
+                }
+                this.$get('/admin/general/checkSetting/category/page', data, response => {
+                    this.list = response.data.data;
+                    this.currentId = response.data.data[0].id || ''
+                    this.loadingList = false
+                });
+            },
+            addCheckItem () {
+                this.$refs.addCheckModal.buttonLoading = false;
+                this.$refs.addCheckForm.validate(valid => {
+                    if (valid) {
+                        this.$post('/admin/general/checkSetting/category/save', this.checkItem, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getCheckList();
+                                this.showCreate = false;
+                            }
+                        });
+                    } else {
+                    }
+                });
+            },
             handleOpenCreate () {
                 this.showCreate = true;
             },
@@ -509,8 +540,8 @@
                 this.showCreateSingle = true;
             },
             handleCreate () {},
-            switchList (name) {
-                this.currentName = name;
+            switchList (item) {
+                this.currentId = item.id;
             },
             addSingleNext () {
                 if (this.checkTypeSingle === '有参考值范围结果类型') {
@@ -521,7 +552,9 @@
             },
             handleClose () {}
         },
-        mounted () {}
+        mounted () {
+            this.getCheckList()
+        }
     };
 </script>
 <style lang="less" scoped>
