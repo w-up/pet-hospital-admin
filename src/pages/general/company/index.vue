@@ -10,14 +10,14 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Input prefix="ios-search" placeholder="名称/住址/联系人/电话" v-model="nameLike"/>
+              <Input prefix="ios-search" placeholder="名称/住址/联系人/电话" v-model="nameLike" @on-change="getUnitList()" clearable/>
             </Col>
           </Row>
           <Row class="mt6 noplr">
              <Col v-if="this.list.length==0&&loadingList==false" span="24" class="ivu-text-center">暂无数据</Col>
             <Col span="24">
               <List class="company-list">
-                <ListItem v-for="(item, index) in list" :key="index" :class="item.name===currentName?'active':''">
+                <ListItem v-for="(item, index) in list" :key="index" :class="item.id===currentId?'active':''">
                     <p @click="switchList(item)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
@@ -79,7 +79,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
-              <Button type="success" @click="handleSubmit">{{isAdd?'保存':'编辑'}}</Button>
+              <Button type="success" @click="handleSubmit">{{isAdd?'添加':'编辑'}}</Button>
             </Col>
           </Row>
         </Card>
@@ -97,7 +97,7 @@
                 nameLike: '',
                 list: [
                 ],
-                currentName: '青岛宠物有限公司',
+                currentId: '',
                 data: {
                 },
                 rules: {
@@ -106,7 +106,6 @@
                     ],
                     cellphone: [
                         {
-                            type: 'string',
                             pattern: /^\d+$/,
                             message: '请输入数字',
                             trigger: 'change'
@@ -114,7 +113,6 @@
                     ],
                     bankAccount: [
                         {
-                            type: 'string',
                             pattern: /^\d+$/,
                             message: '请输入数字',
                             trigger: 'change'
@@ -122,7 +120,6 @@
                     ],
                     arrears: [
                         {
-                            type: 'string',
                             pattern: /^\d+$/,
                             message: '请输入数字',
                             trigger: 'change'
@@ -130,7 +127,6 @@
                     ],
                     arrearsLimit: [
                         {
-                            type: 'string',
                             pattern: /^\d+$/,
                             message: '请输入数字',
                             trigger: 'change'
@@ -141,22 +137,24 @@
         },
         methods: {
             switchList (item) {
-                this.currentName = item.name
+                this.currentId = item.id
                 this.data = item
                 this.isAdd = false
             },
-            getUnitList () {
+            getUnitList (isAfterSave) {
                 var data = {
                     nameLike: this.nameLike
                 }
                 this.$get('/admin/general/contact/unit/page', data, response => {
                     if (response.data.data.length > 0) {
                         this.list = response.data.data;
-                        this.currentName = response.data.data[0].name
-                        this.data = response.data.data[0]
+                        if (!isAfterSave) {
+                            this.data = response.data.data[0]
+                            this.currentId = response.data.data[0].id
+                        }
                     } else {
                         this.list = [];
-                        this.currentName = ''
+                        this.currentId = ''
                         this.data = {}
                     }
                     this.isAdd = false
@@ -164,9 +162,9 @@
                 });
             },
             addUnti () {
-                this.$refs.form.resetFields()
-                this.data = {};
+                this.data = {}
                 this.isAdd = true
+                this.currentId = ''
             },
             handleSubmit () {
                 this.$refs.form.validate(valid => {
@@ -174,7 +172,9 @@
                         this.$post('/admin/general/contact/unit/save', this.data, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
-                                this.getUnitList();
+                                this.data = response.data
+                                this.currentId = response.data.id
+                                this.getUnitList(true);
                             }
                         });
                     } else {
