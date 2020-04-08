@@ -14,9 +14,12 @@
                 <ListItem
                   v-for="(item, index) in scheduleList"
                   :key="index"
-                  :class="item.name===currentName?'active':''"
+                  :class="item.id===scheduleData.id?'active':''"
                 >
-                  <p @click="switchList(item.name)" class="list">{{ item.name }}({{ item.beginTime }}~{{ item.endTime }})</p>
+                  <p
+                    @click="switchList(item)"
+                    class="list"
+                  >{{ item.name }}({{ item.beginTime }}~{{ item.endTime }})</p>
                 </ListItem>
               </List>
             </Col>
@@ -26,7 +29,7 @@
               <Button type="success" @click="handleOpenCreate">+添加班次</Button>
             </Col>
             <Col span="7" class="ivu-text-center">
-              <Button type="primary">编辑</Button>
+              <Button type="primary" @click="handleOpenEdit">编辑</Button>
             </Col>
             <Col span="7" class="ivu-text-center">
               <Button type="error">删除</Button>
@@ -46,7 +49,7 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th>职位</th>
+                    <!-- <th>职位</th> -->
                     <th>人员</th>
                     <th>周一</th>
                     <th>周二</th>
@@ -57,7 +60,25 @@
                     <th>周日</th>
                   </tr>
                 </thead>
-                <tbody v-for="(item, index) in memberList" :key="index">
+                <!-- 没有职位的tbody--暂时 -->
+                <tbody v-if="memberList.length>0">
+                  <tr v-for="(item, index) in memberList" :key="index">
+                    <td>{{item.userName}}</td>
+                    <template v-for="(day) in weekDay">
+                      <td @click="changeArrange(index,day)" :key="day">
+                        <Icon v-if="item[day]" type="md-checkmark-circle" size="25" />
+                        <Icon v-else type="md-close-circle" size="25" />
+                      </td>
+                    </template>
+                  </tr>
+                </tbody>
+                <tbody v-else>
+                  <tr>
+                    <td colspan="8">暂无数据</td>
+                  </tr>
+                </tbody>
+                <!-- 有职位的tbody-等返回的数据有职位时再放出来 -->
+                <!-- <tbody v-for="(item, index) in memberList" :key="index">
                   <tr>
                     <td :rowspan="item.list.length">{{item.position}}</td>
                     <td>{{item.list[0].name}}</td>
@@ -123,7 +144,7 @@
                       </td>
                     </tr>
                   </template>
-                </tbody>
+                </tbody>-->
               </table>
               <div class="ivu-mt ivu-text-right">
                 <Page :total="memberList.length" :current.sync="current" />
@@ -132,22 +153,35 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="warning">保存</Button>
+              <Button type="warning" @click="saveUserSchedule">保存</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal  ref="creatModal" v-model="showCreate" title="添加班次" @on-ok="handleCreate" :loading="true">
+    <Modal ref="creatModal" v-model="showCreate" @on-ok="handleCreate" :loading="true">
+      <div slot="header">{{isAddSchedule?'添加班次':'编辑班次'}}</div>
       <Form ref="createForm" :model="scheduleData" :rules="scheduleRules" :label-width="170">
-        <FormItem label="班次名称："  prop="name">
-          <Input style="width:194px" v-model="scheduleData.name"/>
+        <FormItem label="班次名称：" prop="name">
+          <Input style="width:194px" v-model="scheduleData.name" />
         </FormItem>
         <FormItem label="上班时间：" prop="beginTime">
-          <TimePicker :steps="[1, 5]" format="HH:mm" v-model="scheduleData.beginTime"></TimePicker>
+          <TimePicker
+            :steps="[1, 5]"
+            format="HH:mm"
+            v-model="scheduleData.beginTime"
+            :disabled-hours="startHoursDis"
+            @on-change="startTimeChange"
+          ></TimePicker>
         </FormItem>
         <FormItem label="下班时间：" prop="endTime">
-          <TimePicker :steps="[1, 5]" format="HH:mm" v-model="scheduleData.endTime"></TimePicker>
+          <TimePicker
+            :steps="[1, 5]"
+            format="HH:mm"
+            v-model="scheduleData.endTime"
+            :disabled-hours="endHoursDis"
+            @on-change="endTimeChange"
+          ></TimePicker>
         </FormItem>
       </Form>
     </Modal>
@@ -157,7 +191,21 @@
     export default {
         data () {
             return {
+                weekDay: [
+                    'monday',
+                    'tuesday',
+                    'wednesday',
+                    'thursday',
+                    'friday',
+                    'saturday',
+                    'sunday'
+                ],
+                startHoursDis: [],
+                endHoursDis: [],
+                allHours: [],
+                isAddSchedule: false,
                 scheduleData: {
+                    id: '',
                     name: '',
                     beginTime: '',
                     endTime: ''
@@ -173,177 +221,174 @@
                         { required: true, message: '请输入下班时间', trigger: 'change' }
                     ]
                 },
-                scheduleList: [
-                ],
-                currentName: '',
+                scheduleList: [],
                 memberList: [
-                    {
-                        position: '护士',
-                        list: [
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    },
-                    {
-                        position: '医生',
-                        list: [
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    },
-                    {
-                        position: '医生',
-                        list: [
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    },
-                    {
-                        position: '助理',
-                        list: [
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '张三',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            },
-                            {
-                                name: '李四',
-                                monday: true,
-                                tuesday: true,
-                                wednesday: true,
-                                thursday: true,
-                                friday: true,
-                                saturday: true,
-                                sunday: true
-                            }
-                        ]
-                    }
+                    // {
+                    //     position: '护士',
+                    //     list: [
+                    //         {
+                    //             name: '张三',
+                    //             monday: true,
+                    //             tuesday: true,
+                    //             wednesday: true,
+                    //             thursday: true,
+                    //             friday: true,
+                    //             saturday: true,
+                    //             sunday: true
+                    //         },
+                    //         {
+                    //             name: '李四',
+                    //             monday: true,
+                    //             tuesday: true,
+                    //             wednesday: true,
+                    //             thursday: true,
+                    //             friday: true,
+                    //             saturday: true,
+                    //             sunday: true
+                    //         }
+                    //     ]
+                    // }
                 ],
                 current: 1,
                 showCreate: false
             };
         },
         methods: {
+            setAllHours () {
+                for (var i = 0; i < 24; i++) {
+                    this.allHours.push(i);
+                }
+            },
+            startTimeChange (e) {
+                let ar = this.allHours.filter(function (elem) {
+                    return elem < Number(e.split(':')[0]);
+                });
+                this.endHoursDis = ar;
+            },
+            endTimeChange (e) {
+                let ar = this.allHours.filter(function (elem) {
+                    return elem > Number(e.split(':')[0]);
+                });
+                this.startHoursDis = ar;
+            },
             handleOpenCreate () {
-                this.showCreate = true
-                this.$refs.createForm.resetFields()
+                this.isAddSchedule = true;
+                this.$refs.createForm.resetFields();
+                this.scheduleData = {};
+                this.startHoursDis = [];
+                this.endHoursDis = [];
+                this.showCreate = true;
+            },
+            handleOpenEdit () {
+                this.isAddSchedule = false;
+                let vm = this;
+                let ar = this.allHours.filter(function (elem) {
+                    return elem < Number(vm.scheduleData.beginTime.split(':')[0]);
+                });
+                this.endHoursDis = ar;
+                let er = this.allHours.filter(function (elem) {
+                    return elem > Number(vm.scheduleData.endTime.split(':')[0]);
+                });
+                this.startHoursDis = er;
+                this.showCreate = true;
             },
             handleCreate () {
                 this.$refs.creatModal.buttonLoading = false;
                 this.$refs.createForm.validate(valid => {
                     if (valid) {
-                        this.$post('/admin/user/schedule/save', this.scheduleData, response => {
-                            if (response.success) {
-                                this.$Message.info('保存成功');
-                                this.getScheduleList();
-                                this.showCreate = false
+                        this.$post(
+                            '/admin/general/schedule/save',
+                            this.scheduleData,
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getScheduleList();
+                                    this.showCreate = false;
+                                }
                             }
-                        });
+                        );
                     } else {
                     }
                 });
             },
-            switchList (name) {
-                this.currentName = name;
+            saveUserSchedule () {
+                // 处理数据后保存
+                for (var i = 0; i < this.memberList.length; i++) {
+                    var obj = {}
+                    obj.id = this.memberList[i].id
+                    obj.userId = this.memberList[i].userId
+                    obj.scheduleId = this.memberList[i].scheduleId
+                    var weekDayStr = ''
+                    var weekDayArrange = ''
+                    for (var z = 0; z < this.weekDay.length; z++) {
+                        if (
+                            this.memberList[i][this.weekDay[z]]
+                        ) {
+                            weekDayStr += weekDayStr === '' ? this.weekDay[z] : ',' + this.weekDay[z]
+                            weekDayArrange += weekDayArrange === '' ? 1 : ',' + 1
+                        }
+                    }
+                    obj.weekDay = weekDayStr
+                    obj.arrange = weekDayArrange
+                    this.$post(
+                        '/admin/user/schedule/save',
+                        obj,
+                        response => {
+                            if (response.success) {
+                            }
+                        }
+                    )
+                }
+                this.$Message.info('保存成功');
+            },
+            switchList (item) {
+                this.scheduleData = JSON.parse(JSON.stringify(item));
+                this.getUserScheduleList()
             },
             getScheduleList () {
-                this.$get('/admin/schedule/page', {}, response => {
+                this.$get('/admin/general/schedule/page', {}, response => {
                     this.scheduleList = response.data.data;
-                    this.currentName = response.data.data && response.data.data[0].name
+                    this.scheduleData =
+                        response.data.data &&
+                        JSON.parse(JSON.stringify(response.data.data[0]));
                 });
+            },
+            getUserScheduleList () {
+                var data = {
+                    scheduleId: this.scheduleData.id
+                }
+                this.$get('/admin/user/schedule/page', data, response => {
+                    this.memberList = response.data.data;
+                    if (response.data.data.length === 0) {
+                        return false
+                    }
+                    // 处理表格数据
+                    for (var i = 0; i < this.memberList.length; i++) {
+                        for (var j = 0; j < this.memberList[i].details.length; j++) {
+                            for (var z = 0; z < this.weekDay.length; z++) {
+                                if (
+                                    this.memberList[i].details[j].weekDay.code === this.weekDay[z]
+                                ) {
+                                    this.memberList[i][this.weekDay[z]] = true;
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            changeArrange (index, day) {
+                this.memberList[index][day] = !this.memberList[index][day]
+                console.log(this.memberList)
+                this.$forceUpdate()
             }
         },
         mounted () {
-            this.getScheduleList()
+            this.getScheduleList();
+            this.setAllHours();
+            setTimeout(() => {
+                // 设置延迟执行
+                this.getUserScheduleList();
+            }, 800)
         }
     };
 </script>
