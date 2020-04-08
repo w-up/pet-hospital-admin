@@ -83,7 +83,7 @@
     <Modal v-model="editCombination" title="商品组合设置" @on-ok="handleCreate" width="80%">
       <Row>
         <Col span="5">
-
+          <Card>
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="24">
                 <span class="module-title">消费项目分类</span>
@@ -97,7 +97,7 @@
           </Card>
         </Col>
         <Col span="19" class="box">
-
+          <Card>
             <Row
               type="flex"
               justify="center"
@@ -125,7 +125,7 @@
       </Row>
       <Row class="mtb15">
         <Col span="24">
-
+          <Card>
             <Row
               type="flex"
               justify="center"

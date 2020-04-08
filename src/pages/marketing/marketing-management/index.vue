@@ -8,12 +8,19 @@
               <span class="module-title">营销活动列表</span>
             </Col>
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="mtb15">
-            <Col span="24">
-              <Input prefix="ios-search" />
-            </Col>
+          <Row class="ivu-mt">
+            <Input prefix="ios-search" placeholder="活动名称搜索" />
           </Row>
-          <Row :gutter="16" type="flex" justify="end" class="mtb15">
+          <Row class="mt6">
+            <Select placeholder="活动类型">
+              <Option value="0">中国</Option>
+              <Option value="1">美国</Option>
+            </Select>
+          </Row>
+          <Row class="mt6">
+            <DatePicker type="daterange" placeholder="开始结束日期" style="width: 100%"></DatePicker>
+          </Row>
+          <Row class="mtb15">
             <Col span="24">
               <Tree :data="activityList"></Tree>
             </Col>
@@ -57,9 +64,7 @@
                     <span slot="append">元</span>
                   </Input>
                 </Col>
-                <Col span="1" class="ivu-text-center">
-                  ，
-                </Col>
+                <Col span="1" class="ivu-text-center">，</Col>
                 <Col span="6">
                   <Input size="small" placeholder="必填">
                     <span slot="prepend">立减</span>
@@ -88,9 +93,7 @@
                     <span slot="append">件</span>
                   </Input>
                 </Col>
-                <Col span="1" class="ivu-text-center">
-                  ，
-                </Col>
+                <Col span="1" class="ivu-text-center">，</Col>
                 <Col span="6">
                   <Input size="small">
                     <span slot="prepend">打</span>
@@ -98,7 +101,7 @@
                   </Input>
                 </Col>
               </Row>
-                 <Row>
+              <Row>
                 <Col span="2">活动时间</Col>
                 <Col span="4">
                   <DatePicker size="small" type="datetime" placeholder="选择开始时间"></DatePicker>
@@ -135,7 +138,7 @@
     <Modal v-model="editCombination" title="商品组合设置" @on-ok="handleCreate" width="80%">
       <Row>
         <Col span="5">
-
+          <Card>
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="24">
                 <span class="module-title">消费项目分类</span>
@@ -149,7 +152,7 @@
           </Card>
         </Col>
         <Col span="19" class="box">
-
+          <Card>
             <Row
               type="flex"
               justify="center"
@@ -177,7 +180,7 @@
       </Row>
       <Row class="mtb15">
         <Col span="24">
-
+          <Card>
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="20">
                 <span class="module-title">消费单</span>
@@ -450,7 +453,7 @@
 }
 
 .mtb15 {
-  margin: 15px 0;
+  margin: 16px 0;
 }
 </style>
 <style lang="less">
