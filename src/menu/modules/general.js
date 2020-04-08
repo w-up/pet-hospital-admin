@@ -7,6 +7,10 @@ export default {
     icon: 'md-settings',
     children: [
         {
+            path: `${pre}module`,
+            title: '模块管理'
+        },
+        {
             path: `${pre}consumption-setting`,
             title: '消费设置'
         },

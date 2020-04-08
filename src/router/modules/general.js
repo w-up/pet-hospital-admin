@@ -11,11 +11,20 @@ export default {
     path: '/general',
     name: 'general',
     redirect: {
-        name: `${pre}consumption-setting`
+        name: `${pre}module`
     },
     meta,
     component: BasicLayout,
     children: [
+        {
+            path: 'module',
+            name: `${pre}module`,
+            meta: {
+                ...meta,
+                title: '模块管理'
+            },
+            component: () => import('@/pages/general/module')
+        },
         {
             path: 'consumption-setting',
             name: `${pre}consumption-setting`,
