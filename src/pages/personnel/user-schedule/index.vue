@@ -2,7 +2,7 @@
   <div>
     <Row>
       <Col span="5">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">班次列表</span>
@@ -35,7 +35,7 @@
         </Card>
       </Col>
       <Col span="19" class="box">
-        <Card class="ptb0">
+        <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
               <span class="module-title">排班表</span>

@@ -961,9 +961,6 @@
   padding: 0 16px;
   margin: 0;
 }
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 //使所有页面的表格的td和th都居中
 .ivu-table-wrapper td {
   text-align: center;

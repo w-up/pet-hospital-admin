@@ -116,9 +116,6 @@
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .leftRecordCard .ivu-card-body {
   height: 570px;
 }

@@ -124,9 +124,6 @@
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .company-list {
   height: 550px;
   overflow: auto;

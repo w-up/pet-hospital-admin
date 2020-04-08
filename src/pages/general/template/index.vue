@@ -139,9 +139,6 @@
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .item-list {
   height: 265px;
   overflow: auto;

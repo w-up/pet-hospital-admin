@@ -176,9 +176,6 @@
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .centerSty td {
   text-align: center;
 }

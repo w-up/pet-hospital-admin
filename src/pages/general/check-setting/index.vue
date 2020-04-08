@@ -550,9 +550,6 @@
 }
 </style>
 <style lang="less">
-.ptb0 .ivu-card-body {
-  padding: 0 16px;
-}
 .check-list {
   height: 265px;
   overflow: auto;
