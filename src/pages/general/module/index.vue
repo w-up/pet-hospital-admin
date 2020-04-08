@@ -20,8 +20,8 @@
         <FormItem label="名称：" prop="name">
           <Input v-model="moduleInfo.name" placeholder="必填" />
         </FormItem>
-        <FormItem label="路径：" prop="modulePath">
-          <Input v-model="moduleInfo.modulePath" placeholder="必填" />
+        <FormItem label="路径：">
+          <Input v-model="moduleInfo.modulePath"/>
         </FormItem>
       </Form>
     </Modal>
@@ -43,9 +43,6 @@
                     ],
                     name: [
                         { required: true, message: '请输入模块名称', trigger: 'change' }
-                    ],
-                    modulePath: [
-                        { required: true, message: '请输入路径', trigger: 'change' }
                     ]
                 },
                 moduleColumns: [
@@ -98,6 +95,7 @@
         methods: {
             showModuleModal () {
                 this.$refs.createModuleForm.resetFields()
+                this.moduleInfo = {}
                 this.showCreatModuleModal = true
             },
             getModuleList () {
