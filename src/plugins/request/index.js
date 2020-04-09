@@ -55,6 +55,9 @@ service.interceptors.request.use(
     config => {
         // post请求的参数需要用qs.stringify序列化
         config.data = config.method === 'post' ? Qs.stringify(config.data, { indices: false }) : null
+        config.paramsSerializer = function (params) {
+            return Qs.stringify(params, { arrayFormat: 'repeat' })
+        }
         // 在请求发送之前做一些处理
         const token = util.cookies.get('token');
         // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
