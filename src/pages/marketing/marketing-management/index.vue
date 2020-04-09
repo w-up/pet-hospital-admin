@@ -9,10 +9,21 @@
             </Col>
           </Row>
           <Row class="ivu-mt">
-            <Input prefix="ios-search" v-model="search.nameLike" @on-change="getMarketingList" placeholder="活动名称搜索" clearable />
+            <Input
+              prefix="ios-search"
+              v-model="search.nameLike"
+              @on-change="getMarketingList"
+              placeholder="活动名称搜索"
+              clearable
+            />
           </Row>
           <Row class="mt6">
-            <Select placeholder="活动类型" v-model="search.type" @on-change="getMarketingList" clearable>
+            <Select
+              placeholder="活动类型"
+              v-model="search.type"
+              @on-change="getMarketingList"
+              clearable
+            >
               <Option value="fullReduction">满减</Option>
               <Option value="discount">打折</Option>
               <Option value="buyMore">多买优惠</Option>
@@ -40,7 +51,7 @@
               <Button type="primary" @click="handleTermination">终止活动</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="error" @click="handleDeleted">删除</Button>
+              <Button type="error" @click="handleRemove">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -52,7 +63,7 @@
               <span class="module-title">活动详情</span>
             </Col>
           </Row>
-          <Row type="flex" class="mtb15">
+          <Row :gutter="16" type="flex" class="mtb15">
             <Col span="18">
               <Form
                 ref="marketingForm"
@@ -193,6 +204,32 @@
                 </Row>
               </Form>
             </Col>
+            <Col span="6">
+              <Card>
+                <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
+                  <Col span="12">
+                    <span class="module-title">参与医院列表</span>
+                  </Col>
+                  <Col span="12" class="ivu-text-right">
+                    <Button type="warning" size="small" @click="addHospitalModal=true">添加医院</Button>
+                  </Col>
+                </Row>
+                <Row class="noplr">
+                  <Col v-if="joinHospitals.length==0" span="24" class="ivu-mt ivu-text-center">暂无数据</Col>
+                  <Col span="24">
+                    <List class="check-list">
+                      <ListItem
+                        v-for="(item, index) in joinHospitals"
+                        :key="index"
+                        :class="item.id===selectHospitalId?'active':''"
+                      >
+                        <p @click="selectHospitalId=item.id" class="list">{{ item.name }}</p>
+                      </ListItem>
+                    </List>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
           </Row>
         </Card>
         <Card class="ivu-mt">
@@ -241,7 +278,6 @@
             <Row
               type="flex"
               justify="center"
-              :gutter="1"
               align="top"
               class-name="module-title-wrapper"
             >
@@ -283,6 +319,50 @@
         </Col>
       </Row>
     </Modal>
+    <Modal title="删除" v-model="removeModal" @on-ok="removeMarketing">
+      <div>确认删除吗？</div>
+    </Modal>
+    <Modal title="终止活动" v-model="terminationModal" @on-ok="terminationMarketing">
+      <div>确认终止吗？</div>
+    </Modal>
+    <Modal v-model="addHospitalModal" title="添加医院" width="50%">
+      <Row :gutter="16">
+        <Col span="8">
+          <Row class-name="module-title-wrapper">
+            <Col span="24">
+              <span class="module-title">已添加医院</span>
+            </Col>
+          </Row>
+          <Row class="joinHospitals">
+            <Col v-if="joinHospitals.length==0" span="24" class="ivu-mt ivu-text-center">暂无数据</Col>
+            <Col span="24">
+              <List class="check-list">
+                <ListItem
+                  v-for="(item, index) in joinHospitals"
+                  :key="index"
+                  :class="item.id===selectHospitalId?'active':''"
+                >
+                  <p @click="selectHospitalId=item.id" class="list">{{ item.name }}</p>
+                </ListItem>
+              </List>
+            </Col>
+          </Row>
+        </Col>
+        <Col span="16">
+          <Row class-name="module-title-wrapper">
+            <Col span="24">
+              <span class="module-title">医院列表</span>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+              <Table border :columns="hospitalListColumns" :data="hospitalList"></Table>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      <div slot="footer"></div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -294,6 +374,10 @@
                 if (value === '') {
                     callback(new Error('必填项'));
                 } else {
+                    var r = /^[1-9]\d*$/;
+                    if (value !== '0' && !r.test(value)) {
+                        callback(new Error('请输入整数'));
+                    }
                     callback();
                 }
             };
@@ -301,6 +385,13 @@
                 if (value === '') {
                     callback(new Error('必填项'));
                 } else {
+                    var r = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/;
+                    if (!r.test(value)) {
+                        callback(new Error('请输入数字，最多保留两位小数'));
+                    }
+                    if (this.marketingForm.type !== 'fullReduction' && value > 10) {
+                        callback(new Error('折扣不能大于10'));
+                    }
                     callback();
                 }
             };
@@ -529,7 +620,8 @@
                     limit: '',
                     discount: '',
                     startDate: '',
-                    endDate: ''
+                    endDate: '',
+                    joinHospitalIds: []
                 },
                 rules: {
                     name: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
@@ -552,7 +644,69 @@
                             trigger: 'blur'
                         }
                     ]
-                }
+                },
+                removeModal: false,
+                terminationModal: false,
+                selectHospitalId: '',
+                hospitalList: [],
+                joinHospitals: [],
+                hospitalListColumns: [
+                    {
+                        title: '医院',
+                        minWidth: 84,
+                        key: 'name'
+                    },
+                    {
+                        title: '操作',
+                        minWidth: 84,
+                        render: (h, params) => {
+                            let flag = false
+                            let arr = this.joinHospitals.map(item => item.id);
+                            if (arr.indexOf(params.row.id) > -1) {
+                                flag = true
+                            }
+                            return h('div', [
+                                h(
+                                    'Button',
+                                    {
+                                        props: {
+                                            type: 'info',
+                                            size: 'small'
+                                        },
+                                        style: {
+                                            display: flag ? 'none' : ''
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.joinHospitals.push(params.row)
+                                            }
+                                        }
+                                    },
+                                    '添加'
+                                ),
+                                h(
+                                    'Button',
+                                    {
+                                        props: {
+                                            type: 'error',
+                                            size: 'small'
+                                        },
+                                        style: {
+                                            display: flag ? '' : 'none'
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.joinHospitals.splice(arr.indexOf(params.row.id), 1)
+                                            }
+                                        }
+                                    },
+                                    '删除'
+                                )
+                            ]);
+                        }
+                    }
+                ],
+                addHospitalModal: false
             };
         },
         methods: {
@@ -562,12 +716,13 @@
             handleCreate () {},
             handleAdd () {
                 this.$refs.marketingForm.resetFields();
+                this.marketingForm.id = ''
             },
             getDateRange (e) {
                 if (e != null && e.length > 1) {
-                    this.search.startDate = e[0]
-                    this.search.endDate = e[1]
-                    this.getMarketingList()
+                    this.search.startDate = e[0];
+                    this.search.endDate = e[1];
+                    this.getMarketingList();
                 }
             },
             getChild (data) {
@@ -575,6 +730,7 @@
                 obj.type = obj.type && obj.type.code;
                 obj.status = obj.status && obj.status.code;
                 this.marketingForm = obj;
+                this.joinHospitals = obj.joinHospitals || []
             },
             startDateChange (e) {
                 this.endDateOptions = {
@@ -595,7 +751,6 @@
                 this.$set(this.marketingForm, 'endDate', e);
             },
             getMarketingList () {
-                console.log(this.search);
                 this.$get('/admin/general/marketing/page', this.search, response => {
                     var rtn = response.data.data;
                     // 处理左侧树数据
@@ -663,6 +818,11 @@
                         'yyyy-MM-dd'
                     );
                 }
+
+                this.marketingForm.joinHospitalIds = []
+                this.joinHospitals.forEach(element => {
+                    this.marketingForm.joinHospitalIds.push(element.id)
+                });
                 this.$refs.marketingForm.validate(valid => {
                     if (valid) {
                         this.$post(
@@ -685,28 +845,44 @@
                     this.$Message.error('请选择要终止的活动');
                     return false;
                 }
+                this.terminationModal = true;
+            },
+            terminationMarketing () {
                 var data = {
                     id: this.marketingForm.id,
                     status: 'termination'
-                }
+                };
                 this.$post('/admin/general/marketing/save', data, response => {
                     this.$Message.info('终止成功');
                     this.reload(); // 调用局部刷新方法
-                })
+                });
             },
-            handleDeleted () {
+            handleRemove () {
                 if (this.marketingForm.id == null || this.marketingForm.id === '') {
                     this.$Message.error('请选择要删除的数据');
                     return false;
                 }
-                this.$get('/admin/general/marketing/remove/' + this.marketingForm.id, {}, response => {
-                    this.$Message.info('删除成功');
-                    this.reload(); // 调用局部刷新方法
-                })
+                this.removeModal = true;
+            },
+            removeMarketing () {
+                this.$get(
+                    '/admin/general/marketing/remove/' + this.marketingForm.id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.reload(); // 调用局部刷新方法
+                    }
+                );
+            },
+            getHospitalList () {
+                this.$get('/admin/hospital/page', {}, response => {
+                    this.hospitalList = response.data.data;
+                });
             }
         },
         mounted () {
             this.getMarketingList();
+            this.getHospitalList();
         }
     };
 </script>
@@ -740,5 +916,10 @@
 .lb0 .ivu-form-item-content {
   margin: 1px 0;
   margin-left: 0 !important;
+}
+.joinHospitals {
+  border: 1px solid #dcdee2;
+  min-height: 232px;
+  overflow: auto;
 }
 </style>
