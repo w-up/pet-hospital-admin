@@ -617,6 +617,7 @@
                     hospitalId: '',
                     name: '',
                     type: 'fullReduction',
+                    status: 'normal',
                     limit: '',
                     discount: '',
                     startDate: '',
