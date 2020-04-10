@@ -40,6 +40,8 @@ import './libs/iview-pro/iview-pro.css';
 
 import api from './api'
 
+import _ from 'lodash';
+
 if (window) window.$t = (key, value) => i18n.t(key, value);
 
 Vue.use(plugins);
@@ -55,6 +57,7 @@ Vue.component('i-link', iLink);
  */
 Vue.prototype.$get = api.get;
 Vue.prototype.$post = api.post;
+Vue.prototype._ = _;
 
 new Vue({
     mixins: [mixinApp],

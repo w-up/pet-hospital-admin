@@ -727,11 +727,15 @@
                 }
             },
             getChild (data) {
-                var obj = JSON.parse(JSON.stringify(data[0]));
-                obj.type = obj.type && obj.type.code;
-                obj.status = obj.status && obj.status.code;
-                this.marketingForm = obj;
-                this.joinHospitals = obj.joinHospitals || []
+                if (data && data.length > 0) {
+                    var obj = JSON.parse(JSON.stringify(data[0]));
+                    obj.type = obj.type && obj.type.code;
+                    obj.status = obj.status && obj.status.code;
+                    this.marketingForm = obj;
+                    this.joinHospitals = obj.joinHospitals || []
+                } else {
+                    this.marketingForm.id = ''
+                }
             },
             startDateChange (e) {
                 this.endDateOptions = {
