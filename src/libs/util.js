@@ -79,3 +79,40 @@ export const formatDate = (date, fmt) => {
 export const padLeftZero = (str) => {
     return ('00' + str).substr(str.length)
 }
+
+/**
+* list转成树
+* @params list     代转化数组
+* @params parentId 起始节点
+*/
+export const listToTree = (list, parentId) => {
+    let items = {}
+    // 获取每个节点的直属子节点，*记住是直属，不是所有子节点
+    for (let i = 0; i < list.length; i++) {
+        let key = list[i].parentId
+        if (items[key]) {
+            items[key].push(list[i])
+        } else {
+            items[key] = []
+            items[key].push(list[i])
+        }
+    }
+    return formatTree(items, parentId)
+}
+
+/**
+ * 利用递归格式化每个节点
+ */
+export const formatTree = (items, parentId) => {
+    let result = []
+    if (!items[parentId]) {
+        return result
+    }
+    for (let t of items[parentId]) {
+        t.title = t.name
+        t.expand = true
+        t.children = formatTree(items, t.id)
+        result.push(t)
+    }
+    return result
+}
