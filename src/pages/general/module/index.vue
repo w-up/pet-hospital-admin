@@ -78,7 +78,7 @@
                                         },
                                         on: {
                                             click: () => {
-                                                this.moduleInfo = params.row
+                                                this.moduleInfo = JSON.parse(JSON.stringify(params.row))
                                                 this.showCreatModuleModal = true
                                             }
                                         }
