@@ -20,8 +20,8 @@
         <FormItem label="会员卡类型" prop="name" placeholder="必填">
           <Input style="width: 150px" v-model="membershipFormData.name"/>
         </FormItem>
-        <FormItem label="会员卡折扣" prop="disconut">
-          <Input style="width: 150px" v-model="membershipFormData.disconut"/>
+        <FormItem label="会员卡折扣" prop="discount">
+          <Input style="width: 150px" v-model="membershipFormData.discount"/>
         </FormItem>
         <FormItem label="是否积分">
           <RadioGroup  v-model="membershipFormData.hasIntegral">
@@ -97,7 +97,7 @@
                             trigger: 'change'
                         }
                     ],
-                    disconut: [
+                    discount: [
                         { validator: validateDiscount, trigger: 'blur' }
                     ]
                 },
@@ -123,7 +123,7 @@
                 membershipFormData: {
                     id: '',
                     name: '',
-                    disconut: '',
+                    discount: '',
                     hasIntegral: '',
                     consumptionAmount: '',
                     integral: '',
@@ -149,7 +149,7 @@
                     {
                         title: '会员卡折扣',
                         minWidth: 84,
-                        key: 'disconut'
+                        key: 'discount'
                     },
                     {
                         title: '是否积分',
