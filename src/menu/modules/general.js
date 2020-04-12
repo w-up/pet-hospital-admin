@@ -7,10 +7,6 @@ export default {
     icon: 'md-settings',
     children: [
         {
-            path: `${pre}module`,
-            title: '模块管理'
-        },
-        {
             path: `${pre}consumption-setting`,
             title: '消费设置'
         },
@@ -23,12 +19,12 @@ export default {
             title: '商品组合'
         },
         {
-            path: `${pre}discount-setting`,
-            title: '折扣设置'
-        },
-        {
             path: `${pre}card`,
             title: '卡片管理'
+        },
+        {
+            path: `${pre}discount-setting`,
+            title: '折扣设置'
         },
         {
             path: `${pre}pet`,
@@ -67,6 +63,10 @@ export default {
         {
             path: `${pre}reminder-setting`,
             title: '提醒设置'
+        },
+        {
+            path: `${pre}module`,
+            title: '模块管理'
         }
     ]
 }
