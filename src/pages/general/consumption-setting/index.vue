@@ -28,7 +28,12 @@
             </Row>
             <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
-                <Input prefix="ios-search" v-model="nameLike" @on-change="getGoodsCategoryList" clearable />
+                <Input
+                  prefix="ios-search"
+                  v-model="nameLike"
+                  @on-change="getGoodsCategoryList"
+                  clearable
+                />
               </Col>
             </Row>
             <Row :gutter="16" type="flex" justify="end" class="mtb15">
@@ -58,25 +63,39 @@
           <Card>
             <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
               <Col span="18">
-                <span class="module-title">{{addGoodsCategoryForm.name&&addGoodsCategoryForm.name||"挂号"}}</span>
+                <span
+                  class="module-title"
+                >{{addGoodsCategoryForm.name&&addGoodsCategoryForm.name||"挂号"}}</span>
               </Col>
               <Col span="6">
-                <Input prefix="ios-search" placeholder="名称/编码/条形码" />
+                <Input
+                  prefix="ios-search"
+                  placeholder="名称/编码/条形码"
+                  v-model="keywords"
+                  @on-change="getGoodsList"
+                  clearable
+                />
               </Col>
             </Row>
             <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
-                <Table border :columns="registeredListColumns" :data="registeredListData"></Table>
+                <Table border :columns="goodsColumns" :data="goodsList" @on-selection-change="handleSelect"></Table>
                 <div class="ivu-mt ivu-text-right">
-                  <Page :total="registeredListData.length" :current.sync="current" />
+                  <Page
+                    :total="total"
+                    :show-elevator="total/10>10"
+                    page-size:10
+                    @on-change="getGoodsList"
+                    :current.sync="current"
+                  />
                 </div>
               </Col>
             </Row>
             <Row type="flex" justify="end" class="mtb15">
               <Col span="14" class="ivu-text-left">
-                <Button type="success" @click="showAddProjectModal">+项目</Button>
-                <Button type="error">删除</Button>
-                <Button type="primary">修改</Button>
+                <Button type="success" @click="handleAddGoodsModal">+项目</Button>
+                <Button type="error" @click="handleRemoveGoods">删除</Button>
+                <Button type="primary" @click="handleEditGoods">修改</Button>
                 <Button type="warning">剪切</Button>
                 <Button type="info">粘贴</Button>
                 <Button>批量设置</Button>
@@ -148,9 +167,7 @@
         label-position="left"
         :label-width="100"
       >
-        <FormItem label="类别名称">
-          {{addGoodsCategoryForm.name}}
-        </FormItem>
+        <FormItem label="类别名称">{{addGoodsCategoryForm.name}}</FormItem>
         <FormItem label="夜间调价" prop="adjustPriceType">
           <RadioGroup v-model="addGoodsCategoryForm.adjustPriceType">
             <Radio label="proportion" style="margin-right:50px">按比例</Radio>
@@ -183,13 +200,14 @@
         <Button type="primary" @click="handleAddGoodsCategory('changeGoodsCategoryForm')">保存</Button>
       </div>
     </Modal>
-    <Modal v-model="addProject" title="添加项目" width="60%">
-      <addItem></addItem>
-      <div slot="footer">
-        <Button type="success" @click="addProject=false">保存</Button>
+    <!-- <Modal v-model="addGoodsModal" title="添加项目" width="60%"> -->
+    <!-- 添加项目modal -->
+    <addItem ref="addItem" :type="type" :categoryId="treeId"></addItem>
+    <!-- <div slot="footer">
+        <Button type="success" @click="handleAddGoods">保存</Button>
         <Button type="info">保存并继续</Button>
       </div>
-    </Modal>
+    </Modal>-->
     <Modal v-model="addPackageModal" title="添加套餐" @on-ok="handleCreate" width="80%">
       <Row>
         <Col span="5">
@@ -295,6 +313,9 @@
     <Modal title="删除" v-model="removeModal" @on-ok="removeGoodsCategory">
       <div>确认删除吗？</div>
     </Modal>
+    <Modal title="删除" v-model="removeGoodsModal" @on-ok="removeGoods">
+      <div>确认删除商品吗？</div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -317,7 +338,7 @@
             return {
                 resource: this.$store.state.admin.user.resource,
                 headers: this.$store.state.admin.user.headers,
-                registeredListColumns: [
+                goodsColumns: [
                     {
                         type: 'selection',
                         align: 'center',
@@ -325,7 +346,7 @@
                     },
                     {
                         title: '编号',
-                        key: 'code',
+                        key: 'number',
                         minWidth: 95
                     },
                     {
@@ -341,12 +362,12 @@
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'specification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'unit'
                     },
                     {
                         title: '有效期',
@@ -360,109 +381,88 @@
                     },
                     {
                         title: '最低售价',
-                        key: 'lowPrice',
+                        key: 'lowestPrice',
                         minWidth: 95
                     },
                     {
                         title: '说明',
-                        minWidth: 84,
-                        key: 'remark'
+                        key: 'description',
+                        minWidth: 130,
+                        ellipsis: true,
+                        tooltip: true
                     },
                     {
                         title: '参与折扣',
-                        key: 'isDiscount',
-                        minWidth: 95
+                        key: 'takeDiscount',
+                        minWidth: 95,
+                        render: (h, params) => {
+                            return h('div', params.row.takeDiscount ? '是' : '否');
+                        }
                     },
                     {
                         title: '计算库存',
-                        key: 'calculateInventory',
-                        minWidth: 95
+                        key: 'countInventory',
+                        minWidth: 95,
+                        render: (h, params) => {
+                            return h('div', params.row.countInventory ? '是' : '否');
+                        }
                     },
                     {
                         title: '当前库存',
-                        key: 'currentInventory',
+                        key: 'lowestLimit',
                         minWidth: 95
                     }
                 ],
-                registeredListData: [
-                    {
-                        code: 'P000001',
-                        barCode: '',
-                        name: '住院一级护理',
-                        size: '',
-                        unti: '',
-                        expirationDate: '',
-                        price: '50.00',
-                        lowPrice: '0.00',
-                        remark: '',
-                        isDiscount: '否',
-                        calculateInventory: '否',
-                        currentInventory: '0'
-                    },
-                    {
-                        code: 'P000001',
-                        barCode: '',
-                        name: '住院一级护理',
-                        size: '',
-                        unti: '',
-                        expirationDate: '',
-                        price: '50.00',
-                        lowPrice: '0.00',
-                        remark: '',
-                        isDiscount: '否',
-                        calculateInventory: '否',
-                        currentInventory: '0'
-                    }
-                ],
-                goodsColumns: [
-                    {
-                        title: '商品名称',
-                        minWidth: 84,
-                        key: 'name'
-                    },
-                    {
-                        title: '编号',
-                        minWidth: 84,
-                        key: 'code'
-                    },
-                    {
-                        title: '规格',
-                        minWidth: 84,
-                        key: 'size'
-                    },
-                    {
-                        title: '单位',
-                        minWidth: 84,
-                        key: 'unti'
-                    },
-                    {
-                        title: '单价',
-                        minWidth: 84,
-                        key: 'price'
-                    },
-                    {
-                        title: '组合数量',
-                        key: 'num',
-                        minWidth: 95,
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Input', {
-                                    props: {
-                                        // 将单元格的值给Input
-                                        value: params.row.num
-                                    },
-                                    on: {
-                                        'on-change' (event) {
-                                            // 值改变时
-                                            // 将渲染后的值重新赋值给单元格值
-                                            params.row.num = event.target.value;
-                                        }
-                                    }
-                                })
-                            ]);
-                        }
-                    }
-                ],
+                goodsList: [],
+                // goodsColumns: [
+                //     {
+                //         title: '商品名称',
+                //         minWidth: 84,
+                //         key: 'name'
+                //     },
+                //     {
+                //         title: '编号',
+                //         minWidth: 84,
+                //         key: 'code'
+                //     },
+                //     {
+                //         title: '规格',
+                //         minWidth: 84,
+                //         key: 'size'
+                //     },
+                //     {
+                //         title: '单位',
+                //         minWidth: 84,
+                //         key: 'unti'
+                //     },
+                //     {
+                //         title: '单价',
+                //         minWidth: 84,
+                //         key: 'price'
+                //     },
+                //     {
+                //         title: '组合数量',
+                //         key: 'num',
+                //         minWidth: 95,
+                //         render: (h, params) => {
+                //             return h('div', [
+                //                 h('Input', {
+                //                     props: {
+                //                         // 将单元格的值给Input
+                //                         value: params.row.num
+                //                     },
+                //                     on: {
+                //                         'on-change' (event) {
+                //                             // 值改变时
+                //                             // 将渲染后的值重新赋值给单元格值
+                //                             params.row.num = event.target.value;
+                //                         }
+                //                     }
+                //                 })
+                //             ]);
+                //         }
+                //     }
+                // ],
                 goodsListData: [
                     {
                         name: '',
@@ -613,12 +613,14 @@
                     }
                 ],
                 current: 1,
-                addGoodsCategoryModal: false,
-                changeGoodsCategoryModal: false,
-                addProject: false,
+                total: 0,
+                addGoodsModal: false,
                 addPackageModal: false,
                 importDataModal: false,
                 systemHintModal: false,
+
+                addGoodsCategoryModal: false,
+                changeGoodsCategoryModal: false,
                 type: 'registration', // 商品类型
                 addGoodsCategoryForm: {
                     id: '',
@@ -644,22 +646,25 @@
                 },
                 treeId: '',
                 removeModal: false,
-                nameLike: ''
+                removeGoodsModal: false,
+                selectIds: [],
+                nameLike: '', // 搜索商品类别名称
+                keywords: '' // 搜索商品关键字
             };
         },
         methods: {
             showAddGoodsCategoryModal () {
                 this.$refs.addGoodsCategoryForm.resetFields();
-                this.addGoodsCategoryForm.id = ''
-                this.addGoodsCategoryForm.name = ''
-                this.addGoodsCategoryForm.parentId = this.treeId
+                this.addGoodsCategoryForm.id = '';
+                this.addGoodsCategoryForm.name = '';
+                this.addGoodsCategoryForm.parentId = this.treeId;
                 this.addGoodsCategoryModal = true;
             },
             showChangeGoodsCategoryModal () {
                 this.changeGoodsCategoryModal = true;
             },
-            showAddProjectModal () {
-                this.addProject = true;
+            showAddGoodsModalModal () {
+                this.addGoodsModal = true;
             },
             addPackage () {
                 this.addPackageModal = true;
@@ -673,34 +678,44 @@
             },
             // 切换tab类型
             changeType () {
-                this.getGoodsCategoryList()
+                this.getGoodsCategoryList();
+                this.getGoodsList();
             },
             // 点击树
             getChild (data) {
                 if (data && data.length > 0) {
-                    this.treeId = data[0].id
+                    this.treeId = data[0].id;
                     var obj = JSON.parse(JSON.stringify(data[0]));
-                    this.addGoodsCategoryForm = this._.mapValues(this._.pick(obj, this._.keysIn(this.addGoodsCategoryForm)), (o) => {
-                        if (typeof o === 'object') {
-                            return o.code;
-                        } else {
-                            return o;
+                    this.addGoodsCategoryForm = this._.mapValues(
+                        this._.pick(obj, this._.keysIn(this.addGoodsCategoryForm)),
+                        o => {
+                            if (typeof o === 'object') {
+                                return o.code;
+                            } else {
+                                return o;
+                            }
                         }
-                    });
-                    this.addGoodsCategoryForm.partakeDiscount = obj.partakeDiscount && obj.partakeDiscount.toString()
+                    );
+                    this.addGoodsCategoryForm.partakeDiscount =
+                        obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
                     this.treeId = '';
                     this.$refs.addGoodsCategoryForm.resetFields();
                 }
+                this.getGoodsList();
             },
             // 获取商品分类列表
             getGoodsCategoryList () {
                 var data = {
                     nameLike: this.nameLike,
                     type: this.type
-                }
+                };
                 this.$get('/admin/goods/category/page', data, response => {
-                    let parentId = response.data && response.data.data && response.data.data.length > 0 && response.data.data[0].parentId
+                    let parentId =
+                        response.data &&
+                        response.data.data &&
+                        response.data.data.length > 0 &&
+                        response.data.data[0].parentId;
                     var treeData = listToTree(response.data.data, parentId);
                     // 转成树后需要重新处理渲染按钮
                     treeData.forEach(element => {
@@ -775,9 +790,9 @@
                             response => {
                                 if (response.success) {
                                     this.$Message.info('保存成功');
-                                    this.getGoodsCategoryList()
-                                    this.addGoodsCategoryModal = false
-                                    this.changeGoodsCategoryModal = false
+                                    this.getGoodsCategoryList();
+                                    this.addGoodsCategoryModal = false;
+                                    this.changeGoodsCategoryModal = false;
                                 } else {
                                     this.$Message.error(response.message);
                                 }
@@ -787,7 +802,7 @@
                 });
             },
             handleRemove () {
-                let selectIds = this.$refs.goodsCategoryTree.getSelectedNodes()
+                let selectIds = this.$refs.goodsCategoryTree.getSelectedNodes();
                 if (selectIds == null || selectIds.length === 0) {
                     this.$Message.error('请选择要删除的数据');
                     return false;
@@ -795,7 +810,7 @@
                 this.removeModal = true;
             },
             handleEdit () {
-                let selectIds = this.$refs.goodsCategoryTree.getSelectedNodes()
+                let selectIds = this.$refs.goodsCategoryTree.getSelectedNodes();
                 if (selectIds == null || selectIds.length === 0) {
                     this.$Message.error('请选择要修改的数据');
                     return false;
@@ -808,14 +823,64 @@
                     {},
                     response => {
                         this.$Message.info('删除成功');
-                        this.getGoodsCategoryList()
-                        this.removeModal = false
+                        this.getGoodsCategoryList();
+                        this.removeModal = false;
                     }
                 );
+            },
+            getGoodsList () {
+                this.selectIds = []
+                var data = {
+                    keywords: this.keywords,
+                    type: this.type,
+                    categoryId: this.treeId,
+                    pageSize: 10,
+                    pageNumber: this.current - 1
+                };
+                this.$get('/admin/goods/page', data, response => {
+                    this.total = response.data.total
+                    this.goodsList = response.data.data;
+                });
+            },
+            handleAddGoodsModal () {
+                this.$refs.addItem.handleAddGoodsModal();
+            },
+            handleSelect (val) {
+                this.selectIds = []
+                for (var i = 0; i < val.length; i++) {
+                    this.selectIds.push(val[i].id)
+                }
+            },
+            handleRemoveGoods () {
+                if (this.selectIds == null || this.selectIds.length === 0) {
+                    this.$Message.error('请选择要删除的商品');
+                    return false;
+                }
+                this.removeGoodsModal = true;
+            },
+            // 删除商品
+            removeGoods () {
+                this.$get(
+                    '/admin/goods/remove',
+                    { ids: this.selectIds },
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getGoodsList();
+                        this.removeGoodsModal = false;
+                    }
+                );
+            },
+            handleEditGoods () {
+                if (this.selectIds == null || this.selectIds.length === 0) {
+                    this.$Message.error('请选择要编辑的商品');
+                    return false;
+                }
+                this.$refs.addItem.handleEditPackageModal(this.selectIds[0]);
             }
         },
         mounted () {
             this.getGoodsCategoryList();
+            this.getGoodsList();
         }
     };
 </script>

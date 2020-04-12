@@ -1,313 +1,328 @@
 <template>
   <div>
-    <Tabs value="name1" name="add" class="mytabs" :animated="false">
-      <TabPane label="添加商品" name="name1" tab="add">
-        <Row :gutter="16">
-          <Form ref="form" :model="record" :rules="rules" :label-width="100" class="myform">
-            <Col span="12">
-              <FormItem label="商品名称" prop="name">
-                <Input v-model="record.name" />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem class="lb0">
+    <Modal v-model="addGoodsModal" title="添加项目" width="60%" @on-cancel="closeAddGoodsModal">
+      <Tabs v-model="addType" name="add" class="mytabs" :animated="false">
+        <TabPane label="添加商品" name="goods" tab="add">
+          <Row :gutter="16">
+            <Form
+              ref="addGoodsForm"
+              :model="addGoodsForm"
+              :rules="addGoodsFormRules"
+              :label-width="100"
+              class="myform"
+            >
+              <Col span="12">
+                <FormItem label="商品名称" prop="name">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem class="lb0">
+                  <Checkbox
+                    v-model="addGoodsForm.enableAlias"
+                    style="width:100px;margin:0;padding-right:12px;text-align:right"
+                  >设置别名</Checkbox>
+                  <Input
+                    v-model="addGoodsForm.alias"
+                    placeholder="显示、打印都显示别名"
+                    style="width:calc(100% - 100px)"
+                  />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="拼音搜索">
+                  <Input v-model="addGoodsForm.namePy" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="商品条码">
+                  <Input v-model="addGoodsForm.barCode" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="商品编号">
+                  <Input v-model="addGoodsForm.number" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="商品单位">
+                  <Input v-model="addGoodsForm.unit" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="生产厂家">
+                  <Input v-model="addGoodsForm.factory" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="商品规格">
+                  <Input v-model="addGoodsForm.specification" />
+                </FormItem>
+              </Col>
+              <Col span="24">
+                <FormItem label="库存下限" prop="lowestLimit">
+                  <Input value="0" v-width="200" v-model="addGoodsForm.lowestLimit" />
+                  <span style="color:#ccc;padding-left:12px">库存量低于下限，系统自动提醒</span>
+                </FormItem>
+              </Col>
+              <Col span="24" style="padding-left:40px">
+                <Checkbox class="mr24" v-model="addGoodsForm.takeDiscount">参与打折</Checkbox>
+                <Checkbox class="mr24" v-model="addGoodsForm.partakeDiscount">参与保障卡打折</Checkbox>
+                <Checkbox class="mr24" v-model="addGoodsForm.countInventory">计算库存</Checkbox>
+                <Checkbox class="mr24" v-model="addGoodsForm.hasBatchNumber">有批号商品</Checkbox>
                 <Checkbox
-                  v-model="record.check"
-                  style="width:100px;margin:0;padding-right:12px;text-align:right"
-                >设置别名</Checkbox>
-                <Input
-                  v-model="record.name"
-                  placeholder="显示、打印都显示别名"
-                  style="width:calc(100% - 100px)"
-                />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="拼音搜索">
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="商品条码">
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="商品编号">
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="商品单位">
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="生产厂家">
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="商品规格">
-                <Input />
-              </FormItem>
-            </Col>
-            <Col span="24">
-              <FormItem label="库存下限">
-                <Input value="0" v-width="200" />
-                <span style="color:#ccc;padding-left:12px">库存量低于下限，系统自动提醒</span>
-              </FormItem>
-            </Col>
-            <Col span="24" style="padding-left:40px">
-              <Checkbox style="margin-right:32px">参与打折</Checkbox>
-              <Checkbox style="margin-right:32px">计算库存</Checkbox>
-              <Checkbox style="margin-right:32px">有批号商品</Checkbox>
-              <Checkbox style="margin-right:32px">推荐销售（勾选后，将置顶单品并加推荐符号，提醒员工优先销售）</Checkbox>
-            </Col>
-          </Form>
-        </Row>
-        <div style="border-bottom:1px solid #ccc;margin-top:24px"></div>
-
-        <Tabs value="pane1" class="mytabs ivu-mt" name="pane" :animated="false">
-          <TabPane label="价格设置" name="pane1" tab="pane">
-            <Row :gutter="16">
-              <Form ref="form" :model="record" :rules="rules" :label-width="100" class="myform">
-                <Col span="12">
-                  <FormItem label="销售单价">
-                    <Input v-model="record.name" placeholder="¥0.00" />
-                  </FormItem>
-                </Col>
-                <Col span="12">
-                  <FormItem label="最低销售">
-                    <Input v-model="record.name" placeholder="¥0.00" />
-                  </FormItem>
-                </Col>
-                <Col span="12">
-                  <FormItem label="商品进价">
-                    <Input v-model="record.name" placeholder="¥0.00" />
-                  </FormItem>
-                </Col>
-                <Col span="12">
-                  <FormItem label="批发价格">
-                    <Input v-model="record.name" placeholder="¥0.00" />
-                  </FormItem>
-                </Col>
-                <Col span="12">
-                  <FormItem class="lb0">
-                    <Checkbox
-                      v-model="record.check"
-                      style="width:100px;margin:0;padding-right:12px;text-align:right"
-                    >会员价</Checkbox>
-                    <Input
-                      v-model="record.name"
-                      placeholder="¥0.00"
-                      style="width:calc(100% - 100px)"
-                    />
-                  </FormItem>
-                </Col>
-                <Col span="12">
-                  <FormItem class="lb0">
-                    <span style="color:#ccc">会员卡用户结算时,以会员价结算,不参与折扣</span>
-                  </FormItem>
-                </Col>
-                <Col span="24" offset="1">
-                  <Button type="warning" @click="setHosPriceModal=true">按照医院设置售价</Button>
-                </Col>
-              </Form>
-            </Row>
-          </TabPane>
-          <TabPane label="用法设置" name="pane2" tab="pane">
-            <Row :gutter="16">
-              <Form ref="form" :model="record" :rules="rules" :label-width="80" class="use-setting">
-                <Col span="2">
-                  <FormItem class="lb0">用法设置</FormItem>
-                </Col>
-                <Col span="7">
-                  <FormItem class="lb0">
-                    <Select value="0" placeholder="请选择">
-                      <Option value="0">直肠灌注</Option>
-                      <Option value="1">注射</Option>
-                    </Select>
-                  </FormItem>
-                </Col>
-                <Col span="15">
-                  <FormItem class="lb0">
-                    <Button type="primary" @click="handleEditPrescriptionUsageModal">编辑处方用法</Button>
-                  </FormItem>
-                </Col>
-                <Col span="2">
-                  <FormItem class="lb0">用量设置</FormItem>
-                </Col>
-                <Col span="7">
-                  <FormItem label="犬类---每千克消耗" class="lb140">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5">
-                  <FormItem label="用量下限">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5">
-                  <FormItem label="用量上限">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5" class="ivu-text-center">
-                  <Button type="warning" class="mr10">复制</Button>
-                  <Button type="success">粘贴</Button>
-                </Col>
-                <Col span="7" offset="2">
-                  <FormItem label="猫类---每千克消耗" class="lb140">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5">
-                  <FormItem label="用量下限">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5">
-                  <FormItem label="用量上限">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5" class="ivu-text-center">
-                  <Button type="warning" class="mr10">复制</Button>
-                  <Button type="success">粘贴</Button>
-                </Col>
-                <Col span="7" offset="2">
-                  <FormItem label="其他---每千克消耗" class="lb140">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5">
-                  <FormItem label="用量下限">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5">
-                  <FormItem label="用量上限">
-                    <Input v-model="record.name" />
-                  </FormItem>
-                </Col>
-                <Col span="5" class="ivu-text-center">
-                  <Button type="warning" class="mr10">复制</Button>
-                  <Button type="success">粘贴</Button>
-                </Col>
-                <Col
-                  span="22"
-                  offset="2"
-                  class="ivu-mb"
-                  style="color:#ccc"
-                >用量设置后,系统会在病例中自动按照宠物品种和体重计算处方用量</Col>
-                <Col span="24">
-                  <FormItem class="lb0">
-                    <Checkbox
-                      v-model="record.check"
-                    >病例中根据用量反酸数量(注: 仅适用简单的单位换算,如单位为瓶,规格100ml/瓶,当输入用量120ml时,数量自动计算为2瓶;非此类情况不支持)</Checkbox>
-                  </FormItem>
-                </Col>
-              </Form>
-            </Row>
-          </TabPane>
-          <TabPane label="商品来源" name="pane3" tab="pane">
-            <Row class="ivu-mb">
-              <div style="height:32px;line-height:32px;width:120px;float:left">该商品的供货商</div>
-              <div
-                style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 240px)"
-              ></div>
-              <div style="width:120px;float:left" class="ivu-text-right">
-                <Button type="success" @click="handleAddSupplierModal">+添加供货商</Button>
-              </div>
-            </Row>
-            <Table border :columns="columns8" :data="data8">
-              <template slot-scope="{ row, index }" slot="price">
-                <Input type="text" />
-              </template>
-            </Table>
-          </TabPane>
-          <TabPane label="积分兑换" name="pane4" tab="pane">
-            <Form ref="form" :model="record" :rules="rules" :label-width="120" class="myform">
-              <FormItem class="lb0" style="text-indent:0.3em">
-                <Checkbox v-model="record.check">允许积分兑换</Checkbox>
-              </FormItem>
-              <FormItem label="兑换所需积分值">
-                <Input v-model="record.name" v-width="200" />
-              </FormItem>
+                  class="mr24"
+                  v-model="addGoodsForm.recommend"
+                >推荐销售（勾选后，将置顶单品并加推荐符号，提醒员工优先销售）</Checkbox>
+              </Col>
             </Form>
-          </TabPane>
-          <TabPane label="商品说明" name="pane5" tab="pane">
-            <Input type="textarea" :rows="6" />
-          </TabPane>
-          <TabPane label="有效期管理" name="pane6" tab="pane">
-            <Row class="ivu-mb">
-              <div style="height:32px;line-height:32px;width:100px;float:left">该商品有效期</div>
-              <div
-                style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 480px)"
-              ></div>
-              <div style="width:380px;float:left" class="ivu-text-right">
-                <span class="mr10">
-                  设置提醒：提前
-                  <Input v-width="100" />天提醒
-                </span>
-                <Button type="success">+添加有效期</Button>
-              </div>
-            </Row>
-            <Table border :columns="columns10" :data="data10"></Table>
-          </TabPane>
-        </Tabs>
-      </TabPane>
-      <TabPane label="添加套餐" name="name2" tab="add">
-        <Row :gutter="16">
-          <Form ref="form" :model="record" :rules="rules" :label-width="100" class="myform">
-            <Col span="12">
-              <FormItem label="套餐名称" prop="name">
-                <Input v-model="record.name" />
-              </FormItem>
+          </Row>
+          <div style="border-bottom:1px solid #ccc;margin-top:24px"></div>
+
+          <Tabs v-model="goodsTabPane" class="mytabs ivu-mt" name="pane" :animated="false">
+            <TabPane label="价格设置" name="pane1" tab="pane">
+              <Row :gutter="16">
+                <Form
+                  ref="form1"
+                  :model="addGoodsForm"
+                  :rules="addGoodsFormRules"
+                  :label-width="100"
+                  class="myform"
+                >
+                  <Col span="12">
+                    <FormItem label="销售单价" prop="price">
+                      <Input v-model="addGoodsForm.price" placeholder="¥0.00" />
+                    </FormItem>
+                  </Col>
+                  <Col span="12">
+                    <FormItem label="最低销售" prop="lowestPrice">
+                      <Input v-model="addGoodsForm.lowestPrice" placeholder="¥0.00" />
+                    </FormItem>
+                  </Col>
+                  <Col span="12">
+                    <FormItem label="商品进价" prop="purchasePrice">
+                      <Input v-model="addGoodsForm.purchasePrice" placeholder="¥0.00" />
+                    </FormItem>
+                  </Col>
+                  <Col span="12">
+                    <FormItem label="批发价格" prop="wholesalePrice">
+                      <Input v-model="addGoodsForm.wholesalePrice" placeholder="¥0.00" />
+                    </FormItem>
+                  </Col>
+                  <Col span="12">
+                    <FormItem class="lb0" prop="vipPrice">
+                      <Checkbox
+                        v-model="addGoodsForm.enableVipPrice"
+                        style="width:100px;margin:0;padding-right:12px;text-align:right"
+                      >会员价</Checkbox>
+                      <Input
+                        v-model="addGoodsForm.vipPrice"
+                        placeholder="¥0.00"
+                        style="width:calc(100% - 100px)"
+                      />
+                    </FormItem>
+                  </Col>
+                  <Col span="12">
+                    <FormItem class="lb0">
+                      <span style="color:#ccc">会员卡用户结算时,以会员价结算,不参与折扣</span>
+                    </FormItem>
+                  </Col>
+                  <Col span="24" offset="1">
+                    <Button type="warning" @click="setHosPriceModal=true">按照医院设置售价</Button>
+                  </Col>
+                </Form>
+              </Row>
+            </TabPane>
+            <TabPane label="用法设置" name="pane2" tab="pane">
+              <Row :gutter="16">
+                <Form
+                  ref="addUsageForm"
+                  :model="addUsageForm"
+                  :rules="addUsageFormRules"
+                  :label-width="80"
+                  class="use-setting"
+                >
+                  <Col span="2">
+                    <FormItem class="lb0">用法设置</FormItem>
+                  </Col>
+                  <Col span="7">
+                    <FormItem class="lb0">
+                      <Select v-model="addUsageForm.id" placeholder="请选择">
+                        <Option
+                          v-for="item in usageList"
+                          :value="item.id"
+                          :key="`usage-${item.id}`"
+                        >{{ item.name }}</Option>
+                      </Select>
+                    </FormItem>
+                  </Col>
+                  <Col span="15">
+                    <FormItem class="lb0">
+                      <Button type="primary" @click="handleEditUsageModal">编辑处方用法</Button>
+                    </FormItem>
+                  </Col>
+                  <Col span="2">
+                    <FormItem class="lb0">用量设置</FormItem>
+                  </Col>
+                  <span v-for="(item,index) in petSpeciesList" :key="`petSpecies-${item.id}`">
+                    <Col span="7" :offset="index!=0?'2':''">
+                      <FormItem :label="item.name+'---每千克消耗'" class="lb140">
+                        <Input v-model="addUsageForm.amounts[index]" />
+                      </FormItem>
+                    </Col>
+                    <Col span="5">
+                      <FormItem label="用量下限">
+                        <Input v-model="addUsageForm.upperLimits[index]" />
+                      </FormItem>
+                    </Col>
+                    <Col span="5">
+                      <FormItem label="用量上限">
+                        <Input v-model="addUsageForm.lowerLimits[index]" />
+                      </FormItem>
+                    </Col>
+                    <Col span="5" class="ivu-text-center">
+                      <Button type="warning" class="mr10">复制</Button>
+                      <Button type="success">粘贴</Button>
+                    </Col>
+                  </span>
+                  <Col
+                    span="22"
+                    offset="2"
+                    class="ivu-mb"
+                    style="color:#ccc"
+                  >用量设置后,系统会在病例中自动按照宠物品种和体重计算处方用量</Col>
+                  <Col span="24">
+                    <FormItem class="lb0">
+                      <Checkbox
+                        v-model="addGoodsForm.enableAlias"
+                      >病例中根据用量反酸数量(注: 仅适用简单的单位换算,如单位为瓶,规格100ml/瓶,当输入用量120ml时,数量自动计算为2瓶;非此类情况不支持)</Checkbox>
+                    </FormItem>
+                  </Col>
+                </Form>
+              </Row>
+            </TabPane>
+            <TabPane label="商品来源" name="pane3" tab="pane">
+              <Row class="ivu-mb">
+                <div style="height:32px;line-height:32px;width:120px;float:left">该商品的供货商</div>
+                <div
+                  style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 240px)"
+                ></div>
+                <div style="width:120px;float:left" class="ivu-text-right">
+                  <Button type="success" @click="handleAddSupplierModal">+添加供货商</Button>
+                </div>
+              </Row>
+              <Table border :columns="columns8" :data="data8">
+                <template slot-scope="{ row, index }" slot="price">
+                  <Input type="text" />
+                </template>
+              </Table>
+            </TabPane>
+            <TabPane label="积分兑换" name="pane4" tab="pane">
+              <Form
+                ref="form4"
+                :model="addGoodsForm"
+                :rules="addGoodsFormRules"
+                :label-width="120"
+                class="myform"
+              >
+                <FormItem class="lb0" style="text-indent:0.3em">
+                  <Checkbox v-model="addGoodsForm.integralExchange">允许积分兑换</Checkbox>
+                </FormItem>
+                <FormItem label="兑换所需积分值" prop="integralRequired">
+                  <Input v-model="addGoodsForm.integralRequired" v-width="200" />
+                </FormItem>
+              </Form>
+            </TabPane>
+            <TabPane label="商品说明" name="pane5" tab="pane">
+              <Form ref="form5" :model="addGoodsForm" :rules="addGoodsFormRules" class="myform">
+                <FormItem class="lb0" prop="description">
+                  <Input type="textarea" v-model="addGoodsForm.description" :rows="6" />
+                </FormItem>
+              </Form>
+            </TabPane>
+            <TabPane label="有效期管理" name="pane6" tab="pane">
+              <Row class="ivu-mb">
+                <div style="height:32px;line-height:32px;width:100px;float:left">该商品有效期</div>
+                <div
+                  style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 480px)"
+                ></div>
+                <div style="width:380px;float:left" class="ivu-text-right">
+                  <Form ref="form6" :model="addGoodsForm" :rules="addGoodsFormRules" class="myform">
+                    <FormItem class="lb0" prop="remindDays">
+                      设置提醒：提前
+                      <Input v-model="addGoodsForm.remindDays" v-width="100" />天提醒
+                      <Button type="success">+添加有效期</Button>
+                    </FormItem>
+                  </Form>
+                </div>
+              </Row>
+              <Table border :columns="columns10" :data="data10"></Table>
+            </TabPane>
+          </Tabs>
+        </TabPane>
+        <TabPane label="添加套餐" name="packages" tab="add">
+          <Row :gutter="16">
+            <Form ref="form" :model="addGoodsForm" :rules="rules" :label-width="100" class="myform">
+              <Col span="12">
+                <FormItem label="套餐名称" prop="name">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="套餐编号">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="套餐条码">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="套餐规格">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="套餐单位">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="套餐说明">
+                  <Input v-model="addGoodsForm.name" />
+                </FormItem>
+              </Col>
+            </Form>
+          </Row>
+          <Row class="ivu-mb">
+            <div style="height:32px;line-height:32px;width:80px;float:left">套餐商品</div>
+            <div
+              style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 200px)"
+            ></div>
+            <div style="width:120px;float:left" class="ivu-text-right">
+              <Button type="success" @click="handleAddPackageModal">添加套餐</Button>
+            </div>
+          </Row>
+          <Table border :columns="columns5" :data="data5"></Table>
+          <Row style="margin-top:15px">
+            <Col span="24" class="ivu-text-right">
+              <span style="font-size:16px">合计：</span>0.00
             </Col>
-            <Col span="12">
-              <FormItem label="套餐编号">
-                <Input v-model="record.name" />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="套餐条码">
-                <Input v-model="record.name" />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="套餐规格">
-                <Input v-model="record.name" />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="套餐单位">
-                <Input v-model="record.name" />
-              </FormItem>
-            </Col>
-            <Col span="12">
-              <FormItem label="套餐说明">
-                <Input v-model="record.name" />
-              </FormItem>
-            </Col>
-          </Form>
-        </Row>
-        <Row class="ivu-mb">
-          <div style="height:32px;line-height:32px;width:80px;float:left">套餐商品</div>
-          <div style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 200px)"></div>
-          <div style="width:120px;float:left" class="ivu-text-right">
-            <Button type="success" @click="handleAddPackageModal">添加套餐</Button>
-          </div>
-        </Row>
-        <Table border :columns="columns5" :data="data5"></Table>
-        <Row style="margin-top:15px">
-          <Col span="24" class="ivu-text-right">
-            <span style="font-size:16px">合计：</span>0.00
-          </Col>
-        </Row>
-      </TabPane>
-    </Tabs>
+          </Row>
+        </TabPane>
+      </Tabs>
+      <div slot="footer">
+        <Button type="success" v-if="addType=='goods'" @click="saveGoods(false)">保存</Button>
+        <Button type="success" v-if="addType=='packages'" @click="addPackages">保存</Button>
+        <Button
+          type="info"
+          v-if="addType=='goods'&&goodsTabPane!='pane6'"
+          @click="saveGoods(true)"
+        >保存并继续</Button>
+      </div>
+    </Modal>
+
     <!-- 按照医院设置售价 -->
     <Modal v-model="setHosPriceModal" width="60%" class="mymodal">
       <p slot="header">
@@ -318,7 +333,7 @@
       <div slot="footer"></div>
     </Modal>
     <!-- 编辑处方用法 -->
-    <Modal v-model="editPrescriptionUsageModal" width="60%" class="mymodal">
+    <Modal v-model="editUsageModal" width="60%" class="mymodal">
       <p slot="header">
         <Col span="24">编辑处方用法</Col>
       </p>
@@ -327,10 +342,10 @@
         <div style="height:32px;line-height:32px;width:80px;float:left">处方用法</div>
         <div style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 200px)"></div>
         <div style="width:120px;float:left" class="ivu-text-right">
-          <Button type="success">+新增用法</Button>
+          <Button type="success" @click="handleAddUsageModal">+新增用法</Button>
         </div>
       </Row>
-      <Table border :columns="colummnsUse" :data="dataUse"></Table>
+      <Table border :columns="usageColumns" :data="usageList"></Table>
 
       <div slot="footer"></div>
     </Modal>
@@ -356,14 +371,14 @@
         <Col span="18">
           <Row class-name="module-title-wrapper">
             <Col span="15">
-                <span class="module-title">商品列表</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="warning" class="mr10">快速添加</Button>
-              </Col>
-              <Col span="5" class="ivu-text-right">
-                <Input prefix="ios-search" placeholder="名称，编号，条形码" />
-              </Col>
+              <span class="module-title">商品列表</span>
+            </Col>
+            <Col span="4" class="ivu-text-right">
+              <Button type="warning" class="mr10">快速添加</Button>
+            </Col>
+            <Col span="5" class="ivu-text-right">
+              <Input prefix="ios-search" placeholder="名称，编号，条形码" />
+            </Col>
           </Row>
           <Row class="ivu-mt">
             <Table border :columns="columns3" :data="data3"></Table>
@@ -397,6 +412,24 @@
         <Button type="success">确定</Button>
       </div>
     </Modal>
+
+    <!-- 添加处方用法 -->
+    <Modal v-model="addUsageModal" class="mymodal" width="40%" :title="addUsageForm.id&&'编辑'||'添加'">
+      <Form
+        ref="addUsageForm"
+        :model="addUsageForm"
+        :rules="addUsageFormRules"
+        :label-width="100"
+        class="myform"
+      >
+        <FormItem label="处方用法" prop="name">
+          <Input v-model="addUsageForm.name" />
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="success" @click="addUsage">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -404,7 +437,33 @@
     export default {
         name: 'addItem',
         components: {},
+        props: {
+            type: String,
+            categoryId: String
+        },
         data () {
+            const validateLimit = (rule, value, callback) => {
+                if (value == null || value === '' || value === 0 || value === '0') {
+                    callback();
+                } else {
+                    var r = /^[1-9]\d*$/;
+                    if (value !== '0' && !r.test(value)) {
+                        callback(new Error('请输入整数'));
+                    }
+                    callback();
+                }
+            };
+            const validateNumber = (rule, value, callback) => {
+                if (value == null || value === '') {
+                    callback();
+                } else {
+                    var r = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/;
+                    if (!r.test(value)) {
+                        callback(new Error('请输入数字，最多保留两位小数'));
+                    }
+                    callback();
+                }
+            };
             return {
                 setHosPriceModal: false,
                 columns9: [
@@ -452,12 +511,7 @@
                         ]
                     }
                 ],
-                record: {
-                    creatTime: '2020-03-19',
-                    name: '',
-                    check: true
-                },
-                editPrescriptionUsageModal: false,
+                editUsageModal: false,
                 rules: {
                     name: [{ required: true, message: '请输名称', trigger: 'blur' }]
                 },
@@ -503,7 +557,7 @@
                         name: 'sss'
                     }
                 ],
-                colummnsUse: [
+                usageColumns: [
                     {
                         type: 'index',
                         width: 60,
@@ -512,7 +566,7 @@
                     {
                         title: '用法',
                         minWidth: 84,
-                        key: 'med'
+                        key: 'name'
                     },
                     {
                         title: '操作',
@@ -520,17 +574,34 @@
                         render: (h, params) => {
                             return h('div', [
                                 h(
-                                    'Button',
+                                    'Poptip',
                                     {
                                         props: {
-                                            type: 'error',
-                                            size: 'small'
+                                            confirm: true,
+                                            title: '该操作不可恢复，确认要删除吗?',
+                                            transfer: true
+                                        },
+                                        style: {
+                                            marginRight: '8px'
                                         },
                                         on: {
-                                            click: () => {}
+                                            'on-ok': () => {
+                                                this.deleteUsage(params.row.id);
+                                            }
                                         }
                                     },
-                                    '删除'
+                                    [
+                                        h(
+                                            'Button',
+                                            {
+                                                props: {
+                                                    type: 'error',
+                                                    size: 'small'
+                                                }
+                                            },
+                                            '删除'
+                                        )
+                                    ]
                                 ),
                                 h(
                                     'Button',
@@ -539,23 +610,18 @@
                                             type: 'info',
                                             size: 'small'
                                         },
-                                        class: 'marLef10',
                                         on: {
-                                            click: () => {}
+                                            click: () => {
+                                                this.addUsageModal = true;
+                                                this.addUsageForm.id = params.row.id;
+                                                this.addUsageForm.name = params.row.name;
+                                            }
                                         }
                                     },
                                     '编辑'
                                 )
                             ]);
                         }
-                    }
-                ],
-                dataUse: [
-                    {
-                        med: '直肠灌注'
-                    },
-                    {
-                        med: '腹腔注射'
                     }
                 ],
                 columnsHosList: [
@@ -884,24 +950,304 @@
                         unitPrice: '0.00',
                         num: '1'
                     }
-                ]
+                ],
+
+                addGoodsForm: {
+                    id: '',
+                    type: '',
+                    categoryId: '',
+                    name: '',
+                    enableAlias: true,
+                    alias: '',
+                    namePy: '',
+                    barCode: '',
+                    number: '',
+                    unit: '',
+                    factory: '',
+                    specification: '',
+                    lowestLimit: '0',
+                    takeDiscount: '',
+                    partakeDiscount: '',
+                    countInventory: '',
+                    hasBatchNumber: '',
+                    recommend: '',
+                    price: '',
+                    lowestPrice: '',
+                    purchasePrice: '',
+                    wholesalePrice: '',
+                    enableVipPrice: true,
+                    vipPrice: '',
+                    integralExchange: '',
+                    integralRequired: '',
+                    description: '',
+                    remindDays: '',
+                    usageId: ''
+                },
+                addGoodsFormRules: {
+                    name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
+                    lowestLimit: [{ validator: validateLimit, trigger: 'blur' }],
+                    price: [{ validator: validateNumber, trigger: 'blur' }],
+                    lowestPrice: [{ validator: validateNumber, trigger: 'blur' }],
+                    purchasePrice: [{ validator: validateNumber, trigger: 'blur' }],
+                    wholesalePrice: [{ validator: validateNumber, trigger: 'blur' }],
+                    vipPrice: [{ validator: validateNumber, trigger: 'blur' }],
+                    integralRequired: [{ validator: validateLimit, trigger: 'blur' }],
+                    description: [
+                        { required: true, message: '请输入商品说明', trigger: 'blur' }
+                    ],
+                    remindDays: [{ validator: validateLimit, trigger: 'blur' }]
+                },
+                addType: 'goods', // 添加时选中的的类型
+                goodsTabPane: 'pane1', // 添加时选中的goods的明细tab
+                addGoodsModal: false,
+                usageList: [], // 处方用法列表,
+                addUsageModal: false,
+                addUsageForm: {
+                    id: '',
+                    name: '',
+                    orderNum: '',
+                    sourRegurgitation: true,
+                    speciesKeys: [], // 宠物分类key
+                    speciesNames: [], // 宠物分类name
+                    amounts: [], // 每kg消耗
+                    upperLimits: [], // 用量下限
+                    lowerLimits: [] // 用量上限
+                },
+                addUsageFormRules: {
+                    name: [{ required: true, message: '请输名称', trigger: 'blur' }]
+                    // number: [{ validator: validateNumber, trigger: 'blur' }]
+                    // upperLimits: [{ validator: validateNumber, trigger: 'blur' }],
+                    // lowerLimits: [{ validator: validateNumber, trigger: 'blur' }]
+                },
+                petSpeciesList: [] // 宠物分类列表
             };
         },
         mounted () {
             let vm = this;
             vm.$nextTick(() => {});
+            console.log(this.type);
+            console.log(this.categoryId);
         },
-        created () {},
+        created () {
+            this.getUsageList();
+            this.getPetSpeciesList();
+        },
         computed: {},
         methods: {
-            handleEditPrescriptionUsageModal () {
-                this.editPrescriptionUsageModal = true;
+            handleEditUsageModal () {
+                this.editUsageModal = true;
             },
             handleAddSupplierModal () {
                 this.addSupplierModal = true;
             },
             handleAddPackageModal () {
                 this.addPackageModal = true;
+            },
+            handleAddGoodsModal () {
+                // 父组件需要调用
+                this.$refs.addGoodsForm.resetFields();
+                this.addGoodsForm.id = '';
+                this.addGoodsModal = true;
+            },
+            handleEditPackageModal (id) {
+                this.getGoodsDetail(id);
+                this.addGoodsModal = true;
+            },
+            closeAddGoodsModal () {
+                this.addGoodsModal = false;
+                // 需要调用父组件方法
+                this.$parent.getGoodsList();
+            },
+            // 保存商品
+            saveGoods (next) {
+                this.addGoodsForm.type = this.type;
+                this.addGoodsForm.categoryId = this.categoryId;
+                console.log(this.addGoodsForm);
+                var flag = true;
+                this.$refs.addGoodsForm.validate(valid => {
+                    if (valid) {
+                        flag = true;
+                        if (this.goodsTabPane === 'pane1') {
+                            this.$refs.form1.validate(valid1 => {
+                                if (valid1) {
+                                    flag = true;
+                                } else {
+                                    flag = false;
+                                }
+                            });
+                        } else if (this.goodsTabPane === 'pane4') {
+                            this.$refs.form4.validate(valid4 => {
+                                if (valid4) {
+                                    flag = true;
+                                } else {
+                                    flag = false;
+                                }
+                            });
+                        } else if (this.goodsTabPane === 'pane5') {
+                            this.$refs.form5.validate(valid5 => {
+                                if (valid5) {
+                                    flag = true;
+                                } else {
+                                    flag = false;
+                                }
+                            });
+                        } else if (this.goodsTabPane === 'pane6') {
+                            this.$refs.form6.validate(valid6 => {
+                                if (valid6) {
+                                    flag = true;
+                                } else {
+                                    flag = false;
+                                }
+                            });
+                        }
+                    } else {
+                        flag = false;
+                    }
+                });
+                if (flag) {
+                    this.$post('/admin/goods/save', this.addGoodsForm, response => {
+                        if (response.success) {
+                            this.addGoodsForm.id = response.data.id;
+                            this.$Message.info('保存成功');
+                        } else {
+                            this.$Message.error(response.message);
+                        }
+                    });
+                    if (this.goodsTabPane === 'pane2') {
+                        console.log(this.addUsageForm)
+                        this.$post('/admin/general/prescription/usage/save', this.addUsageForm, response => {
+                            if (response.success) {
+                                this.getUsageList()
+                            } else {
+                                this.$Message.error(response.message);
+                            }
+                        });
+                    }
+                    if (next) {
+                        var curpane = this.goodsTabPane;
+                        this.goodsTabPane =
+                            'pane' +
+                            (parseInt(curpane.substring(curpane.length - 1, curpane.length)) +
+                            1);
+                    }
+                }
+            },
+            // 保存套餐
+            addPackages () {
+                this.addGoodsForm.type = this.type;
+                this.addGoodsForm.categoryId = this.categoryId;
+                console.log(this.addGoodsForm);
+                this.$refs.addGoodsForm.validate(valid => {
+                    if (valid) {
+                        // this.$post(
+                        //     '/admin/goods/save',
+                        //     this.addGoodsCategoryForm,
+                        //     response => {
+                        //         if (response.success) {
+                        //             this.$Message.info('保存成功');
+                        //             this.getGoodsCategoryList()
+                        //             this.addGoodsCategoryModal = false
+                        //             this.changeGoodsCategoryModal = false
+                        //         } else {
+                        //             this.$Message.error(response.message);
+                        //         }
+                        //     }
+                        // );
+                    }
+                });
+            },
+            getGoodsDetail (id) {
+                this.$get('/admin/goods/detail/' + id, {}, response => {
+                    this.addGoodsForm = this._.mapValues(
+                        this._.pick(response.data, this._.keysIn(this.addGoodsForm)),
+                        o => {
+                            if (typeof o === 'object') {
+                                return o.code;
+                            } else {
+                                return o;
+                            }
+                        }
+                    );
+                    this.addUsageForm.id = this.addGoodsForm.usageId || ''
+                    console.log(this.addGoodsForm);
+                });
+            },
+            // 获取处方用法列表
+            getUsageList () {
+                this.$get('/admin/general/prescription/usage/page', {}, response => {
+                    this.usageList = response.data.data;
+                });
+            },
+            // 获取宠物分类列表
+            getPetSpeciesList () {
+                this.$get('/admin/pet/species/page', {}, response => {
+                    this.petSpeciesList = response.data.data;
+                });
+            },
+            // 删除处方用法
+            deleteUsage (id) {
+                this.$get(
+                    '/admin/general/prescription/usage/remove/' + id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getUsageList();
+                    }
+                );
+            },
+            handleAddUsageModal () {
+                this.addUsageModal = true;
+                this.addUsageForm.id = '';
+                this.addUsageForm.name = '';
+            },
+            // 新增处方用法
+            addUsage () {
+                this.$refs.addUsageForm.validate(valid => {
+                    if (valid) {
+                        this.$post(
+                            '/admin/general/prescription/usage/save',
+                            this.addUsageForm,
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getUsageList();
+                                    this.addUsageModal = false;
+                                } else {
+                                    this.$Message.error(response.message);
+                                }
+                            }
+                        );
+                    }
+                });
+            }
+        },
+        watch: {
+            'addUsageForm.id': function (newVal) {
+                this.addGoodsForm.usageId = newVal
+                if (newVal != null && newVal !== '') {
+                    this.usageList.forEach(element => {
+                        if (element.id === newVal) {
+                            this.addUsageForm.name = element.name
+                            this.petSpeciesList.forEach((item, index) => {
+                                this.addUsageForm.speciesKeys[index] = item.key
+                                this.addUsageForm.speciesNames[index] = item.name
+                                this.addUsageForm.amounts[index] = null
+                                this.addUsageForm.upperLimits[index] = null
+                                this.addUsageForm.lowerLimits[index] = null
+                                // 当前选中的usage
+                                if (element.items && element.items.length > 0) {
+                                    element.items.forEach(jtem => {
+                                        if (item.key === jtem.petSpecies.key) {
+                                            this.addUsageForm.amounts[index] = jtem.amount
+                                            this.addUsageForm.upperLimits[index] = jtem.upperLimit
+                                            this.addUsageForm.lowerLimits[index] = jtem.lowerLimit
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    });
+                }
             }
         }
     };
@@ -941,6 +1287,10 @@
   height: 400px;
   overflow: auto;
 }
+
+.mr24 {
+  margin-right: 24px;
+}
 </style>
 <style lang="less">
 .marLef10 {
@@ -968,37 +1318,6 @@
 .ivu-table-wrapper th {
   text-align: center;
 }
-.animal-list {
-  height: 265px;
-  overflow: auto;
-}
-.animal-list .ivu-list-item {
-  padding: 0;
-}
-.animal-list .ivu-list-item p {
-  padding: 12px 0;
-  width: 100%;
-}
-.animal-list .active {
-  background: #ddd;
-}
-
-.record-list {
-  height: 265px;
-  overflow: auto;
-  border: 1px solid #ccc;
-}
-.record-list .ivu-list-item {
-  padding: 0;
-}
-.record-list .record {
-  width: 100%;
-  padding: 12px;
-}
-.record-list .active {
-  background: #ddd;
-}
-
 .lb0 .ivu-form-item-content {
   margin: 1px 0;
   margin-left: 0 !important;
