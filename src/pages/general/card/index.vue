@@ -7,6 +7,9 @@
       <TabPane label="次卡种类列表" name="secondaryCard">
         <Table class="centerSty" border :columns="secondaryCardColumns" :data="secondaryCardData" @on-selection-change="handleSelectSec"></Table>
       </TabPane>
+      <TabPane label="保障卡种类列表" name="ensuringCard">
+        <Table class="centerSty" border :columns="ensuringCardColumns" :data="ensuringCardData" @on-selection-change="handleSelectSec"></Table>
+      </TabPane>
     </Tabs>
     <Row :gutter="16" type="flex" class="mtb15">
       <Col>
@@ -59,6 +62,18 @@
         <FormItem label="服务提成" prop="serviceCommission">
           <Input style="width: 150px" v-model="secondaryFormData.serviceCommission">
             <span slot="append">元/次</span>
+          </Input>
+        </FormItem>
+      </Form>
+    </Modal>
+    <Modal ref="ensuringModal" v-model="showEnsuringModal" :title="isAddSec?'新建保障卡':'编辑保障卡'" @on-ok="createEnsuring" :loading="true">
+      <Form ref="ensuringForm" :model="ensuringFormData" :label-width="187" :rules="ensuringRules">
+        <FormItem label="保障卡类型" prop="name">
+          <Input style="width: 150px" v-model="ensuringFormData.name" placeholder="必填"/>
+        </FormItem>
+        <FormItem label="折扣" prop="discount">
+          <Input style="width: 150px" v-model="ensuringFormData.discount">
+            <span slot="append">%</span>
           </Input>
         </FormItem>
       </Form>
@@ -120,6 +135,14 @@
                         }
                     ]
                 },
+                ensuringRules: {
+                    name: [
+                        { required: true, message: '请输入保障卡卡类型', trigger: 'change' }
+                    ],
+                    discount: [
+                        { validator: validateDiscount, trigger: 'blur' }
+                    ]
+                },
                 membershipFormData: {
                     id: '',
                     name: '',
@@ -133,6 +156,11 @@
                     id: '',
                     salesCommission: '',
                     serviceCommission: ''
+                },
+                ensuringFormData: {
+                    id: '',
+                    name: '',
+                    discount: ''
                 },
                 cardType: 'membershipCard',
                 membershipCardColumns: [
@@ -200,12 +228,34 @@
                 ],
                 secondaryCardData: [
                 ],
+                ensuringCardColumns: [
+                    {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    },
+                    {
+                        title: '保障卡类型',
+                        minWidth: 84,
+                        key: 'name'
+                    },
+                    {
+                        title: '折扣',
+                        minWidth: 84,
+                        key: 'discount'
+                    }
+                ],
+                ensuringCardData: [
+                ],
                 showMembershipModal: false,
                 showSecondaryModal: false,
+                showEnsuringModal: false,
                 isAddMem: false,
                 isAddSec: false,
+                isAddEns: false,
                 selectListMem: [],
-                selectListSec: []
+                selectListSec: [],
+                selectListEns: []
             };
         },
         methods: {
@@ -219,6 +269,24 @@
                 this.$get('/admin/general/card/page', data, response => {
                     this.membershipCardData = response.data.data
                     this.selectListMem = []
+                });
+            },
+            getSecondaryCardList () {
+                var data = {
+                    type: 'times'
+                }
+                this.$get('/admin/general/card/page', data, response => {
+                    this.secondaryCardData = response.data.data
+                    this.selectListSec = []
+                });
+            },
+            getEnsuringCardList () {
+                var data = {
+                    type: 'ensuring'
+                }
+                this.$get('/admin/general/card/page', data, response => {
+                    this.ensuringCardData = response.data.data
+                    this.selectListEns = []
                 });
             },
             createMembership () {
@@ -257,13 +325,22 @@
                     }
                 });
             },
-            getSecondaryCardList () {
-                var data = {
-                    type: 'times'
-                }
-                this.$get('/admin/general/card/page', data, response => {
-                    this.secondaryCardData = response.data.data
-                    this.selectListSec = []
+            createEnsuring () {
+                this.$refs.ensuringModal.buttonLoading = false;
+                this.$refs.ensuringForm.validate(valid => {
+                    if (valid) {
+                        this.ensuringFormData.type = 'ensuring'
+                        this.$post('/admin/general/card/save', this.ensuringFormData, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getEnsuringCardList();
+                                this.showEnsuringModal = false;
+                            } else {
+                                this.$Message.error(response.message);
+                            }
+                        });
+                    } else {
+                    }
                 });
             },
             handleOpenCreate () {
@@ -272,11 +349,16 @@
                     this.$refs.membershipForm.resetFields();
                     this.membershipFormData = {};
                     this.showMembershipModal = true;
-                } else {
+                } else if (this.cardType === 'times') {
                     this.isAddSec = true
                     this.$refs.secondaryForm.resetFields();
                     this.secondaryFormData = {};
                     this.showSecondaryModal = true;
+                } else {
+                    this.isAddEns = true
+                    this.$refs.ensuringForm.resetFields();
+                    this.ensuringFormData = {};
+                    this.showEnsuringModal = true;
                 }
             },
             handleOpenEdit () {
@@ -311,6 +393,7 @@
         mounted () {
             this.getMembershipCardList()
             this.getSecondaryCardList()
+            this.getEnsuringCardList()
         }
     };
 </script>
