@@ -69,7 +69,7 @@
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
               <Button type="primary" @click="handleCreateCheckItem">+单项</Button>
-              <Button type="warning">修改</Button>
+              <Button type="warning" @click="handleEditCheckItem">修改</Button>
               <Button type="error">删除</Button>
             </Col>
           </Row>
@@ -294,7 +294,7 @@
       <Row>
           <Form ref="otherTypeForm" :label-width="80" class="labelLefForm" :rules="otherTypeRules" :model="otherTypeFormData">
             <Col span="11">
-              <FormItem label="指标名称" prop="name">
+              <FormItem label="指标名称" prop="indexName">
                 <Input placeholder="必填" v-model="otherTypeFormData.indexName"/>
               </FormItem>
             </Col>
@@ -309,8 +309,8 @@
               </FormItem>
             </Col>
             <Col span="11" offset="2">
-              <FormItem label="描述" v-model="otherTypeFormData.explain">
-                <Input />
+              <FormItem label="描述">
+                <Input  v-model="otherTypeFormData.explain"/>
               </FormItem>
             </Col>
             <Col span="19">
@@ -338,7 +338,13 @@
             return {
                 selectList: [],
                 isAddOtherTypeItem: false,
-                otherTypeFormData: {},
+                otherTypeFormData: {
+                    indexName: '',
+                    standardName: '',
+                    indexUnit: '',
+                    explain: '',
+                    resultValue: ''
+                },
                 checkItemColumns: [],
                 loadingTable: true,
                 showElevator: false,
@@ -354,7 +360,7 @@
                     name: [{ required: true, message: '请输入名称', trigger: 'change' }]
                 },
                 otherTypeRules: {
-                    name: [{ required: true, message: '请输入指标名称', trigger: 'change' }]
+                    indexName: [{ required: true, message: '请输入指标名称', trigger: 'change' }]
                 },
                 nameLike: '',
                 loadingList: true,
@@ -585,7 +591,13 @@
                 } else {
                     this.isAddOtherTypeItem = true
                     this.$refs.otherTypeForm.resetFields()
-                    this.otherTypeFormData = {}
+                    this.otherTypeFormData = {
+                        indexName: '',
+                        standardName: '',
+                        indexUnit: '',
+                        explain: '',
+                        resultValue: ''
+                    }
                     this.showOtherTypeModal = true
                 }
             },
@@ -593,10 +605,12 @@
                 this.$refs.otherTypeModal.buttonLoading = false;
                 this.$refs.otherTypeForm.validate(valid => {
                     if (valid) {
+                        this.otherTypeFormData.settingId = this.currentCheckTypeData.id
                         this.$post('/admin/general/checkSetting/item/save', this.otherTypeFormData, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
-                                this.getScheduleList();
+                                this.getCheckItemList();
+                                this.showOtherTypeModal = false
                             }
                         });
                     } else {
@@ -612,15 +626,16 @@
                     return false
                 }
                 if (this.currentCheckTypeData.hasReference) {
+                    this.rangeTypeModal = true
+                } else {
                     this.isAddOtherTypeItem = false
                     this.$refs.otherTypeForm.resetFields()
                     this.otherTypeFormData = JSON.parse(JSON.stringify(this.selectList[0]))
                     this.showOtherTypeModal = true
-                } else {
-                    this.rangeTypeModal = true
                 }
             },
-            handleClose () {}
+            handleClose () {},
+            createRangeType () {}
         },
         mounted () {
             this.getCheckList();
