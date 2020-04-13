@@ -707,16 +707,16 @@
             // 获取商品分类列表
             getGoodsCategoryList () {
                 var data = {
+                    limit: 100,
                     nameLike: this.nameLike,
                     type: this.type
                 };
-                this.$get('/admin/goods/category/page', data, response => {
+                this.$get('/admin/goods/category/search', data, response => {
                     let parentId =
                         response.data &&
-                        response.data.data &&
-                        response.data.data.length > 0 &&
-                        response.data.data[0].parentId;
-                    var treeData = listToTree(response.data.data, parentId);
+                        response.data.length > 0 &&
+                        response.data[0].parentId;
+                    var treeData = listToTree(response.data, parentId);
                     // 转成树后需要重新处理渲染按钮
                     treeData.forEach(element => {
                         this.renderTreeButton(element);

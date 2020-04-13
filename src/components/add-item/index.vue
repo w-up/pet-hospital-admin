@@ -208,12 +208,12 @@
                   style="border-bottom:1px solid #ccc;height:16px;float:left;width:calc(100% - 240px)"
                 ></div>
                 <div style="width:120px;float:left" class="ivu-text-right">
-                  <Button type="success" @click="handleAddSupplierModal">+添加供货商</Button>
+                  <Button type="success" @click="handleAddContactUnitModal">+添加供货商</Button>
                 </div>
               </Row>
-              <Table border :columns="columns8" :data="data8">
+              <Table border :columns="goodsSupplierColumns" :data="goodsSupplierList">
                 <template slot-scope="{ row, index }" slot="price">
-                  <Input type="text" />
+                  <Input type="text" v-model="goodsSupplierList[index].price" />
                 </template>
               </Table>
             </TabPane>
@@ -402,14 +402,15 @@
         <Button type="success">保存</Button>
       </div>
     </Modal>
+
     <!-- 添加供货商 -->
-    <Modal v-model="addSupplierModal" class="mymodal">
+    <Modal v-model="contactUnitModal" class="mymodal">
       <p slot="header">
         <Col span="24">选择往来单位</Col>
       </p>
-      <Table border :columns="columns9" :data="data9"></Table>
+      <Table ref="contactUnitTable" border :columns="contactUnitColumns" :data="contactUnitList"></Table>
       <div slot="footer">
-        <Button type="success">确定</Button>
+        <Button type="success" @click="handleAddContactUnit">确定</Button>
       </div>
     </Modal>
 
@@ -466,7 +467,7 @@
             };
             return {
                 setHosPriceModal: false,
-                columns9: [
+                contactUnitColumns: [
                     {
                         type: 'selection',
                         width: 60
@@ -475,14 +476,6 @@
                         title: '往来单位',
                         minWidth: 84,
                         key: 'name'
-                    }
-                ],
-                data9: [
-                    {
-                        name: '上海公司'
-                    },
-                    {
-                        name: '苏州公司'
                     }
                 ],
                 packageData: [
@@ -515,17 +508,18 @@
                 rules: {
                     name: [{ required: true, message: '请输名称', trigger: 'blur' }]
                 },
-                columns8: [
+                goodsSupplierColumns: [
                     {
                         title: '供货商名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'supplierName'
                     },
                     {
                         title: '供货商价格',
                         minWidth: 84,
                         key: 'price',
                         slot: 'price'
+
                     },
                     {
                         title: '操作',
@@ -540,21 +534,19 @@
                                             size: 'small'
                                         },
                                         on: {
-                                            click: () => {}
+                                            click: () => {
+                                                if (params.row.id != null && params.row.id !== '') {
+                                                    this.removeGoodsSupplier(params.row.id)
+                                                } else {
+                                                    this.goodsSupplierList.splice(params.index, 1)
+                                                }
+                                            }
                                         }
                                     },
                                     '删除'
                                 )
                             ]);
                         }
-                    }
-                ],
-                data8: [
-                    {
-                        name: 'xxx'
-                    },
-                    {
-                        name: 'sss'
                     }
                 ],
                 usageColumns: [
@@ -799,7 +791,7 @@
                         time: '2020年3月23日'
                     }
                 ],
-                addSupplierModal: false,
+                contactUnitModal: false,
                 addPackageModal: false,
                 columns3: [
                     {
@@ -1019,7 +1011,9 @@
                     // upperLimits: [{ validator: validateNumber, trigger: 'blur' }],
                     // lowerLimits: [{ validator: validateNumber, trigger: 'blur' }]
                 },
-                petSpeciesList: [] // 宠物分类列表
+                petSpeciesList: [], // 宠物分类列表
+                goodsSupplierList: [],
+                contactUnitList: []
             };
         },
         mounted () {
@@ -1029,16 +1023,17 @@
             console.log(this.categoryId);
         },
         created () {
-            this.getUsageList();
-            this.getPetSpeciesList();
+            this.getUsageList();// 处方用法
+            this.getPetSpeciesList();// 宠物种类
         },
         computed: {},
         methods: {
             handleEditUsageModal () {
                 this.editUsageModal = true;
             },
-            handleAddSupplierModal () {
-                this.addSupplierModal = true;
+            handleAddContactUnitModal () {
+                this.contactUnitModal = true;
+                this.getContactUnitList();
             },
             handleAddPackageModal () {
                 this.addPackageModal = true;
@@ -1055,6 +1050,8 @@
             },
             closeAddGoodsModal () {
                 this.addGoodsModal = false;
+                this.$refs.addGoodsForm.resetFields();
+                this.addGoodsForm.id = '';
                 // 需要调用父组件方法
                 this.$parent.getGoodsList();
             },
@@ -1122,6 +1119,13 @@
                                 this.$Message.error(response.message);
                             }
                         });
+                    } else if (this.goodsTabPane === 'pane3') {
+                        console.log(this.goodsSupplierList)
+                        this.goodsSupplierList.forEach(element => {
+                            this.$post('/admin/goods/supplier/save', element, response => {
+                                this.getGoodsSupplierList()
+                            });
+                        });
                     }
                     if (next) {
                         var curpane = this.goodsTabPane;
@@ -1174,14 +1178,14 @@
             },
             // 获取处方用法列表
             getUsageList () {
-                this.$get('/admin/general/prescription/usage/page', {}, response => {
-                    this.usageList = response.data.data;
+                this.$get('/admin/general/prescription/usage/search', { limit: 100 }, response => {
+                    this.usageList = response.data;
                 });
             },
             // 获取宠物分类列表
             getPetSpeciesList () {
-                this.$get('/admin/pet/species/page', {}, response => {
-                    this.petSpeciesList = response.data.data;
+                this.$get('/admin/pet/species/search', { limit: 100 }, response => {
+                    this.petSpeciesList = response.data;
                 });
             },
             // 删除处方用法
@@ -1219,6 +1223,46 @@
                         );
                     }
                 });
+            },
+            // 获取商品来源列表
+            getGoodsSupplierList () {
+                this.$get('/admin/goods/supplier/search', { limit: 100, goodsId: this.addGoodsForm.id }, response => {
+                    this.goodsSupplierList = response.data;
+                });
+            },
+            // 获取往来单位列表
+            getContactUnitList () {
+                this.$get('/admin/general/contact/unit/search', { limit: 100 }, response => {
+                    this.contactUnitList = response.data;
+                    let arr = this.goodsSupplierList.map(item => item.supplierId);
+                    this.contactUnitList.forEach(element => {
+                        if (arr.indexOf(element.id) > -1) {
+                            element._checked = true// 商品来源存在默认选中
+                        }
+                    })
+                });
+            },
+            handleAddContactUnit () {
+                let arr = this.goodsSupplierList.map(item => item.supplierId);
+                var selectIds = this.$refs.contactUnitTable.getSelection()
+                selectIds.forEach(element => {
+                    if (arr.indexOf(element.id) === -1) {
+                        var obj = { id: '', goodsId: this.addGoodsForm.id, supplierId: element.id, supplierName: element.name, price: '' }
+                        this.goodsSupplierList.push(obj)
+                    }
+                })
+                this.contactUnitModal = false
+            },
+            // 删除商品来源
+            removeGoodsSupplier (id) {
+                this.$get(
+                    '/admin/goods/supplier/remove/' + id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getGoodsSupplierList();
+                    }
+                );
             }
         },
         watch: {
@@ -1247,6 +1291,12 @@
                             })
                         }
                     });
+                }
+            },
+            'addGoodsForm.id': function (newVal, oldVal) {
+                if (oldVal !== newVal && newVal != null && newVal !== '') {
+                    // 编辑/添加完赋值时
+                    this.getGoodsSupplierList();// 商品来源
                 }
             }
         }
