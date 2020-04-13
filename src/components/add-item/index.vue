@@ -251,12 +251,12 @@
                     <FormItem class="lb0" prop="remindDays">
                       设置提醒：提前
                       <Input v-model="addGoodsForm.remindDays" v-width="100" />天提醒
-                      <Button type="success">+添加有效期</Button>
+                      <Button type="success" @click="handleAddGoodsExpiryDateModal">+添加有效期</Button>
                     </FormItem>
                   </Form>
                 </div>
               </Row>
-              <Table border :columns="columns10" :data="data10"></Table>
+              <Table border :columns="goodsExpiryDateColumns" :data="goodsExpiryDateList"></Table>
             </TabPane>
           </Tabs>
         </TabPane>
@@ -429,6 +429,34 @@
       </Form>
       <div slot="footer">
         <Button type="success" @click="addUsage">确定</Button>
+      </div>
+    </Modal>
+
+    <!-- 添加商品有效期 -->
+    <Modal v-model="addGoodsExpiryDateModal" class="mymodal" width="40%" title="添加有效期">
+      <Form
+        ref="addGoodsExpiryDateForm"
+        :model="addGoodsExpiryDateForm"
+        :rules="addGoodsExpiryDateRules"
+        :label-width="100"
+        class="myform"
+      >
+        <FormItem label="单号" prop="orderNumber">
+          <Input v-model="addGoodsExpiryDateForm.orderNumber" />
+        </FormItem>
+        <FormItem label="过期时间" prop="date">
+          <DatePicker
+              type="date"
+              v-model="addGoodsExpiryDateForm.date"
+              format="yyyy-MM-dd"
+              @on-change="addGoodsExpiryDateForm.date=$event"
+              placeholder="过期时间"
+              style="width: 100%"
+            ></DatePicker>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="success" @click="addGoodsExpiryDate">确定</Button>
       </div>
     </Modal>
   </div>
@@ -750,16 +778,16 @@
                         isShowInout: true
                     }
                 ],
-                columns10: [
+                goodsExpiryDateColumns: [
                     {
                         title: '单号',
                         minWidth: 84,
-                        key: 'order'
+                        key: 'orderNumber'
                     },
                     {
                         title: '有效期',
                         minWidth: 84,
-                        key: 'time'
+                        key: 'date'
                     },
                     {
                         title: '操作',
@@ -767,28 +795,37 @@
                         render: (h, params) => {
                             return h('div', [
                                 h(
-                                    'Button',
+                                    'Poptip',
                                     {
                                         props: {
-                                            type: 'error',
-                                            size: 'small'
+                                            confirm: true,
+                                            title: '该操作不可恢复，确认要删除吗?',
+                                            transfer: true
+                                        },
+                                        style: {
+                                            marginRight: '8px'
                                         },
                                         on: {
-                                            click: () => {}
+                                            'on-ok': () => {
+                                                this.removeGoodsExpiryDate(params.row.id);
+                                            }
                                         }
                                     },
-                                    '删除'
+                                    [
+                                        h(
+                                            'Button',
+                                            {
+                                                props: {
+                                                    type: 'error',
+                                                    size: 'small'
+                                                }
+                                            },
+                                            '删除'
+                                        )
+                                    ]
                                 )
                             ]);
                         }
-                    }
-                ],
-                data10: [
-                    {
-                        time: '2020年3月22日'
-                    },
-                    {
-                        time: '2020年3月23日'
                     }
                 ],
                 contactUnitModal: false,
@@ -1013,7 +1050,24 @@
                 },
                 petSpeciesList: [], // 宠物分类列表
                 goodsSupplierList: [],
-                contactUnitList: []
+                contactUnitList: [],
+                goodsExpiryDateList: [],
+                addGoodsExpiryDateModal: false,
+                addGoodsExpiryDateForm: {
+                    orderNumber: '',
+                    date: '',
+                    remindDays: ''
+                },
+                addGoodsExpiryDateRules: {
+                    orderNumber: [{ required: true, message: '请输入单号', trigger: 'blur' }],
+                    date: [
+                        {
+                            required: true,
+                            message: '请选择到期时间',
+                            trigger: 'blur'
+                        }
+                    ]
+                }
             };
         },
         mounted () {
@@ -1037,6 +1091,11 @@
             },
             handleAddPackageModal () {
                 this.addPackageModal = true;
+            },
+            handleAddGoodsExpiryDateModal () {
+                this.$refs.addGoodsExpiryDateForm.resetFields();
+                this.addGoodsExpiryDateForm.id = '';
+                this.addGoodsExpiryDateModal = true;
             },
             handleAddGoodsModal () {
                 // 父组件需要调用
@@ -1162,16 +1221,13 @@
             },
             getGoodsDetail (id) {
                 this.$get('/admin/goods/detail/' + id, {}, response => {
-                    this.addGoodsForm = this._.mapValues(
-                        this._.pick(response.data, this._.keysIn(this.addGoodsForm)),
-                        o => {
-                            if (typeof o === 'object') {
-                                return o.code;
-                            } else {
-                                return o;
-                            }
+                    this.addGoodsForm = this._.mapValues(response.data, function (o) {
+                        if (typeof o === 'object') {
+                            return o.code;
+                        } else {
+                            return o;
                         }
-                    );
+                    });
                     this.addUsageForm.id = this.addGoodsForm.usageId || ''
                     console.log(this.addGoodsForm);
                 });
@@ -1242,6 +1298,12 @@
                     })
                 });
             },
+            // 获取商品有效期
+            getGoodsExpiryDateList () {
+                this.$get('/admin/goods/expiry/date/search', { limit: 100, goodsId: this.addGoodsForm.id }, response => {
+                    this.goodsExpiryDateList = response.data;
+                });
+            },
             handleAddContactUnit () {
                 let arr = this.goodsSupplierList.map(item => item.supplierId);
                 var selectIds = this.$refs.contactUnitTable.getSelection()
@@ -1263,6 +1325,39 @@
                         this.getGoodsSupplierList();
                     }
                 );
+            },
+            // 删除商品有效期
+            removeGoodsExpiryDate (id) {
+                this.$get(
+                    '/admin/goods/expiry/date/remove/' + id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getGoodsExpiryDateList();
+                    }
+                );
+            },
+            // 新增过期日期
+            addGoodsExpiryDate () {
+                this.addGoodsExpiryDateForm.remindDays = this.addGoodsForm.remindDays
+                this.addGoodsExpiryDateForm.goodsId = this.addGoodsForm.id
+                this.$refs.addGoodsExpiryDateForm.validate(valid => {
+                    if (valid) {
+                        this.$post(
+                            '/admin/goods/expiry/date/save',
+                            this.addGoodsExpiryDateForm,
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getGoodsExpiryDateList();
+                                    this.addGoodsExpiryDateModal = false;
+                                } else {
+                                    this.$Message.error(response.message);
+                                }
+                            }
+                        );
+                    }
+                });
             }
         },
         watch: {
@@ -1297,6 +1392,7 @@
                 if (oldVal !== newVal && newVal != null && newVal !== '') {
                     // 编辑/添加完赋值时
                     this.getGoodsSupplierList();// 商品来源
+                    this.getGoodsExpiryDateList();// 有效期
                 }
             }
         }

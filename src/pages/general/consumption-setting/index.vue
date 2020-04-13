@@ -686,16 +686,13 @@
                 if (data && data.length > 0) {
                     this.treeId = data[0].id;
                     var obj = JSON.parse(JSON.stringify(data[0]));
-                    this.addGoodsCategoryForm = this._.mapValues(
-                        this._.pick(obj, this._.keysIn(this.addGoodsCategoryForm)),
-                        o => {
-                            if (typeof o === 'object') {
-                                return o.code;
-                            } else {
-                                return o;
-                            }
+                    this.addGoodsCategoryForm = this._.mapValues(obj, function (o) {
+                        if (typeof o === 'object') {
+                            return o.code;
+                        } else {
+                            return o;
                         }
-                    );
+                    });
                     this.addGoodsCategoryForm.partakeDiscount =
                         obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
