@@ -136,9 +136,9 @@
             <TabPane label="用法设置" name="pane2" tab="pane">
               <Row :gutter="16">
                 <Form
-                  ref="addUsageForm"
-                  :model="addUsageForm"
-                  :rules="addUsageFormRules"
+                  ref="addGoodsDosageForm"
+                  :model="addGoodsDosageForm"
+                  :rules="addGoodsDosageFormRules"
                   :label-width="80"
                   class="use-setting"
                 >
@@ -147,7 +147,7 @@
                   </Col>
                   <Col span="7">
                     <FormItem class="lb0">
-                      <Select v-model="addUsageForm.id" placeholder="请选择">
+                      <Select v-model="addGoodsForm.usageId" placeholder="请选择">
                         <Option
                           v-for="item in usageList"
                           :value="item.id"
@@ -164,20 +164,34 @@
                   <Col span="2">
                     <FormItem class="lb0">用量设置</FormItem>
                   </Col>
-                  <span v-for="(item,index) in petSpeciesList" :key="`petSpecies-${item.id}`">
+                  <Col
+                    span="22"
+                    class="ivu-title"
+                    v-if="addGoodsDosageForm.goodsDosageList==null||addGoodsDosageForm.goodsDosageList.length==0"
+                  >请先添加宠物类型</Col>
+                  <span
+                    v-else
+                    v-for="(item,index) in addGoodsDosageForm.goodsDosageList"
+                    :key="`goodsDosage-${index}`"
+                  >
                     <Col span="7" :offset="index!=0?'2':''">
-                      <FormItem :label="item.name+'---每千克消耗'" class="lb140">
-                        <Input v-model="addUsageForm.amounts[index]" />
+                      <FormItem
+                        :label="item.speciesName+'---每千克消耗'"
+                        class="lb140"
+                        :prop="'goodsDosageList.'+index+'.consume'"
+                        :rules="addGoodsDosageFormRules.consume"
+                      >
+                        <Input v-model="item.consume" />
                       </FormItem>
                     </Col>
                     <Col span="5">
                       <FormItem label="用量下限">
-                        <Input v-model="addUsageForm.upperLimits[index]" />
+                        <Input v-model="item.upperLimit" />
                       </FormItem>
                     </Col>
                     <Col span="5">
                       <FormItem label="用量上限">
-                        <Input v-model="addUsageForm.lowerLimits[index]" />
+                        <Input v-model="item.lowerLimit" />
                       </FormItem>
                     </Col>
                     <Col span="5" class="ivu-text-center">
@@ -194,7 +208,7 @@
                   <Col span="24">
                     <FormItem class="lb0">
                       <Checkbox
-                        v-model="addGoodsForm.enableAlias"
+                        v-model="addGoodsForm.sourRegurgitation"
                       >病例中根据用量反酸数量(注: 仅适用简单的单位换算,如单位为瓶,规格100ml/瓶,当输入用量120ml时,数量自动计算为2瓶;非此类情况不支持)</Checkbox>
                     </FormItem>
                   </Col>
@@ -213,7 +227,11 @@
               </Row>
               <Table border :columns="goodsSupplierColumns" :data="goodsSupplierList">
                 <template slot-scope="{ row, index }" slot="price">
-                  <Input type="text" v-model="goodsSupplierList[index].price" />
+                  <Form :ref="'addGoodsSupplierForm'+index" :model="row" :rules="addGoodsSupplierFormRules">
+                    <FormItem prop="price" class="mt5">
+                      <Input v-model="row.price" />
+                    </FormItem>
+                  </Form>
                 </template>
               </Table>
             </TabPane>
@@ -446,13 +464,13 @@
         </FormItem>
         <FormItem label="过期时间" prop="date">
           <DatePicker
-              type="date"
-              v-model="addGoodsExpiryDateForm.date"
-              format="yyyy-MM-dd"
-              @on-change="addGoodsExpiryDateForm.date=$event"
-              placeholder="过期时间"
-              style="width: 100%"
-            ></DatePicker>
+            type="date"
+            v-model="addGoodsExpiryDateForm.date"
+            format="yyyy-MM-dd"
+            @on-change="addGoodsExpiryDateForm.date=$event"
+            placeholder="过期时间"
+            style="width: 100%"
+          ></DatePicker>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -488,7 +506,7 @@
                 } else {
                     var r = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/;
                     if (!r.test(value)) {
-                        callback(new Error('请输入数字，最多保留两位小数'));
+                        callback(new Error('最多两位小数的数字'));
                     }
                     callback();
                 }
@@ -547,7 +565,6 @@
                         minWidth: 84,
                         key: 'price',
                         slot: 'price'
-
                     },
                     {
                         title: '操作',
@@ -564,9 +581,9 @@
                                         on: {
                                             click: () => {
                                                 if (params.row.id != null && params.row.id !== '') {
-                                                    this.removeGoodsSupplier(params.row.id)
+                                                    this.removeGoodsSupplier(params.row.id);
                                                 } else {
-                                                    this.goodsSupplierList.splice(params.index, 1)
+                                                    this.goodsSupplierList.splice(params.index, 1);
                                                 }
                                             }
                                         }
@@ -1010,7 +1027,8 @@
                     integralRequired: '',
                     description: '',
                     remindDays: '',
-                    usageId: ''
+                    usageId: '',
+                    sourRegurgitation: ''
                 },
                 addGoodsFormRules: {
                     name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
@@ -1034,19 +1052,10 @@
                 addUsageForm: {
                     id: '',
                     name: '',
-                    orderNum: '',
-                    sourRegurgitation: true,
-                    speciesKeys: [], // 宠物分类key
-                    speciesNames: [], // 宠物分类name
-                    amounts: [], // 每kg消耗
-                    upperLimits: [], // 用量下限
-                    lowerLimits: [] // 用量上限
+                    orderNum: ''
                 },
                 addUsageFormRules: {
                     name: [{ required: true, message: '请输名称', trigger: 'blur' }]
-                    // number: [{ validator: validateNumber, trigger: 'blur' }]
-                    // upperLimits: [{ validator: validateNumber, trigger: 'blur' }],
-                    // lowerLimits: [{ validator: validateNumber, trigger: 'blur' }]
                 },
                 petSpeciesList: [], // 宠物分类列表
                 goodsSupplierList: [],
@@ -1059,7 +1068,9 @@
                     remindDays: ''
                 },
                 addGoodsExpiryDateRules: {
-                    orderNumber: [{ required: true, message: '请输入单号', trigger: 'blur' }],
+                    orderNumber: [
+                        { required: true, message: '请输入单号', trigger: 'blur' }
+                    ],
                     date: [
                         {
                             required: true,
@@ -1067,6 +1078,15 @@
                             trigger: 'blur'
                         }
                     ]
+                },
+                addGoodsDosageForm: {
+                    goodsDosageList: [] // 商品用法列表
+                },
+                addGoodsDosageFormRules: {
+                    consume: [{ validator: validateNumber, trigger: 'blur' }]
+                },
+                addGoodsSupplierFormRules: {
+                    price: [{ validator: validateNumber, trigger: 'blur' }]
                 }
             };
         },
@@ -1077,8 +1097,8 @@
             console.log(this.categoryId);
         },
         created () {
-            this.getUsageList();// 处方用法
-            this.getPetSpeciesList();// 宠物种类
+            this.getUsageList(); // 处方用法
+            this.getPetSpeciesList(); // 宠物种类
         },
         computed: {},
         methods: {
@@ -1131,6 +1151,23 @@
                                     flag = false;
                                 }
                             });
+                        } else if (this.goodsTabPane === 'pane2') {
+                            this.$refs.addGoodsDosageForm.validate(valid2 => {
+                                if (valid2) {
+                                    flag = true;
+                                } else {
+                                    flag = false;
+                                }
+                            });
+                        } else if (this.goodsTabPane === 'pane3') {
+                            this.goodsSupplierList.forEach((element, index) => {
+                                var ref = 'addGoodsSupplierForm' + index
+                                this.$refs[ref].validate(valid3 => {
+                                    if (!valid3) {
+                                        flag = false;
+                                    }
+                                });
+                            })
                         } else if (this.goodsTabPane === 'pane4') {
                             this.$refs.form4.validate(valid4 => {
                                 if (valid4) {
@@ -1170,19 +1207,17 @@
                         }
                     });
                     if (this.goodsTabPane === 'pane2') {
-                        console.log(this.addUsageForm)
-                        this.$post('/admin/general/prescription/usage/save', this.addUsageForm, response => {
-                            if (response.success) {
-                                this.getUsageList()
-                            } else {
-                                this.$Message.error(response.message);
-                            }
+                        console.log(this.addGoodsDosageForm.goodsDosageList);
+                        this.addGoodsDosageForm.goodsDosageList.forEach(element => {
+                            this.$post('/admin/goods/dosage/save', element, response => {
+                                this.getGoodsDosageList();
+                            });
                         });
                     } else if (this.goodsTabPane === 'pane3') {
-                        console.log(this.goodsSupplierList)
+                        console.log(this.goodsSupplierList);
                         this.goodsSupplierList.forEach(element => {
                             this.$post('/admin/goods/supplier/save', element, response => {
-                                this.getGoodsSupplierList()
+                                this.getGoodsSupplierList();
                             });
                         });
                     }
@@ -1228,21 +1263,51 @@
                             return o;
                         }
                     });
-                    this.addUsageForm.id = this.addGoodsForm.usageId || ''
                     console.log(this.addGoodsForm);
                 });
             },
             // 获取处方用法列表
             getUsageList () {
-                this.$get('/admin/general/prescription/usage/search', { limit: 100 }, response => {
-                    this.usageList = response.data;
-                });
+                this.$get(
+                    '/admin/general/prescription/usage/search',
+                    { limit: 100 },
+                    response => {
+                        this.usageList = response.data;
+                    }
+                );
             },
             // 获取宠物分类列表
             getPetSpeciesList () {
                 this.$get('/admin/pet/species/search', { limit: 100 }, response => {
                     this.petSpeciesList = response.data;
                 });
+            },
+            // 获取商品用法列表
+            getGoodsDosageList () {
+                this.$get(
+                    '/admin/goods/dosage/search',
+                    { limit: 100, goodsId: this.addGoodsForm.id },
+                    response => {
+                        this.addGoodsDosageForm.goodsDosageList = response.data;
+
+                        let arr = this.addGoodsDosageForm.goodsDosageList.map(
+                            item => item.speciesId
+                        );
+                        this.petSpeciesList.forEach(element => {
+                            if (arr.indexOf(element.id) === -1) {
+                                this.addGoodsDosageForm.goodsDosageList.push({
+                                    id: '',
+                                    goodsId: this.addGoodsForm.id,
+                                    speciesId: element.id,
+                                    speciesName: element.name,
+                                    consume: '',
+                                    upperLimit: '',
+                                    lowerLimit: ''
+                                });
+                            }
+                        });
+                    }
+                );
             },
             // 删除处方用法
             deleteUsage (id) {
@@ -1282,65 +1347,75 @@
             },
             // 获取商品来源列表
             getGoodsSupplierList () {
-                this.$get('/admin/goods/supplier/search', { limit: 100, goodsId: this.addGoodsForm.id }, response => {
-                    this.goodsSupplierList = response.data;
-                });
+                this.$get(
+                    '/admin/goods/supplier/search',
+                    { limit: 100, goodsId: this.addGoodsForm.id },
+                    response => {
+                        this.goodsSupplierList = response.data;
+                    }
+                );
             },
             // 获取往来单位列表
             getContactUnitList () {
-                this.$get('/admin/general/contact/unit/search', { limit: 100 }, response => {
-                    this.contactUnitList = response.data;
-                    let arr = this.goodsSupplierList.map(item => item.supplierId);
-                    this.contactUnitList.forEach(element => {
-                        if (arr.indexOf(element.id) > -1) {
-                            element._checked = true// 商品来源存在默认选中
-                        }
-                    })
-                });
+                this.$get(
+                    '/admin/general/contact/unit/search',
+                    { limit: 100 },
+                    response => {
+                        this.contactUnitList = response.data;
+                        let arr = this.goodsSupplierList.map(item => item.supplierId);
+                        this.contactUnitList.forEach(element => {
+                            if (arr.indexOf(element.id) > -1) {
+                                element._checked = true; // 商品来源存在默认选中
+                            }
+                        });
+                    }
+                );
             },
             // 获取商品有效期
             getGoodsExpiryDateList () {
-                this.$get('/admin/goods/expiry/date/search', { limit: 100, goodsId: this.addGoodsForm.id }, response => {
-                    this.goodsExpiryDateList = response.data;
-                });
+                this.$get(
+                    '/admin/goods/expiry/date/search',
+                    { limit: 100, goodsId: this.addGoodsForm.id },
+                    response => {
+                        this.goodsExpiryDateList = response.data;
+                    }
+                );
             },
             handleAddContactUnit () {
                 let arr = this.goodsSupplierList.map(item => item.supplierId);
-                var selectIds = this.$refs.contactUnitTable.getSelection()
+                var selectIds = this.$refs.contactUnitTable.getSelection();
                 selectIds.forEach(element => {
                     if (arr.indexOf(element.id) === -1) {
-                        var obj = { id: '', goodsId: this.addGoodsForm.id, supplierId: element.id, supplierName: element.name, price: '' }
-                        this.goodsSupplierList.push(obj)
+                        var obj = {
+                            id: '',
+                            goodsId: this.addGoodsForm.id,
+                            supplierId: element.id,
+                            supplierName: element.name,
+                            price: ''
+                        };
+                        this.goodsSupplierList.push(obj);
                     }
-                })
-                this.contactUnitModal = false
+                });
+                this.contactUnitModal = false;
             },
             // 删除商品来源
             removeGoodsSupplier (id) {
-                this.$get(
-                    '/admin/goods/supplier/remove/' + id,
-                    {},
-                    response => {
-                        this.$Message.info('删除成功');
-                        this.getGoodsSupplierList();
-                    }
-                );
+                this.$get('/admin/goods/supplier/remove/' + id, {}, response => {
+                    this.$Message.info('删除成功');
+                    this.getGoodsSupplierList();
+                });
             },
             // 删除商品有效期
             removeGoodsExpiryDate (id) {
-                this.$get(
-                    '/admin/goods/expiry/date/remove/' + id,
-                    {},
-                    response => {
-                        this.$Message.info('删除成功');
-                        this.getGoodsExpiryDateList();
-                    }
-                );
+                this.$get('/admin/goods/expiry/date/remove/' + id, {}, response => {
+                    this.$Message.info('删除成功');
+                    this.getGoodsExpiryDateList();
+                });
             },
             // 新增过期日期
             addGoodsExpiryDate () {
-                this.addGoodsExpiryDateForm.remindDays = this.addGoodsForm.remindDays
-                this.addGoodsExpiryDateForm.goodsId = this.addGoodsForm.id
+                this.addGoodsExpiryDateForm.remindDays = this.addGoodsForm.remindDays;
+                this.addGoodsExpiryDateForm.goodsId = this.addGoodsForm.id;
                 this.$refs.addGoodsExpiryDateForm.validate(valid => {
                     if (valid) {
                         this.$post(
@@ -1361,38 +1436,12 @@
             }
         },
         watch: {
-            'addUsageForm.id': function (newVal) {
-                this.addGoodsForm.usageId = newVal
-                if (newVal != null && newVal !== '') {
-                    this.usageList.forEach(element => {
-                        if (element.id === newVal) {
-                            this.addUsageForm.name = element.name
-                            this.petSpeciesList.forEach((item, index) => {
-                                this.addUsageForm.speciesKeys[index] = item.key
-                                this.addUsageForm.speciesNames[index] = item.name
-                                this.addUsageForm.amounts[index] = null
-                                this.addUsageForm.upperLimits[index] = null
-                                this.addUsageForm.lowerLimits[index] = null
-                                // 当前选中的usage
-                                if (element.items && element.items.length > 0) {
-                                    element.items.forEach(jtem => {
-                                        if (item.key === jtem.petSpecies.key) {
-                                            this.addUsageForm.amounts[index] = jtem.amount
-                                            this.addUsageForm.upperLimits[index] = jtem.upperLimit
-                                            this.addUsageForm.lowerLimits[index] = jtem.lowerLimit
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    });
-                }
-            },
             'addGoodsForm.id': function (newVal, oldVal) {
                 if (oldVal !== newVal && newVal != null && newVal !== '') {
                     // 编辑/添加完赋值时
-                    this.getGoodsSupplierList();// 商品来源
-                    this.getGoodsExpiryDateList();// 有效期
+                    this.getGoodsSupplierList(); // 商品来源
+                    this.getGoodsExpiryDateList(); // 有效期
+                    this.getGoodsDosageList(); // 商品用法
                 }
             }
         }
@@ -1437,6 +1486,10 @@
 .mr24 {
   margin-right: 24px;
 }
+
+.mt5 {
+  margin-top: 5px;
+}
 </style>
 <style lang="less">
 .marLef10 {
@@ -1476,5 +1529,9 @@
 }
 .use-setting .ivu-form-item-label {
   text-align: left;
+}
+.ivu-title {
+  height: 32px;
+  line-height: 32px;
 }
 </style>
