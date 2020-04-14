@@ -54,7 +54,8 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         // post请求的参数需要用qs.stringify序列化
-        config.data = config.method === 'post' ? Qs.stringify(config.data, { indices: false }) : null
+        // axios默认请求为json，默认post请求序列化，请求传入stringify为false则不序列化
+        config.data = config.method === 'post' ? ((config.stringify == null || config.stringify === undefined || config.stringify) ? Qs.stringify(config.data, { indices: false }) : config.data) : null
         config.paramsSerializer = function (params) {
             return Qs.stringify(params, { arrayFormat: 'repeat' })
         }

@@ -185,12 +185,14 @@
                       </FormItem>
                     </Col>
                     <Col span="5">
-                      <FormItem label="用量下限">
+                      <FormItem label="用量下限" :prop="'goodsDosageList.'+index+'.upperLimit'"
+                        :rules="addGoodsDosageFormRules.upperLimit">
                         <Input v-model="item.upperLimit" />
                       </FormItem>
                     </Col>
                     <Col span="5">
-                      <FormItem label="用量上限">
+                      <FormItem label="用量上限" :prop="'goodsDosageList.'+index+'.lowerLimit'"
+                        :rules="addGoodsDosageFormRules.lowerLimit">
                         <Input v-model="item.lowerLimit" />
                       </FormItem>
                     </Col>
@@ -229,7 +231,8 @@
                 <template slot-scope="{ row, index }" slot="price">
                   <Form :ref="'addGoodsSupplierForm'+index" :model="row" :rules="addGoodsSupplierFormRules">
                     <FormItem prop="price" class="mt5">
-                      <Input v-model="row.price" />
+                      <!-- <Input v-model="row.price" /> -->
+                      <Input v-model="goodsSupplierList[index].price" />
                     </FormItem>
                   </Form>
                 </template>
@@ -280,35 +283,35 @@
         </TabPane>
         <TabPane label="添加套餐" name="packages" tab="add">
           <Row :gutter="16">
-            <Form ref="form" :model="addGoodsForm" :rules="rules" :label-width="100" class="myform">
+            <Form ref="addGoodsCombinationForm" :model="addGoodsCombinationForm" :rules="addGoodsCombinationFormRules" :label-width="100" class="myform">
               <Col span="12">
                 <FormItem label="套餐名称" prop="name">
-                  <Input v-model="addGoodsForm.name" />
+                  <Input v-model="addGoodsCombinationForm.name" />
                 </FormItem>
               </Col>
               <Col span="12">
                 <FormItem label="套餐编号">
-                  <Input v-model="addGoodsForm.name" />
+                  <Input v-model="addGoodsCombinationForm.number" />
                 </FormItem>
               </Col>
               <Col span="12">
                 <FormItem label="套餐条码">
-                  <Input v-model="addGoodsForm.name" />
+                  <Input v-model="addGoodsCombinationForm.barCode" />
                 </FormItem>
               </Col>
               <Col span="12">
                 <FormItem label="套餐规格">
-                  <Input v-model="addGoodsForm.name" />
+                  <Input v-model="addGoodsCombinationForm.specification" />
                 </FormItem>
               </Col>
               <Col span="12">
                 <FormItem label="套餐单位">
-                  <Input v-model="addGoodsForm.name" />
+                  <Input v-model="addGoodsCombinationForm.unit" />
                 </FormItem>
               </Col>
               <Col span="12">
                 <FormItem label="套餐说明">
-                  <Input v-model="addGoodsForm.name" />
+                  <Input v-model="addGoodsCombinationForm.description" />
                 </FormItem>
               </Col>
             </Form>
@@ -322,17 +325,25 @@
               <Button type="success" @click="handleAddPackageModal">添加套餐</Button>
             </div>
           </Row>
-          <Table border :columns="columns5" :data="data5"></Table>
+          <Table ref="detailsTable" border :columns="detailsColumns" :data="detailsList">
+            <template slot-scope="{ row, index }" slot="num">
+                  <Form :ref="'detailsForm'+index" :model="row" :rules="addDetailsFormRules">
+                    <FormItem prop="num" class="mt5">
+                      <Input v-model="detailsList[index].num" @on-change="countTotalPrice" />
+                    </FormItem>
+                  </Form>
+                </template>
+          </Table>
           <Row style="margin-top:15px">
             <Col span="24" class="ivu-text-right">
-              <span style="font-size:16px">合计：</span>0.00
+              <span style="font-size:16px">合计：</span>{{totalPrice}}
             </Col>
           </Row>
         </TabPane>
       </Tabs>
       <div slot="footer">
         <Button type="success" v-if="addType=='goods'" @click="saveGoods(false)">保存</Button>
-        <Button type="success" v-if="addType=='packages'" @click="addPackages">保存</Button>
+        <Button type="success" v-if="addType=='packages'" @click="saveGoodsCombination">保存</Button>
         <Button
           type="info"
           v-if="addType=='goods'&&goodsTabPane!='pane6'"
@@ -381,25 +392,36 @@
             </Col>
           </Row>
           <Row>
-            <Col style="padding:8px 16px;border:1px solid #ccc">
-              <Tree :data="packageData"></Tree>
+            <Col class="all-category-tree-box">
+              <Tree ref="allGoodsCategoryTree" :data="allGoodsCategoryTreeData" @on-select-change="getAllGoodsCategoryTreeChild"></Tree>
             </Col>
           </Row>
         </Col>
         <Col span="18">
           <Row class-name="module-title-wrapper">
-            <Col span="15">
+            <Col span="14">
               <span class="module-title">商品列表</span>
             </Col>
             <Col span="4" class="ivu-text-right">
-              <Button type="warning" class="mr10">快速添加</Button>
+              <Button type="warning" class="mr10" @click="quickAdd">快速添加</Button>
             </Col>
-            <Col span="5" class="ivu-text-right">
-              <Input prefix="ios-search" placeholder="名称，编号，条形码" />
+            <Col span="6" class="ivu-text-right">
+              <Input prefix="ios-search" placeholder="名称，编号，条形码" v-model="search.keywords"
+                  @on-change="getAllGoodsList"
+                  clearable />
             </Col>
           </Row>
-          <Row class="ivu-mt">
-            <Table border :columns="columns3" :data="data3"></Table>
+          <Row>
+            <Table border :columns="allGoodsColumns" :data="allGoodsList"></Table>
+            <div class="ivu-mt ivu-text-right">
+                  <Page
+                    :total="total"
+                    :show-elevator="total/10>10"
+                    page-size:10
+                    @on-change="getAllGoodsList"
+                    :current.sync="current"
+                  />
+                </div>
           </Row>
         </Col>
       </Row>
@@ -409,15 +431,23 @@
           <span class="module-title">已选商品列表</span>
         </Col>
         <Col span="16" class="ivu-text-right">
-          <Button type="error">删除</Button>
+          <Button type="error" @click="removeSelect">删除</Button>
         </Col>
       </Row>
       <Row>
-        <Table border :columns="columns6" :data="data6"></Table>
+        <Table ref="addDetailsTable" border :columns="addDetailsColumns" :data="detailsList">
+            <template slot-scope="{ row, index }" slot="num">
+                  <Form :ref="'addDetailsForm'+index" :model="row" :rules="addDetailsFormRules">
+                    <FormItem prop="num" class="mt5">
+                      <Input v-model="detailsList[index].num" @on-change="countTotalPrice" />
+                    </FormItem>
+                  </Form>
+                </template>
+          </Table>
       </Row>
 
       <div slot="footer">
-        <Button type="success">保存</Button>
+        <Button type="success" @click="closePackageModal">保存</Button>
       </div>
     </Modal>
 
@@ -524,32 +554,7 @@
                         key: 'name'
                     }
                 ],
-                packageData: [
-                    {
-                        title: '挂号',
-                        expand: true,
-                        children: [
-                            {
-                                title: '挂号服务',
-                                expand: false
-                            },
-                            {
-                                title: '住院费用',
-                                expand: false
-                            }
-                        ]
-                    },
-                    {
-                        title: '处方',
-                        expand: true,
-                        children: [
-                            {
-                                title: '口服类',
-                                expand: false
-                            }
-                        ]
-                    }
-                ],
+                allGoodsCategoryTreeData: [],
                 editUsageModal: false,
                 rules: {
                     name: [{ required: true, message: '请输名称', trigger: 'blur' }]
@@ -847,9 +852,11 @@
                 ],
                 contactUnitModal: false,
                 addPackageModal: false,
-                columns3: [
+                allGoodsColumns: [
                     {
-                        title: '编号'
+                        title: '编号',
+                        minWidth: 84,
+                        key: 'number'
                     },
                     {
                         title: '名称',
@@ -857,41 +864,60 @@
                         key: 'name'
                     },
                     {
-                        title: '规格'
+                        title: '规格',
+                        minWidth: 84,
+                        key: 'specification'
                     },
                     {
-                        title: '单位'
+                        title: '单位',
+                        minWidth: 84,
+                        key: 'unit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'unitPrice'
+                        key: 'price'
                     },
                     {
-                        title: '条形码'
+                        title: '条形码',
+                        minWidth: 84,
+                        key: 'barCode'
                     }
                 ],
-                data3: [
+                detailsColumns: [
                     {
-                        name: '腹部',
-                        unitPrice: '0.00'
+                        title: '商品名称',
+                        minWidth: 84,
+                        key: 'name'
                     },
                     {
-                        name: '眼部',
-                        unitPrice: '0.00'
-                    }
-                ],
-                data6: [
-                    {
-                        name: '腹部',
-                        unitPrice: '0.00'
+                        title: '商品编号',
+                        minWidth: 84,
+                        key: 'number'
                     },
                     {
-                        name: '眼部',
-                        unitPrice: '0.00'
+                        title: '规格',
+                        minWidth: 84,
+                        key: 'specification'
+                    },
+                    {
+                        title: '单位',
+                        minWidth: 84,
+                        key: 'unit'
+                    },
+                    {
+                        title: '单价',
+                        minWidth: 84,
+                        key: 'price'
+                    },
+                    {
+                        title: '组合数量',
+                        minWidth: 84,
+                        key: 'num',
+                        slot: 'num'
                     }
                 ],
-                columns6: [
+                addDetailsColumns: [
                     {
                         type: 'selection',
                         width: 60
@@ -904,97 +930,28 @@
                     {
                         title: '商品编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'number'
                     },
                     {
-                        title: '规格'
+                        title: '规格',
+                        minWidth: 84,
+                        key: 'specification'
                     },
                     {
-                        title: '单位'
+                        title: '单位',
+                        minWidth: 84,
+                        key: 'unit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'unitPrice'
+                        key: 'price'
                     },
                     {
                         title: '组合数量',
                         minWidth: 84,
                         key: 'num',
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Input', {
-                                    props: {
-                                        // 将单元格的值给Input
-                                        value: params.row.num
-                                    },
-                                    on: {
-                                        'on-change' (event) {
-                                            // 值改变时
-                                            // 将渲染后的值重新赋值给单元格值
-                                            params.row.num = event.target.value;
-                                        }
-                                    }
-                                })
-                            ]);
-                        }
-                    }
-                ],
-                columns5: [
-                    {
-                        title: '商品名称',
-                        minWidth: 84,
-                        key: 'name'
-                    },
-                    {
-                        title: '商品编号',
-                        minWidth: 84,
-                        key: 'code'
-                    },
-                    {
-                        title: '规格'
-                    },
-                    {
-                        title: '单位'
-                    },
-                    {
-                        title: '单价',
-                        minWidth: 84,
-                        key: 'unitPrice'
-                    },
-                    {
-                        title: '组合数量',
-                        minWidth: 84,
-                        key: 'num',
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Input', {
-                                    props: {
-                                        // 将单元格的值给Input
-                                        value: params.row.num
-                                    },
-                                    on: {
-                                        'on-change' (event) {
-                                            // 值改变时
-                                            // 将渲染后的值重新赋值给单元格值
-                                            params.row.num = event.target.value;
-                                        }
-                                    }
-                                })
-                            ]);
-                        }
-                    }
-                ],
-                data5: [
-                    {
-                        name: '222',
-                        unitPrice: '0.00',
-                        num: '1'
-                    },
-                    {
-                        name: '3333',
-                        unitPrice: '0.00',
-                        num: '1'
+                        slot: 'num'
                     }
                 ],
 
@@ -1083,11 +1040,43 @@
                     goodsDosageList: [] // 商品用法列表
                 },
                 addGoodsDosageFormRules: {
-                    consume: [{ validator: validateNumber, trigger: 'blur' }]
+                    consume: [{ validator: validateNumber, trigger: 'blur' }],
+                    upperLimit: [{ validator: validateLimit, trigger: 'blur' }],
+                    lowerLimit: [{ validator: validateLimit, trigger: 'blur' }]
                 },
                 addGoodsSupplierFormRules: {
                     price: [{ validator: validateNumber, trigger: 'blur' }]
-                }
+                },
+                addGoodsCombinationForm: {
+                    id: '',
+                    type: '',
+                    combinationType: 'packages',
+                    name: '',
+                    number: '',
+                    barCode: '',
+                    specification: '',
+                    unit: '',
+                    description: ''
+                },
+                addGoodsCombinationFormRules: {
+                    name: [{ required: true, message: '请输入套餐名称', trigger: 'blur' }]
+                },
+                detailsList: [], // 商品组合列表
+                addDetailsFormRules: {
+                    num: [{ validator: validateLimit, trigger: 'blur' }]
+                },
+                allGoodsList: [], // 所有商品列表
+                search: {
+                    keywords: '',
+                    type: '',
+                    categoryId: '',
+                    pageSize: 5,
+                    pageNumber: 0
+                },
+                total: 0,
+                current: 1,
+                totalPrice: 0.00
+
             };
         },
         mounted () {
@@ -1110,6 +1099,8 @@
                 this.getContactUnitList();
             },
             handleAddPackageModal () {
+                this.getAllGoodsCategoryList();
+                this.getAllGoodsList();
                 this.addPackageModal = true;
             },
             handleAddGoodsExpiryDateModal () {
@@ -1131,6 +1122,10 @@
                 this.addGoodsModal = false;
                 this.$refs.addGoodsForm.resetFields();
                 this.addGoodsForm.id = '';
+
+                this.$refs.addGoodsCombinationForm.resetFields();
+                this.addGoodsCombinationForm.id = '';
+                this.detailsList = [];
                 // 需要调用父组件方法
                 this.$parent.getGoodsList();
             },
@@ -1231,28 +1226,38 @@
                 }
             },
             // 保存套餐
-            addPackages () {
-                this.addGoodsForm.type = this.type;
-                this.addGoodsForm.categoryId = this.categoryId;
-                console.log(this.addGoodsForm);
-                this.$refs.addGoodsForm.validate(valid => {
+            saveGoodsCombination () {
+                this.addGoodsCombinationForm.type = this.type;
+                console.log(this.addGoodsCombinationForm);
+                var flag = true
+                this.$refs.addGoodsCombinationForm.validate(valid => {
                     if (valid) {
-                        // this.$post(
-                        //     '/admin/goods/save',
-                        //     this.addGoodsCategoryForm,
-                        //     response => {
-                        //         if (response.success) {
-                        //             this.$Message.info('保存成功');
-                        //             this.getGoodsCategoryList()
-                        //             this.addGoodsCategoryModal = false
-                        //             this.changeGoodsCategoryModal = false
-                        //         } else {
-                        //             this.$Message.error(response.message);
-                        //         }
-                        //     }
-                        // );
+                        this.detailsList.forEach((element, index) => {
+                            var ref = 'detailsForm' + index
+                            this.$refs[ref].validate(valid => {
+                                if (!valid) {
+                                    flag = false;
+                                }
+                            });
+                        })
+                    } else {
+                        flag = false
                     }
                 });
+                if (flag) {
+                    this.addGoodsCombinationForm.detailForms = this.detailsList
+                    this.$post(
+                        '/admin/goods/combination/batchsave',
+                        this.addGoodsCombinationForm,
+                        response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                            } else {
+                                this.$Message.error(response.message);
+                            }
+                        }, false
+                    );
+                }
             },
             getGoodsDetail (id) {
                 this.$get('/admin/goods/detail/' + id, {}, response => {
@@ -1433,6 +1438,92 @@
                         );
                     }
                 });
+            },
+            // 获取商品分类列表(根据类名分组生成树)
+            getAllGoodsCategoryList () {
+                var data = {
+                    limit: 100
+                };
+                this.$get('/admin/goods/category/search', data, response => {
+                    var data = this._.groupBy(response.data, 'type.name')
+                    this.allGoodsCategoryTreeData = [];
+                    for (let key in data) {
+                        var obj = {}
+                        obj.title = key
+                        obj.expand = true
+                        obj.children = data[key]
+                        obj.children.forEach(element => {
+                            element.title = element.name
+                            obj.type = element.type
+                        })
+                        this.allGoodsCategoryTreeData.push(obj);
+                    }
+                });
+            },
+            // 点击树
+            getAllGoodsCategoryTreeChild (data) {
+                if (data && data.length > 0) {
+                    this.search.type = data[0].type && data[0].type.code
+                    this.search.categoryId = data[0].id
+                } else {
+                    this.search.type = ''
+                    this.search.categoryId = ''
+                }
+                this.getAllGoodsList();
+            },
+            getAllGoodsList () {
+                this.search.pageNumber = this.current - 1
+                this.$get('/admin/goods/page', this.search, response => {
+                    this.total = response.data.total
+                    this.allGoodsList = response.data.data;
+                });
+            },
+            quickAdd () {
+                let arr = this.detailsList.map(
+                    item => item.goodsId
+                );
+                this.allGoodsList.forEach(element => {
+                    if (arr.indexOf(element.id) === -1) {
+                        this.detailsList.push({
+                            id: '',
+                            goodsId: element.id,
+                            name: element.name,
+                            number: element.number,
+                            specification: element.specification,
+                            unit: element.unit,
+                            price: element.price,
+                            num: ''
+                        });
+                    }
+                });
+            },
+            removeSelect () {
+                var selectIds = this.$refs.addDetailsTable.getSelection();
+                selectIds.forEach((element, index) => {
+                    this.detailsList.splice(index, 1);
+                });
+            },
+            closePackageModal () {
+                var flag = true
+                this.detailsList.forEach((element, index) => {
+                    var ref = 'addDetailsForm' + index
+                    this.$refs[ref].validate(valid => {
+                        if (!valid) {
+                            flag = false;
+                        }
+                    });
+                })
+                if (flag) { this.addPackageModal = false }
+                console.log(this.detailsList)
+            },
+            countTotalPrice () {
+                var totalPrice = 0
+                this.detailsList.forEach(element => {
+                    var price = element.price || 0
+                    var num = element.num || 0
+                    totalPrice += price * num
+                })
+                this.totalPrice = totalPrice
             }
         },
         watch: {
@@ -1489,6 +1580,13 @@
 
 .mt5 {
   margin-top: 5px;
+}
+
+.all-category-tree-box {
+  padding:8px 16px;
+  border:1px solid #ccc;
+  height: 330px;
+  overflow: auto;
 }
 </style>
 <style lang="less">
