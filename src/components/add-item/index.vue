@@ -197,8 +197,8 @@
                       </FormItem>
                     </Col>
                     <Col span="5" class="ivu-text-center">
-                      <Button type="warning" class="mr10">复制</Button>
-                      <Button type="success">粘贴</Button>
+                      <Button type="warning" class="mr10" @click="copyGoodsDosage(index)">复制</Button>
+                      <Button type="success" @click="pasteGoodsDosage(index)">粘贴</Button>
                     </Col>
                   </span>
                   <Col
@@ -1524,6 +1524,17 @@
                     totalPrice += price * num
                 })
                 this.totalPrice = totalPrice
+            },
+            copyGoodsDosage (index) {
+                localStorage.goodsDosage = JSON.stringify(this.addGoodsDosageForm.goodsDosageList[index])
+            },
+            pasteGoodsDosage (index) {
+                var goodsDosage = JSON.parse(localStorage.goodsDosage)
+                if (goodsDosage != null) {
+                    this.addGoodsDosageForm.goodsDosageList[index].consume = goodsDosage.consume
+                    this.addGoodsDosageForm.goodsDosageList[index].upperLimit = goodsDosage.upperLimit
+                    this.addGoodsDosageForm.goodsDosageList[index].lowerLimit = goodsDosage.lowerLimit
+                }
             }
         },
         watch: {
