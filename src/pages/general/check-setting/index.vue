@@ -1,15 +1,5 @@
 <template>
   <div>
-    <Tabs value="name1">
-      <TabPane label="处方组合" name="name1"></TabPane>
-      <TabPane label="检验组合" name="name2"></TabPane>
-      <TabPane label="处置组合" name="name3"></TabPane>
-      <TabPane label="手术组合" name="name4"></TabPane>
-      <TabPane label="住院组合" name="name5"></TabPane>
-      <TabPane label="美容组合" name="name6"></TabPane>
-      <TabPane label="疫苗组合" name="name7"></TabPane>
-      <TabPane label="商品组合" name="name8"></TabPane>
-    </Tabs>
     <Row>
       <Col span="6">
         <Card>
