@@ -1,4 +1,5 @@
 import hospital from './modules/hospital';
+import district from './modules/district';
 import personnel from './modules/personnel';
 import BasicLayout from '@/layouts/basic-layout';
 import marketing from './modules/marketing';
@@ -60,6 +61,7 @@ const frameIn = [
         ]
     },
     hospital,
+    district,
     personnel,
     marketing,
     general,

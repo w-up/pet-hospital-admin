@@ -9,6 +9,13 @@ export default [
         name: 'hospital'
     },
     {
+        path: '/district',
+        title: '大区管理',
+        icon: 'md-albums',
+        hideSider: false,
+        name: 'district'
+    },
+    {
         path: '/personnel',
         title: '人员管理',
         icon: 'md-person',
