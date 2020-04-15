@@ -128,7 +128,7 @@
                     </FormItem>
                   </Col>
                   <Col span="24" offset="1">
-                    <Button type="warning" @click="setHosPriceModal=true">按照医院设置售价</Button>
+                    <Button type="warning" @click="handleSetHosPriceModal">按照医院设置售价</Button>
                   </Col>
                 </Form>
               </Row>
@@ -185,14 +185,20 @@
                       </FormItem>
                     </Col>
                     <Col span="5">
-                      <FormItem label="用量下限" :prop="'goodsDosageList.'+index+'.upperLimit'"
-                        :rules="addGoodsDosageFormRules.upperLimit">
+                      <FormItem
+                        label="用量下限"
+                        :prop="'goodsDosageList.'+index+'.upperLimit'"
+                        :rules="addGoodsDosageFormRules.upperLimit"
+                      >
                         <Input v-model="item.upperLimit" />
                       </FormItem>
                     </Col>
                     <Col span="5">
-                      <FormItem label="用量上限" :prop="'goodsDosageList.'+index+'.lowerLimit'"
-                        :rules="addGoodsDosageFormRules.lowerLimit">
+                      <FormItem
+                        label="用量上限"
+                        :prop="'goodsDosageList.'+index+'.lowerLimit'"
+                        :rules="addGoodsDosageFormRules.lowerLimit"
+                      >
                         <Input v-model="item.lowerLimit" />
                       </FormItem>
                     </Col>
@@ -229,7 +235,11 @@
               </Row>
               <Table border :columns="goodsSupplierColumns" :data="goodsSupplierList">
                 <template slot-scope="{ row, index }" slot="price">
-                  <Form :ref="'addGoodsSupplierForm'+index" :model="row" :rules="addGoodsSupplierFormRules">
+                  <Form
+                    :ref="'addGoodsSupplierForm'+index"
+                    :model="row"
+                    :rules="addGoodsSupplierFormRules"
+                  >
                     <FormItem prop="price" class="mt5">
                       <!-- <Input v-model="row.price" /> -->
                       <Input v-model="goodsSupplierList[index].price" />
@@ -283,7 +293,13 @@
         </TabPane>
         <TabPane label="添加套餐" name="packages" tab="add">
           <Row :gutter="16">
-            <Form ref="addGoodsCombinationForm" :model="addGoodsCombinationForm" :rules="addGoodsCombinationFormRules" :label-width="100" class="myform">
+            <Form
+              ref="addGoodsCombinationForm"
+              :model="addGoodsCombinationForm"
+              :rules="addGoodsCombinationFormRules"
+              :label-width="100"
+              class="myform"
+            >
               <Col span="12">
                 <FormItem label="套餐名称" prop="name">
                   <Input v-model="addGoodsCombinationForm.name" />
@@ -327,16 +343,17 @@
           </Row>
           <Table ref="detailsTable" border :columns="detailsColumns" :data="detailsList">
             <template slot-scope="{ row, index }" slot="num">
-                  <Form :ref="'detailsForm'+index" :model="row" :rules="addDetailsFormRules">
-                    <FormItem prop="num" class="mt5">
-                      <Input v-model="detailsList[index].num" @on-change="countTotalPrice" />
-                    </FormItem>
-                  </Form>
-                </template>
+              <Form :ref="'detailsForm'+index" :model="row" :rules="addDetailsFormRules">
+                <FormItem prop="num" class="mt5">
+                  <Input v-model="detailsList[index].num" @on-change="countTotalPrice" />
+                </FormItem>
+              </Form>
+            </template>
           </Table>
           <Row style="margin-top:15px">
             <Col span="24" class="ivu-text-right">
-              <span style="font-size:16px">合计：</span>{{totalPrice}}
+              <span style="font-size:16px">合计：</span>
+              {{totalPrice}}
             </Col>
           </Row>
         </TabPane>
@@ -357,7 +374,32 @@
       <p slot="header">
         <Col span="24">按照医院设置售价</Col>
       </p>
-      <Table border :columns="columnsHosList" :data="dataHosList"></Table>
+      <Table border :columns="goodsHospitalColumns" :data="goodsHospitalList">
+        <template slot-scope="{ row, index }" slot="price">
+          <Form
+            :ref="'addGoodsHospitalForm'+index"
+            :model="row"
+            :rules="addGoodsHospitalFormRules"
+            v-if="editIndex === index"
+          >
+            <FormItem prop="price" class="mt5">
+              <Input v-model="goodsHospitalList[index].price" />
+            </FormItem>
+          </Form>
+          <span v-else>{{ row.price }}</span>
+        </template>
+
+        <template slot-scope="{ row, index }" slot="action">
+          <div v-if="editIndex === index">
+            <Button @click="handleSaveGoodsHospital(index)" type="info" size="small">保存</Button>
+            <Button type="primary" size="small" @click="setDefaultPrice(index)">默认</Button>
+          </div>
+          <div v-else>
+            <Button @click="editIndex = index" type="info" size="small">编辑</Button>
+            <Button type="primary" size="small" @click="setDefaultPrice(index)">默认</Button>
+          </div>
+        </template>
+      </Table>
 
       <div slot="footer"></div>
     </Modal>
@@ -393,7 +435,11 @@
           </Row>
           <Row>
             <Col class="all-category-tree-box">
-              <Tree ref="allGoodsCategoryTree" :data="allGoodsCategoryTreeData" @on-select-change="getAllGoodsCategoryTreeChild"></Tree>
+              <Tree
+                ref="allGoodsCategoryTree"
+                :data="allGoodsCategoryTreeData"
+                @on-select-change="getAllGoodsCategoryTreeChild"
+              ></Tree>
             </Col>
           </Row>
         </Col>
@@ -406,22 +452,26 @@
               <Button type="warning" class="mr10" @click="quickAdd">快速添加</Button>
             </Col>
             <Col span="6" class="ivu-text-right">
-              <Input prefix="ios-search" placeholder="名称，编号，条形码" v-model="search.keywords"
-                  @on-change="getAllGoodsList"
-                  clearable />
+              <Input
+                prefix="ios-search"
+                placeholder="名称，编号，条形码"
+                v-model="search.keywords"
+                @on-change="getAllGoodsList"
+                clearable
+              />
             </Col>
           </Row>
           <Row>
             <Table border :columns="allGoodsColumns" :data="allGoodsList"></Table>
             <div class="ivu-mt ivu-text-right">
-                  <Page
-                    :total="total"
-                    :show-elevator="total/10>10"
-                    page-size:10
-                    @on-change="getAllGoodsList"
-                    :current.sync="current"
-                  />
-                </div>
+              <Page
+                :total="total"
+                :show-elevator="total/10>10"
+                page-size:10
+                @on-change="getAllGoodsList"
+                :current.sync="current"
+              />
+            </div>
           </Row>
         </Col>
       </Row>
@@ -436,14 +486,14 @@
       </Row>
       <Row>
         <Table ref="addDetailsTable" border :columns="addDetailsColumns" :data="detailsList">
-            <template slot-scope="{ row, index }" slot="num">
-                  <Form :ref="'addDetailsForm'+index" :model="row" :rules="addDetailsFormRules">
-                    <FormItem prop="num" class="mt5">
-                      <Input v-model="detailsList[index].num" @on-change="countTotalPrice" />
-                    </FormItem>
-                  </Form>
-                </template>
-          </Table>
+          <template slot-scope="{ row, index }" slot="num">
+            <Form :ref="'addDetailsForm'+index" :model="row" :rules="addDetailsFormRules">
+              <FormItem prop="num" class="mt5">
+                <Input v-model="detailsList[index].num" @on-change="countTotalPrice" />
+              </FormItem>
+            </Form>
+          </template>
+        </Table>
       </Row>
 
       <div slot="footer">
@@ -666,138 +716,22 @@
                         }
                     }
                 ],
-                columnsHosList: [
+                goodsHospitalColumns: [
                     {
                         title: '医院',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'hospitalName'
                     },
                     {
                         title: '售价',
                         minWidth: 84,
                         key: 'price',
-                        render: (h, params) => {
-                            var flagInput = '';
-                            var flagspan = '';
-                            if (params.row.isShowInout) {
-                                flagInput = '';
-                                flagspan = 'none';
-                            } else {
-                                flagInput = 'none';
-                                flagspan = '';
-                            }
-                            return h('div', [
-                                h('Input', {
-                                    props: {
-                                        // 将单元格的值给Input
-                                        value: params.row.price
-                                    },
-                                    style: {
-                                        display: flagInput
-                                    },
-                                    on: {
-                                        'on-change' (event) {
-                                            // 值改变时
-                                            // 将渲染后的值重新赋值给单元格值
-                                            params.row.price = event.target.value;
-                                        }
-                                    }
-                                }),
-                                h(
-                                    'span',
-                                    {
-                                        style: {
-                                            display: flagspan
-                                        }
-                                    },
-                                    params.row.price
-                                )
-                            ]);
-                        }
+                        slot: 'price'
                     },
                     {
                         title: '操作',
                         minWidth: 84,
-                        render: (h, params) => {
-                            var flagEdit = '';
-                            var flagSave = '';
-                            if (params.row.isShowInout) {
-                                flagSave = '';
-                                flagEdit = 'none';
-                            } else {
-                                flagSave = 'none';
-                                flagEdit = '';
-                            }
-                            return h('div', [
-                                h(
-                                    'Button',
-                                    {
-                                        props: {
-                                            type: 'info',
-                                            size: 'small'
-                                        },
-                                        style: {
-                                            display: flagEdit
-                                        },
-                                        on: {
-                                            click: () => {
-                                                this.dataHosList[params.index].isShowInout = true;
-                                            }
-                                        }
-                                    },
-                                    '编辑'
-                                ),
-                                h(
-                                    'Button',
-                                    {
-                                        props: {
-                                            type: 'success',
-                                            size: 'small'
-                                        },
-                                        style: {
-                                            display: flagSave
-                                        },
-                                        on: {
-                                            click: () => {
-                                                this.dataHosList[params.index].isShowInout = true;
-                                            }
-                                        }
-                                    },
-                                    '保存'
-                                ),
-                                h(
-                                    'Button',
-                                    {
-                                        props: {
-                                            type: 'primary',
-                                            size: 'small'
-                                        },
-                                        class: 'marLef10',
-                                        on: {
-                                            click: () => {}
-                                        }
-                                    },
-                                    '默认'
-                                )
-                            ]);
-                        }
-                    }
-                ],
-                dataHosList: [
-                    {
-                        name: '医院1',
-                        price: '10.00',
-                        isShowInout: false
-                    },
-                    {
-                        name: '医院1',
-                        price: '10.00',
-                        isShowInout: false
-                    },
-                    {
-                        name: '医院1',
-                        price: '',
-                        isShowInout: true
+                        slot: 'action'
                     }
                 ],
                 goodsExpiryDateColumns: [
@@ -1075,19 +1009,23 @@
                 },
                 total: 0,
                 current: 1,
-                totalPrice: 0.00
-
+                totalPrice: 0.0,
+                hospitalList: [],
+                goodsHospitalList: [],
+                editIndex: -1,
+                addGoodsHospitalFormRules: {
+                    price: [{ validator: validateNumber, trigger: 'blur' }]
+                }
             };
         },
         mounted () {
             let vm = this;
             vm.$nextTick(() => {});
-            console.log(this.type);
-            console.log(this.categoryId);
         },
         created () {
             this.getUsageList(); // 处方用法
             this.getPetSpeciesList(); // 宠物种类
+            this.getHospitalList(); // 医院列表
         },
         computed: {},
         methods: {
@@ -1156,13 +1094,13 @@
                             });
                         } else if (this.goodsTabPane === 'pane3') {
                             this.goodsSupplierList.forEach((element, index) => {
-                                var ref = 'addGoodsSupplierForm' + index
+                                var ref = 'addGoodsSupplierForm' + index;
                                 this.$refs[ref].validate(valid3 => {
                                     if (!valid3) {
                                         flag = false;
                                     }
                                 });
-                            })
+                            });
                         } else if (this.goodsTabPane === 'pane4') {
                             this.$refs.form4.validate(valid4 => {
                                 if (valid4) {
@@ -1229,23 +1167,23 @@
             saveGoodsCombination () {
                 this.addGoodsCombinationForm.type = this.type;
                 console.log(this.addGoodsCombinationForm);
-                var flag = true
+                var flag = true;
                 this.$refs.addGoodsCombinationForm.validate(valid => {
                     if (valid) {
                         this.detailsList.forEach((element, index) => {
-                            var ref = 'detailsForm' + index
+                            var ref = 'detailsForm' + index;
                             this.$refs[ref].validate(valid => {
                                 if (!valid) {
                                     flag = false;
                                 }
                             });
-                        })
+                        });
                     } else {
-                        flag = false
+                        flag = false;
                     }
                 });
                 if (flag) {
-                    this.addGoodsCombinationForm.detailForms = this.detailsList
+                    this.addGoodsCombinationForm.detailForms = this.detailsList;
                     this.$post(
                         '/admin/goods/combination/batchsave',
                         this.addGoodsCombinationForm,
@@ -1255,7 +1193,8 @@
                             } else {
                                 this.$Message.error(response.message);
                             }
-                        }, false
+                        },
+                        false
                     );
                 }
             },
@@ -1445,17 +1384,17 @@
                     limit: 100
                 };
                 this.$get('/admin/goods/category/search', data, response => {
-                    var data = this._.groupBy(response.data, 'type.name')
+                    var data = this._.groupBy(response.data, 'type.name');
                     this.allGoodsCategoryTreeData = [];
                     for (let key in data) {
-                        var obj = {}
-                        obj.title = key
-                        obj.expand = true
-                        obj.children = data[key]
+                        var obj = {};
+                        obj.title = key;
+                        obj.expand = true;
+                        obj.children = data[key];
                         obj.children.forEach(element => {
-                            element.title = element.name
-                            obj.type = element.type
-                        })
+                            element.title = element.name;
+                            obj.type = element.type;
+                        });
                         this.allGoodsCategoryTreeData.push(obj);
                     }
                 });
@@ -1463,25 +1402,23 @@
             // 点击树
             getAllGoodsCategoryTreeChild (data) {
                 if (data && data.length > 0) {
-                    this.search.type = data[0].type && data[0].type.code
-                    this.search.categoryId = data[0].id
+                    this.search.type = data[0].type && data[0].type.code;
+                    this.search.categoryId = data[0].id;
                 } else {
-                    this.search.type = ''
-                    this.search.categoryId = ''
+                    this.search.type = '';
+                    this.search.categoryId = '';
                 }
                 this.getAllGoodsList();
             },
             getAllGoodsList () {
-                this.search.pageNumber = this.current - 1
+                this.search.pageNumber = this.current - 1;
                 this.$get('/admin/goods/page', this.search, response => {
-                    this.total = response.data.total
+                    this.total = response.data.total;
                     this.allGoodsList = response.data.data;
                 });
             },
             quickAdd () {
-                let arr = this.detailsList.map(
-                    item => item.goodsId
-                );
+                let arr = this.detailsList.map(item => item.goodsId);
                 this.allGoodsList.forEach(element => {
                     if (arr.indexOf(element.id) === -1) {
                         this.detailsList.push({
@@ -1504,37 +1441,113 @@
                 });
             },
             closePackageModal () {
-                var flag = true
+                var flag = true;
                 this.detailsList.forEach((element, index) => {
-                    var ref = 'addDetailsForm' + index
+                    var ref = 'addDetailsForm' + index;
                     this.$refs[ref].validate(valid => {
                         if (!valid) {
                             flag = false;
                         }
                     });
-                })
-                if (flag) { this.addPackageModal = false }
-                console.log(this.detailsList)
+                });
+                if (flag) {
+                    this.addPackageModal = false;
+                }
+                console.log(this.detailsList);
             },
             countTotalPrice () {
-                var totalPrice = 0
+                var totalPrice = 0;
                 this.detailsList.forEach(element => {
-                    var price = element.price || 0
-                    var num = element.num || 0
-                    totalPrice += price * num
-                })
-                this.totalPrice = totalPrice
+                    var price = element.price || 0;
+                    var num = element.num || 0;
+                    totalPrice += price * num;
+                });
+                this.totalPrice = totalPrice;
             },
             copyGoodsDosage (index) {
-                localStorage.goodsDosage = JSON.stringify(this.addGoodsDosageForm.goodsDosageList[index])
+                localStorage.goodsDosage = JSON.stringify(
+                    this.addGoodsDosageForm.goodsDosageList[index]
+                );
             },
             pasteGoodsDosage (index) {
-                var goodsDosage = JSON.parse(localStorage.goodsDosage)
+                var goodsDosage = JSON.parse(localStorage.goodsDosage);
                 if (goodsDosage != null) {
-                    this.addGoodsDosageForm.goodsDosageList[index].consume = goodsDosage.consume
-                    this.addGoodsDosageForm.goodsDosageList[index].upperLimit = goodsDosage.upperLimit
-                    this.addGoodsDosageForm.goodsDosageList[index].lowerLimit = goodsDosage.lowerLimit
+                    this.addGoodsDosageForm.goodsDosageList[index].consume =
+                        goodsDosage.consume;
+                    this.addGoodsDosageForm.goodsDosageList[index].upperLimit =
+                        goodsDosage.upperLimit;
+                    this.addGoodsDosageForm.goodsDosageList[index].lowerLimit =
+                        goodsDosage.lowerLimit;
                 }
+            },
+            getHospitalList () {
+                this.$get('/admin/hospital/search', { limit: 100 }, response => {
+                    this.hospitalList = response.data;
+                });
+            },
+            getGoodsHospitalList () {
+                this.$get(
+                    '/admin/goods/hospital/search',
+                    { goodsId: this.addGoodsForm.id, limit: 100 },
+                    response => {
+                        this.goodsHospitalList = response.data;
+                        let arr = this.goodsHospitalList.map(item => item.hospitalId);
+                        this.hospitalList.forEach(element => {
+                            if (arr.indexOf(element.id) === -1) {
+                                this.goodsHospitalList.push({
+                                    id: '',
+                                    goodsId: this.addGoodsForm.id,
+                                    hospitalId: element.id,
+                                    hospitalName: element.name,
+                                    price: ''
+                                });
+                            }
+                        });
+                    }
+                );
+            },
+            handleSetHosPriceModal () {
+                if (this.addGoodsForm.id == null || this.addGoodsForm.id === '') {
+                    this.$Message.error('请先保存商品信息');
+                } else {
+                    this.getGoodsHospitalList();
+                    this.setHosPriceModal = true;
+                }
+            },
+            handleSaveGoodsHospital (index) {
+                this.$refs['addGoodsHospitalForm' + index].validate(valid => {
+                    if (valid) {
+                        this.$post(
+                            '/admin/goods/hospital/save',
+                            this.goodsHospitalList[index],
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getGoodsHospitalList();
+                                    this.editIndex = -1
+                                } else {
+                                    this.$Message.error(response.message);
+                                }
+                            }
+                        );
+                    }
+                });
+            },
+            setDefaultPrice (index) {
+                this.goodsHospitalList[index].price = this.addGoodsForm.price;
+                this.editIndex = -1
+                this.$post(
+                    '/admin/goods/hospital/save',
+                    this.goodsHospitalList[index],
+                    response => {
+                        if (response.success) {
+                            this.$Message.info('保存成功');
+                            this.getGoodsHospitalList();
+                        } else {
+                            this.$Message.error(response.message);
+                        }
+                    }
+                );
             }
         },
         watch: {
@@ -1594,8 +1607,8 @@
 }
 
 .all-category-tree-box {
-  padding:8px 16px;
-  border:1px solid #ccc;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
   height: 330px;
   overflow: auto;
 }
