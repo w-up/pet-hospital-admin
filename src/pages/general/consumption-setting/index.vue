@@ -17,11 +17,11 @@
       <Row>
         <Col span="6">
           <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="12">
+            <Row class-name="module-title-wrapper">
+              <Col span="4">
                 <span class="module-title">目录</span>
               </Col>
-              <Col span="12" class="ivu-text-right">
+              <Col span="20" class="ivu-text-right">
                 <Button type="warning">剪切</Button>
                 <Button type="info">粘贴</Button>
               </Col>
