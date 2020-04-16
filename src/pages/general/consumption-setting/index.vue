@@ -65,7 +65,7 @@
               <Col span="18">
                 <span
                   class="module-title"
-                >{{addGoodsCategoryForm.name&&addGoodsCategoryForm.name||"挂号"}}</span>
+                >{{addGoodsCategoryForm.name&&addGoodsCategoryForm.name||currentTabName}}</span>
               </Col>
               <Col span="6">
                 <Input
@@ -649,7 +649,21 @@
                 removeGoodsModal: false,
                 selectIds: [],
                 nameLike: '', // 搜索商品类别名称
-                keywords: '' // 搜索商品关键字
+                keywords: '', // 搜索商品关键字
+                currentTabName: '挂号',
+                tabObj: {
+                    registration: '挂号',
+                    prescription: '处方',
+                    check: '检验',
+                    handle: '处置',
+                    operation: '手术',
+                    hospitalization: '住院',
+                    vaccine: '疫苗驱虫',
+                    beauty: '美容',
+                    goods: '商品',
+                    foster: '寄养',
+                    imageCheck: '影像检验'
+                }
             };
         },
         methods: {
@@ -677,7 +691,8 @@
                 this.systemHintModal = true;
             },
             // 切换tab类型
-            changeType () {
+            changeType (name) {
+                this.currentTabName = this.tabObj[name]
                 this.getGoodsCategoryList();
                 this.getGoodsList();
             },
@@ -696,8 +711,8 @@
                     this.addGoodsCategoryForm.partakeDiscount =
                         obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
-                    this.treeId = '';
-                    this.$refs.addGoodsCategoryForm.resetFields();
+                    // this.treeId = '';
+                    // this.$refs.addGoodsCategoryForm.resetFields();
                 }
                 this.getGoodsList();
             },
@@ -777,7 +792,6 @@
             },
             // 保存商品分类
             handleAddGoodsCategory (form) {
-                console.log(this.addGoodsCategoryForm);
                 this.addGoodsCategoryForm.type = this.type;
                 this.$refs[form].validate(valid => {
                     if (valid) {
