@@ -1,15 +1,11 @@
 // 菜单，侧边栏
-import hospital from './modules/hospital';
-import district from './modules/district';
-import personnel from './modules/personnel';
+import organization from './modules/organization';
 import marketing from './modules/marketing';
 import general from './modules/general';
 import feedback from './modules/feedback';
 
 export default [
-    hospital,
-    district,
-    personnel,
+    organization,
     marketing,
     general,
     feedback

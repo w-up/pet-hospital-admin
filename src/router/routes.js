@@ -1,6 +1,4 @@
-import hospital from './modules/hospital';
-import district from './modules/district';
-import personnel from './modules/personnel';
+import organization from './modules/organization';
 import BasicLayout from '@/layouts/basic-layout';
 import marketing from './modules/marketing';
 import general from './modules/general';
@@ -60,9 +58,7 @@ const frameIn = [
             }
         ]
     },
-    hospital,
-    district,
-    personnel,
+    organization,
     marketing,
     general,
     feedback

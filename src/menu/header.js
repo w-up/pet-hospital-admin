@@ -2,25 +2,11 @@
 
 export default [
     {
-        path: '/hospital',
-        title: '医院管理',
+        path: '/organization',
+        title: '组织机构',
         icon: 'md-home',
         hideSider: false,
-        name: 'hospital'
-    },
-    {
-        path: '/district',
-        title: '大区管理',
-        icon: 'md-albums',
-        hideSider: false,
-        name: 'district'
-    },
-    {
-        path: '/personnel',
-        title: '人员管理',
-        icon: 'md-person',
-        hideSider: false,
-        name: 'personnel'
+        name: 'organization'
     },
     {
         path: '/marketing',

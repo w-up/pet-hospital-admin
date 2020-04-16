@@ -261,8 +261,8 @@
                 ],
                 resource: this.$store.state.admin.user.resource,
                 headers: this.$store.state.admin.user.headers,
-                defaultImg: require('../../../assets/images/default.png'),
-                defauLtLogo: require('../../../assets/images/upload-logo.png'),
+                defaultImg: require('../../../../assets/images/default.png'),
+                defauLtLogo: require('../../../../assets/images/upload-logo.png'),
                 grid: {
                     xl: 8,
                     lg: 8,
