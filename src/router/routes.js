@@ -12,7 +12,7 @@ const frameIn = [
     {
         path: '/',
         redirect: {
-            name: 'hospital-index'
+            name: 'organization-hospital'
         },
         component: BasicLayout,
         children: [
@@ -20,7 +20,7 @@ const frameIn = [
                 path: 'index',
                 name: 'index',
                 redirect: {
-                    name: 'hospital-index'
+                    name: 'organization-hospital'
                 }
             },
             {

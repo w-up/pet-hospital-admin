@@ -20,14 +20,14 @@ export default {
             path: 'district',
             name: `${pre}district`,
             redirect: {
-                name: `${pre}index`
+                name: `${pre}district-index`
             },
             meta,
             component: ParentView,
             children: [
                 {
                     path: 'index',
-                    name: `${pre}index`,
+                    name: `${pre}district-index`,
                     meta: {
                         ...meta,
                         title: '大区管理'
@@ -40,14 +40,14 @@ export default {
             path: 'hospital',
             name: `${pre}hospital`,
             redirect: {
-                name: `${pre}index`
+                name: `${pre}hospital-index`
             },
             meta,
             component: ParentView,
             children: [
                 {
                     path: 'index',
-                    name: `${pre}index`,
+                    name: `${pre}hospital-index`,
                     meta: {
                         ...meta,
                         title: '医院管理'

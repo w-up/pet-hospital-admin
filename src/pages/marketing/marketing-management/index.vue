@@ -240,15 +240,12 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table border :columns="columns1" :data="data1"></Table>
-              <div class="ivu-mt ivu-text-right">
-                <Page :total="data1.length" :current.sync="current" />
-              </div>
-            </Col>
+              <Table border :columns="goodsColumns" :data="goodsList"></Table>
+              </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
-              <Button type="warning" @click="handleOpenEditCombination">添加商品</Button>
+              <Button type="warning" @click="handleAddGoodsModal">添加商品</Button>
             </Col>
             <Col span="12" class="ivu-text-right">
               <Button type="primary" @click="handleSave">保存</Button>
@@ -257,68 +254,10 @@
         </Card>
       </Col>
     </Row>
-    <Modal v-model="editCombination" title="商品组合设置" @on-ok="handleCreate" width="80%">
-      <Row>
-        <Col span="5">
-          <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="24">
-                <span class="module-title">消费项目分类</span>
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end">
-              <Col span="24">
-                <Tree :data="consumptionTypeData"></Tree>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-        <Col span="19" class="box">
-          <Card>
-            <Row
-              type="flex"
-              justify="center"
-              align="top"
-              class-name="module-title-wrapper"
-            >
-              <Col span="15">
-                <span class="module-title">消费项目列表</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="warning" class="mr10">快速添加</Button>
-              </Col>
-              <Col span="5" class="ivu-text-right">
-                <Input prefix="ios-search" placeholder="名称，编号，条形码" />
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end" class="mtb15">
-              <Col span="24">
-                <Table border :columns="consumptionProjectColumns" :data="consumptionProjectData"></Table>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-      <Row class="mtb15">
-        <Col span="24">
-          <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="20">
-                <span class="module-title">消费单</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="error" class="mr10">删除</Button>
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end" class="mtb15">
-              <Col span="24">
-                <Table border :columns="consumptionOrderColumns" :data="consumptionOrderData"></Table>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-    </Modal>
+
+    <!-- 商品组合设置 -->
+    <addGoods ref="addGoods" :goodsList="goodsList"></addGoods>
+
     <Modal title="删除" v-model="removeModal" @on-ok="removeMarketing">
       <div>确认删除吗？</div>
     </Modal>
@@ -366,9 +305,11 @@
   </div>
 </template>
 <script>
+    import addGoods from '@/components/add-goods';
     import { formatDate } from '@/libs/util';
     export default {
         inject: ['reload'],
+        components: { addGoods },
         data () {
             const validateLimit = (rule, value, callback) => {
                 if (value === '') {
@@ -397,16 +338,15 @@
             };
             return {
                 marketingList: [],
-                columns1: [
+                goodsColumns: [
                     {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
+                        title: '序号',
+                        type: 'index'
                     },
                     {
                         title: '编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'number'
                     },
                     {
                         title: '条形码',
@@ -421,186 +361,17 @@
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'specification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'unit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
                         key: 'price'
-                    }
-                ],
-                data1: [
-                    {
-                        code: '0000',
-                        barCode: '黑猫',
-                        name: 'HM',
-                        size: '',
-                        unti: ''
-                    },
-                    {
-                        code: '0009',
-                        barCode: '白猫',
-                        name: 'BM',
-                        size: '',
-                        unti: ''
-                    }
-                ],
-                current: 1,
-                editCombination: false,
-                consumptionTypeData: [
-                    {
-                        title: '检验',
-                        expand: true,
-                        children: [
-                            {
-                                title: '尿常规(犬类)',
-                                expand: false
-                            },
-                            {
-                                title: '尿常规(猫类)',
-                                expand: false
-                            }
-                        ]
-                    }
-                ],
-                consumptionProjectColumns: [
-                    {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
-                    },
-                    {
-                        title: '编号',
-                        minWidth: 84,
-                        key: 'code'
-                    },
-                    {
-                        title: '条形码',
-                        minWidth: 84,
-                        key: 'barCode'
-                    },
-                    {
-                        title: '名称',
-                        minWidth: 84,
-                        key: 'name'
-                    },
-                    {
-                        title: '规格',
-                        minWidth: 84,
-                        key: 'size'
-                    },
-                    {
-                        title: '单位',
-                        minWidth: 84,
-                        key: 'unti'
-                    },
-                    {
-                        title: '单价',
-                        minWidth: 84,
-                        key: 'price'
-                    },
-                    {
-                        title: '厂家',
-                        minWidth: 84,
-                        key: 'factory'
-                    },
-                    {
-                        title: '备注',
-                        minWidth: 84,
-                        key: 'remark'
-                    }
-                ],
-                consumptionProjectData: [
-                    {
-                        code: '',
-                        barCode: '',
-                        name: '复合维生素B片',
-                        size: '',
-                        unti: '片',
-                        price: '',
-                        factory: '',
-                        remark: ''
-                    }
-                ],
-                consumptionOrderColumns: [
-                    {
-                        type: 'selection',
-                        minWidth: 60,
-                        align: 'center'
-                    },
-                    {
-                        title: '编号',
-                        minWidth: 84,
-                        key: 'code'
-                    },
-                    {
-                        title: '条形码',
-                        minWidth: 84,
-                        key: 'barCode'
-                    },
-                    {
-                        title: '名称',
-                        minWidth: 84,
-                        key: 'name'
-                    },
-                    {
-                        title: '规格',
-                        minWidth: 84,
-                        key: 'size'
-                    },
-                    {
-                        title: '单位',
-                        minWidth: 84,
-                        key: 'unti'
-                    },
-                    {
-                        title: '单价',
-                        minWidth: 84,
-                        key: 'price'
-                    },
-                    {
-                        title: '数量',
-                        minWidth: 84,
-                        key: 'num'
-                    },
-                    {
-                        title: '用量',
-                        minWidth: 84,
-                        key: 'useNum'
-                    },
-                    {
-                        title: '备注',
-                        minWidth: 84,
-                        key: 'remark'
-                    }
-                ],
-                consumptionOrderData: [
-                    {
-                        code: 'P00001',
-                        barCode: '000001',
-                        name: '宠物补血膏',
-                        size: '20ml',
-                        unti: 'ml',
-                        price: '5',
-                        num: '5',
-                        useNum: '1.0',
-                        remark: ''
-                    },
-                    {
-                        code: 'P00001',
-                        barCode: '000001',
-                        name: '宠物补血膏',
-                        size: '20ml',
-                        unti: 'ml',
-                        price: '5',
-                        num: '5',
-                        useNum: '1.0',
-                        remark: ''
                     }
                 ],
                 daterange: [],
@@ -707,14 +478,11 @@
                         }
                     }
                 ],
-                addHospitalModal: false
+                addHospitalModal: false,
+                goodsList: []
             };
         },
         methods: {
-            handleOpenEditCombination () {
-                this.editCombination = true;
-            },
-            handleCreate () {},
             handleAdd () {
                 this.$refs.marketingForm.resetFields();
                 this.marketingForm.id = ''
@@ -733,6 +501,7 @@
                     obj.status = obj.status && obj.status.code;
                     this.marketingForm = obj;
                     this.joinHospitals = obj.joinHospitals || []
+                    this.goodsList = obj.goods || []
                 } else {
                     this.marketingForm.id = ''
                 }
@@ -828,6 +597,10 @@
                 this.joinHospitals.forEach(element => {
                     this.marketingForm.joinHospitalIds.push(element.id)
                 });
+                this.marketingForm.goodsIds = []
+                this.goodsList.forEach(element => {
+                    this.marketingForm.goodsIds.push(element.id)
+                });
                 this.$refs.marketingForm.validate(valid => {
                     if (valid) {
                         this.$post(
@@ -883,6 +656,12 @@
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalList = response.data.data;
                 });
+            },
+            handleAddGoodsModal () {
+                this.$refs.addGoods.handleAddGoodsModal();
+            },
+            getGoodsList (list) {
+                this.goodsList = list
             }
         },
         mounted () {
