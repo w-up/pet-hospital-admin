@@ -10,18 +10,18 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Tree :data="data1"></Tree>
+              <Tree ref="tree" :data="treeData" @on-select-change="selectChange"></Tree>
             </Col>
           </Row>
           <Row :gutter="16" class="mtb15">
             <Col span="7" class="ivu-text-center">
-              <Button size="small" type="info" @click="handleOpenCreate">+一级分类</Button>
+              <Button size="small" type="info" @click="showFirTypeModal">+一级分类</Button>
             </Col>
             <Col span="7" class="ivu-text-center">
-              <Button size="small" type="primary">+二级分类</Button>
+              <Button size="small" type="primary" @click="showSecTypeModal">+二级分类</Button>
             </Col>
             <Col span="5" class="ivu-text-center">
-              <Button size="small" type="warning">修改</Button>
+              <Button size="small" type="warning" @click="editNodes">修改</Button>
             </Col>
             <Col span="5" class="ivu-text-center">
               <Button size="small" type="error">删除</Button>
@@ -38,19 +38,19 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Input type="textarea" :autosize="{minRows: 20,maxRows: 20}" />
+              <Input type="textarea" :autosize="{minRows: 20,maxRows: 20}" v-model="description"/>
             </Col>
             <Col span="24" class="ivu-text-right mtb15">
-              <Button type="success">保存</Button>
+              <Button type="success" @click="saveDescription">保存</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="添加分类" @on-ok="handleCreate">
-      <Form ref="create" :label-width="120">
-        <FormItem label="分类名称">
-          <Input placeholder="必填" style="width:300px"/>
+    <Modal ref="addFirTypeModal" v-model="showAddFirTypeModal" :title="isAddFirType?'添加分类':'修改分类'" @on-ok="handleAddFirType" :loading="true">
+      <Form ref="addFirTypeForm" :label-width="120" :rules="firTypeRules" :model="firTypeData">
+        <FormItem label="分类名称" prop="title">
+          <Input placeholder="必填" style="width:300px" v-model="firTypeData.title"/>
         </FormItem>
       </Form>
     </Modal>
@@ -61,46 +61,138 @@
         name: 'list-table-list',
         data () {
             return {
-                data1: [
-                    {
-                        title: '外科',
-                        expand: true,
-                        children: [
-                            {
-                                title: '血管瘤',
-                                expand: false
-                            },
-                            {
-                                title: '肝癌',
-                                expand: false
-                            }
-                        ]
-                    },
-                    {
-                        title: '内科',
-                        expand: true,
-                        children: [
-                            {
-                                title: '糖尿病',
-                                expand: false
-                            },
-                            {
-                                title: '血管瘤',
-                                expand: false
-                            }
-                        ]
-                    }
+                description: '',
+                isAddFirType: false,
+                firTypeData: {
+                    parentId: '0',
+                    title: ''
+                },
+                firTypeRules: {
+                    title: [
+                        { required: true, message: '请输入分类名称', trigger: 'change' }
+                    ]
+                },
+                treeData: [
+                    // {
+                    //     title: '外科',
+                    //     expand: true,
+                    //     children: [
+                    //         {
+                    //             title: '血管瘤',
+                    //             expand: false
+                    //         },
+                    //         {
+                    //             title: '肝癌',
+                    //             expand: false
+                    //         }
+                    //     ]
+                    // },
+                    // {
+                    //     title: '内科',
+                    //     expand: true,
+                    //     children: [
+                    //         {
+                    //             title: '糖尿病',
+                    //             expand: false
+                    //         },
+                    //         {
+                    //             title: '血管瘤',
+                    //             expand: false
+                    //         }
+                    //     ]
+                    // }
                 ],
-                showCreate: false
+                showAddFirTypeModal: false
             };
         },
         methods: {
-            handleOpenCreate () {
-                this.showCreate = true;
+            selectChange (selectedNodesList, selectedNode) {
+                this.description = selectedNode.content ? selectedNode.content : ''
             },
-            handleCreate () {}
+            editNodes: function () {
+                var selectedNodesList = this.$refs.tree.getSelectedNodes()
+                if (selectedNodesList.length === 0) {
+                    this.$Message.error('请选择需要修改的分类');
+                    return false
+                }
+                this.isAddFirType = false
+                this.$refs.addFirTypeForm.resetFields()
+                this.firTypeData = {}
+                this.firTypeData.id = selectedNodesList[0].id
+                this.firTypeData.parentId = selectedNodesList[0].parentId
+                this.firTypeData.title = selectedNodesList[0].title
+                this.showAddFirTypeModal = true
+            },
+            saveDescription: function () {
+                var selectedNodesList = this.$refs.tree.getSelectedNodes()
+                if (selectedNodesList.length === 0) {
+                    this.$Message.error('请选择左侧树');
+                    return false
+                }
+                if (this.description === '') {
+                    this.$Message.error('请填写病症描述');
+                    return false
+                }
+                this.firTypeData = {}
+                this.firTypeData.id = selectedNodesList[0].id
+                this.firTypeData.content = this.description
+                this.$post('/admin/general/system/first/diagnosis/save', this.firTypeData, response => {
+                    if (response.success) {
+                        this.$Message.info('保存成功')
+                        this.getTreeData()
+                        this.description = ''
+                    }
+                });
+            },
+            showSecTypeModal: function () {
+                var selectedNodesList = this.$refs.tree.getSelectedNodes()
+                if (selectedNodesList.length === 0) {
+                    this.$Message.error('请选择一级分类');
+                } else if (selectedNodesList[0].nodeLevel !== 1) {
+                    this.$Message.error('请选择一级分类');
+                } else {
+                    this.isAddFirType = true
+                    this.$refs.addFirTypeForm.resetFields()
+                    this.firTypeData = {
+                        parentId: selectedNodesList[0].id,
+                        title: ''
+                    }
+                    this.showAddFirTypeModal = true
+                }
+            },
+            getTreeData () {
+                this.$get('/admin/general/system/first/diagnosis/treePage?parentId=0', {}, response => {
+                    this.treeData = response.data;
+                });
+            },
+            showFirTypeModal () {
+                this.isAddFirType = true
+                this.$refs.addFirTypeForm.resetFields()
+                this.firTypeData = {
+                    parentId: '0',
+                    title: ''
+                }
+                this.showAddFirTypeModal = true
+            },
+            handleAddFirType () {
+                this.$refs.addFirTypeModal.buttonLoading = false;
+                this.$refs.addFirTypeForm.validate(valid => {
+                    if (valid) {
+                        this.$post('/admin/general/system/first/diagnosis/save', this.firTypeData, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getTreeData();
+                                this.showAddFirTypeModal = false
+                            }
+                        });
+                    } else {
+                    }
+                });
+            }
         },
-        mounted () {}
+        mounted () {
+            this.getTreeData()
+        }
     };
 </script>
 <style lang="less" scoped>
