@@ -73,34 +73,6 @@
                     ]
                 },
                 treeData: [
-                    // {
-                    //     title: '外科',
-                    //     expand: true,
-                    //     children: [
-                    //         {
-                    //             title: '血管瘤',
-                    //             expand: false
-                    //         },
-                    //         {
-                    //             title: '肝癌',
-                    //             expand: false
-                    //         }
-                    //     ]
-                    // },
-                    // {
-                    //     title: '内科',
-                    //     expand: true,
-                    //     children: [
-                    //         {
-                    //             title: '糖尿病',
-                    //             expand: false
-                    //         },
-                    //         {
-                    //             title: '血管瘤',
-                    //             expand: false
-                    //         }
-                    //     ]
-                    // }
                 ],
                 showAddFirTypeModal: false
             };
@@ -127,10 +99,6 @@
                 var selectedNodesList = this.$refs.tree.getSelectedNodes()
                 if (selectedNodesList.length === 0) {
                     this.$Message.error('请选择左侧树');
-                    return false
-                }
-                if (this.description === '') {
-                    this.$Message.error('请填写病症描述');
                     return false
                 }
                 this.firTypeData = {}
@@ -182,6 +150,7 @@
                             if (response.success) {
                                 this.$Message.info('保存成功');
                                 this.getTreeData();
+                                this.description = ''
                                 this.showAddFirTypeModal = false
                             }
                         });
