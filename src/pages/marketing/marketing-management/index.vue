@@ -240,7 +240,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table border :columns="goodsColumns" :data="goodsList"></Table>
+              <Table border :columns="goodsColumnsParent" :data="goodsList"></Table>
               </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
@@ -256,7 +256,7 @@
     </Row>
 
     <!-- 商品组合设置 -->
-    <addGoods ref="addGoods" :goodsList="goodsList"></addGoods>
+    <addGoods ref="addGoods" :goodsList="goodsList" :goodsColumns="goodsColumns"></addGoods>
 
     <Modal title="删除" v-model="removeModal" @on-ok="removeMarketing">
       <div>确认删除吗？</div>
@@ -338,7 +338,7 @@
             };
             return {
                 marketingList: [],
-                goodsColumns: [
+                goodsColumnsParent: [
                     {
                         title: '序号',
                         type: 'index'
@@ -372,6 +372,47 @@
                         title: '单价',
                         minWidth: 84,
                         key: 'price'
+                    }
+                ],
+                goodsColumns: [
+                    {
+                        type: 'selection',
+                        width: 60
+                    },
+                    {
+                        title: '编号',
+                        minWidth: 84,
+                        key: 'number'
+                    },
+                    {
+                        title: '条形码',
+                        minWidth: 84,
+                        key: 'barCode'
+                    },
+                    {
+                        title: '名称',
+                        minWidth: 84,
+                        key: 'name'
+                    },
+                    {
+                        title: '规格',
+                        minWidth: 84,
+                        key: 'specification'
+                    },
+                    {
+                        title: '单位',
+                        minWidth: 84,
+                        key: 'unit'
+                    },
+                    {
+                        title: '单价',
+                        minWidth: 84,
+                        key: 'price'
+                    },
+                    {
+                        title: '备注',
+                        minWidth: 84,
+                        key: 'description'
                     }
                 ],
                 daterange: [],

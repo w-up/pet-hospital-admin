@@ -66,7 +66,7 @@
             return {
                 tabObj: {},
                 description: '',
-                currentCategoryId: '5e9c6c13834b910d3be7c569',
+                currentCategoryId: '',
                 currentTabName: '',
                 categoryList: [],
                 treeData: [
@@ -94,6 +94,7 @@
                 this.$get('/admin/general/template/category/page', {}, response => {
                     this.categoryList = response.data.data;
                     this.currentTabName = response.data.data[0].name
+                    this.currentCategoryId = response.data.data[0].id
                     for (var i = 0; i < this.categoryList.length; i++) {
                         this.tabObj[this.categoryList[i].id] = this.categoryList[i].name
                     }

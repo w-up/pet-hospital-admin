@@ -1,14 +1,7 @@
 <template>
   <div>
-    <Tabs value="name1">
-      <TabPane label="处方组合" name="name1"></TabPane>
-      <TabPane label="检验组合" name="name2"></TabPane>
-      <TabPane label="处置组合" name="name3"></TabPane>
-      <TabPane label="手术组合" name="name4"></TabPane>
-      <TabPane label="住院组合" name="name5"></TabPane>
-      <TabPane label="美容组合" name="name6"></TabPane>
-      <TabPane label="疫苗组合" name="name7"></TabPane>
-      <TabPane label="商品组合" name="name8"></TabPane>
+    <Tabs v-model="currentTypeCode" @on-click="changeType">
+      <TabPane  v-for="(item, index) in typeList" :key="index" :label="item.otherName" :name="item.code"></TabPane>
     </Tabs>
     <Row>
       <Col span="6">
@@ -20,28 +13,29 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="ivu-mt">
             <Col span="24">
-              <Input prefix="ios-search" />
+              <Input prefix="ios-search" clearable @on-change="getLeftGoodsList" v-model="nameLike"/>
             </Col>
           </Row>
           <Row class="mt6 noplr">
             <Col span="24">
               <List class="good-list">
+                <p v-show="goodsList.length==0&&!isloadinglist" style="text-align: center;">暂无数据</p>
                 <ListItem
-                  v-for="(item, index) in list"
+                  v-for="(item, index) in goodsList"
                   :key="index"
-                  :class="item.name===currentName?'active':''"
+                  :class="item.id===currentGoodsData.id?'active':''"
                 >
-                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
+                  <p @click="switchList(item)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
-              <Button type="success" @click="handleOpenCreate">+添加</Button>
+              <Button type="success" @click="openAddCombi">+添加</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="primary">修改</Button>
+              <Button type="primary" @click="openEditCombi">修改</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
               <Button type="error">删除</Button>
@@ -53,34 +47,33 @@
         <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
-              <span class="module-title">处方组合内容</span>
+              <span class="module-title">{{currentTabName}}内容</span>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table border :columns="columns1" :data="data1"></Table>
-              <div class="ivu-mt ivu-text-right">
-                <Page :total="data1.length" :current.sync="current" />
-              </div>
+              <Table border :columns="combiDetailColumns" :data="combiDetailData"></Table>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="warning" @click="handleOpenEditCombination">+组合/修改</Button>
+              <Button type="warning" @click="handleAddGoodsModal">+组合/修改</Button>
               <Button type="error">删除</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="新增商品组合" @on-ok="handleCreate">
-      <Form ref="create" :label-width="180">
-        <FormItem label="商品组合名称">
-          <Input style="width:70%" />
+      <!-- 商品组合设置 -->
+    <addGoods ref="addGoods" :goodsList="combiDetailData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true"></addGoods>
+    <Modal ref="addCombiModal" v-model="showAddCombiModal" :title="isAddCombi?'新增商品组合':'编辑商品组合'" @on-ok="handleCreateCombi"  :loading="true">
+      <Form ref="addCombiForm" :label-width="180" :rules="combiRules" :model="combiData">
+        <FormItem label="商品组合名称" prop="name">
+          <Input style="width:70%" v-model="combiData.name"/>
         </FormItem>
       </Form>
     </Modal>
-    <Modal v-model="editCombination" title="商品组合设置" @on-ok="handleCreate" width="80%">
+    <!-- <Modal v-model="editCombination" title="商品组合设置" width="80%">
       <Row>
         <Col span="5">
           <Card>
@@ -147,17 +140,31 @@
           </Card>
         </Col>
       </Row>
-    </Modal>
+    </Modal> -->
   </div>
 </template>
 <script>
+    import addGoods from '@/components/add-goods';
     export default {
-        name: 'list-table-list',
+        components: { addGoods },
         data () {
             return {
-                list: [{ name: '药品' }],
-                currentName: '药品',
-                columns1: [
+                isloadinglist: true,
+                tabObj: {},
+                currentTabName: '',
+                currentTypeCode: '',
+                typeList: [],
+                goodsList: [],
+                nameLike: '',
+                isAddCombi: '',
+                combiRules: {
+                    name: [
+                        { required: true, message: '请输入商品组合名称', trigger: 'change' }
+                    ]
+                },
+                combiData: {},
+                currentGoodsData: {},
+                combiDetailColumns: [
                     {
                         type: 'selection',
                         width: 60,
@@ -166,27 +173,27 @@
                     {
                         title: '编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'goodsNumber'
                     },
                     {
                         title: '名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'goodsName'
                     },
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'goodsSpecification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'goodsUnit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'price'
+                        key: 'goodsPrice'
                     },
                     {
                         title: '数量',
@@ -196,12 +203,12 @@
                     {
                         title: '用法',
                         minWidth: 84,
-                        key: 'method'
+                        key: 'usageName'
                     },
                     {
                         title: '用量',
                         minWidth: 84,
-                        key: 'useNum'
+                        key: 'dosage'
                     },
                     {
                         title: '条形码',
@@ -214,35 +221,10 @@
                         key: 'remark'
                     }
                 ],
-                data1: [
-                    {
-                        code: 'P00001',
-                        name: '痛咖啡',
-                        size: '500mg',
-                        unti: '片',
-                        price: '10.00',
-                        num: '20.00',
-                        method: '',
-                        useNum: '1195.0',
-                        barCode: '',
-                        remark: ''
-                    },
-                    {
-                        code: 'P00002',
-                        name: '止泻药',
-                        size: '500mg',
-                        unti: '片',
-                        price: '10.00',
-                        num: '20.00',
-                        method: '',
-                        useNum: '1195.0',
-                        barCode: '',
-                        remark: ''
-                    }
+                combiDetailData: [
                 ],
-                current: 1,
-                showCreate: false,
-                editCombination: false,
+                showAddCombiModal: false,
+
                 consumptionTypeData: [
                     {
                         title: '检验',
@@ -260,11 +242,6 @@
                     }
                 ],
                 consumptionProjectColumns: [
-                    {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
-                    },
                     {
                         title: '编号',
                         minWidth: 84,
@@ -318,7 +295,7 @@
                         remark: ''
                     }
                 ],
-                consumptionOrderColumns: [
+                consumptionOrderColumns: [// 传给组件用到
                     {
                         type: 'selection',
                         minWidth: 60,
@@ -327,7 +304,7 @@
                     {
                         title: '编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'goodsNumber'
                     },
                     {
                         title: '条形码',
@@ -337,31 +314,49 @@
                     {
                         title: '名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'goodsName'
                     },
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'goodsSpecification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'goodsUnit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'price'
+                        key: 'goodsPrice'
                     },
                     {
                         title: '数量',
                         minWidth: 84,
-                        key: 'num'
+                        key: 'num',
+                        render: (h, params) => {
+                            let vm = this;
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        // 将单元格的值给Input
+                                        value: params.row.num
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            // 值改变时
+                                            // 将渲染后的值重新赋值给单元格值
+                                            vm.combiDetailData[params.row._index].num = event.target.value
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
                     },
                     {
                         title: '用法',
-                        key: 'method',
+                        key: 'usageId',
                         minWidth: 90,
                         render: (h, params) => {
                             let vm = this;
@@ -369,23 +364,22 @@
                                 'Select',
                                 {
                                     props: {
-                                        value: params.row.method, // 获取选择的下拉框的值
+                                        value: params.row.usageId, // 获取选择的下拉框的值
                                         size: 'small',
                                         transfer: true
                                     },
                                     on: {
                                         'on-change': e => {
-                                            params.row.method = e; // 改变下拉框赋值
+                                            vm.combiDetailData[params.row._index].usageId = e // 改变下拉框赋值
                                         }
                                     }
                                 },
-                                vm.methodList.map(item => {
-                                    // this.productTypeList下拉框里的data
+                                vm.usageList.map(item => {
                                     return h('Option', {
                                         // 下拉框的值
                                         props: {
-                                            value: item,
-                                            label: item
+                                            value: item.id,
+                                            label: item.name
                                         }
                                     });
                                 })
@@ -395,12 +389,42 @@
                     {
                         title: '用量',
                         minWidth: 84,
-                        key: 'useNum'
+                        key: 'dosage',
+                        render: (h, params) => {
+                            let vm = this
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        value: params.row.dosage
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            vm.combiDetailData[params.row._index].dosage = event.target.value
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
                     },
                     {
                         title: '备注',
                         minWidth: 84,
-                        key: 'remark'
+                        key: 'remark',
+                        render: (h, params) => {
+                            let vm = this
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        value: params.row.remark
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            vm.combiDetailData[params.row._index].remark = event.target.value
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
                     }
                 ],
                 consumptionOrderData: [
@@ -429,25 +453,142 @@
                         remark: ''
                     }
                 ],
-                methodList: [
+                usageList: [
                     '条目一',
                     '条目二'
                 ]
             };
         },
         methods: {
-            handleOpenCreate () {
-                this.showCreate = true;
+            switchList (item) {
+                this.currentGoodsData = JSON.parse(JSON.stringify(item))
+                this.getCombiDetailList()
             },
-            handleOpenEditCombination () {
-                this.editCombination = true;
+            getCombiDetailList () {
+                this.$get('/admin/goods/combination/detail/page?combinationId=' + this.currentGoodsData.id, {}, response => {
+                    this.combiDetailData = response.data.data
+                });
             },
-            handleCreate () {},
-            switchList (name) {
-                this.currentName = name;
+            getUsageList () {
+                this.$get('/admin/general/prescription/usage/page', {}, response => {
+                    this.usageList = response.data.data
+                });
+            },
+            getLeftGoodsList () {
+                this.$get('/admin/goods/combination/page?combinationType=combination&type=' + this.currentTypeCode + '&nameLike=' + this.nameLike, {}, response => {
+                    this.goodsList = response.data.data
+                    this.isloadinglist = false
+                    this.currentGoodsData =
+                        response.data.data.length > 0
+                            ? JSON.parse(JSON.stringify(response.data.data[0]))
+                            : {};
+                    this.getCombiDetailList()
+                });
+            },
+            // 切换tab类型
+            changeType (code) {
+                this.currentTabName = this.tabObj[code]
+                this.currentTypeCode = code
+                this.getLeftGoodsList()
+            },
+            getTypeList () {
+                this.$get('/admin/common/enum/goodsType/list', {}, response => {
+                    this.typeList = response.data;
+                    this.currentTabName = response.data[0].otherName
+                    this.currentTypeCode = response.data[0].code
+                    for (var i = 0; i < this.typeList.length; i++) {
+                        this.tabObj[this.typeList[i].code] = this.typeList[i].otherName
+                    }
+                    this.getLeftGoodsList()
+                });
+            },
+            openAddCombi () {
+                this.isAddCombi = true
+                this.$refs.addCombiForm.resetFields()
+                this.combiData = {
+                    type: this.currentTypeCode,
+                    combinationType: 'combination',
+                    name: ''
+                }
+                this.showAddCombiModal = true;
+            },
+            openEditCombi () {
+                if (!this.currentGoodsData.id) {
+                    this.$Message.error('无可修改项');
+                    return false
+                }
+                this.isAddCombi = false
+                this.$refs.addCombiForm.resetFields()
+                this.combiData = JSON.parse(JSON.stringify(this.currentGoodsData));
+                this.combiData = {
+                    type: this.currentGoodsData.type.code,
+                    combinationType: 'combination',
+                    name: this.currentGoodsData.name,
+                    id: this.currentGoodsData.id
+                }
+                this.showAddCombiModal = true;
+            },
+            handleCreateCombi () {
+                this.$refs.addCombiModal.buttonLoading = false;
+                this.$refs.addCombiForm.validate(valid => {
+                    if (valid) {
+                        this.$post(
+                            '/admin/goods/combination/save',
+                            this.combiData,
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getLeftGoodsList();
+                                    this.showAddCombiModal = false;
+                                } else {
+                                    this.$Message.error(response.message);
+                                }
+                            }
+                        );
+                    } else {
+                    }
+                })
+            },
+            getGoodsList (list) {
+                console.log(list)
+                if (list.length > 0) {
+                    for (var i = 0; i < list.length; i++) {
+                        var obj = {}
+                        obj.combinationId = this.currentGoodsData.id
+                        obj.goodsId = list[i].goodsId
+                        obj.num = list[i].num
+                        obj.usageId = list[i].usageId
+                        obj.dosage = list[i].dosage
+                        obj.remark = list[i].remark
+                        this.$post(
+                            '/admin/goods/combination/detail/save',
+                            obj,
+                            response => {
+                                if (response.success) {
+
+                                } else {
+                                }
+                            }
+                        );
+                    }
+                    setTimeout(() => {
+                        // 设置延迟执行
+                        this.getCombiDetailList()
+                    }, 500)
+                }
+            },
+            handleAddGoodsModal () {
+                if (!this.currentGoodsData.id) {
+                    this.$Message.error('左侧商品组合列表无数据');
+                    return false
+                }
+                this.$refs.addGoods.handleAddGoodsModal();
             }
         },
-        mounted () {}
+        mounted () {
+            this.getTypeList()
+            this.getUsageList()
+        }
     };
 </script>
 <style lang="less" scoped>

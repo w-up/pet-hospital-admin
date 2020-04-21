@@ -65,7 +65,7 @@
         </Col>
       </Row>
       <Row>
-        <Table ref="addGoodsTable" border :columns="addGoodsColumns" :data="goodsList"></Table>
+        <Table ref="addGoodsTable" border :columns="goodsColumns" :data="goodsList"></Table>
       </Row>
 
       <div slot="footer">
@@ -80,7 +80,9 @@
         name: 'addGoods',
         components: {},
         props: {
-            goodsList: Array
+            goodsList: Array,
+            goodsColumns: Array,
+            isFormCombi: Boolean
         },
         data () {
             return {
@@ -127,47 +129,6 @@
                         key: 'description'
                     }
                 ],
-                addGoodsColumns: [
-                    {
-                        type: 'selection',
-                        width: 60
-                    },
-                    {
-                        title: '编号',
-                        minWidth: 84,
-                        key: 'number'
-                    },
-                    {
-                        title: '条形码',
-                        minWidth: 84,
-                        key: 'barCode'
-                    },
-                    {
-                        title: '名称',
-                        minWidth: 84,
-                        key: 'name'
-                    },
-                    {
-                        title: '规格',
-                        minWidth: 84,
-                        key: 'specification'
-                    },
-                    {
-                        title: '单位',
-                        minWidth: 84,
-                        key: 'unit'
-                    },
-                    {
-                        title: '单价',
-                        minWidth: 84,
-                        key: 'price'
-                    },
-                    {
-                        title: '备注',
-                        minWidth: 84,
-                        key: 'description'
-                    }
-                ],
                 allGoodsCategoryTreeData: [],
                 allGoodsList: [], // 所有商品列表
                 search: {
@@ -187,6 +148,15 @@
         },
         created () {},
         computed: {},
+        watch: {
+            combiDetailData: {
+                handler (newValue, oldValue) {
+                    console.log(newValue)
+                },
+                deep: true
+            }
+
+        },
         methods: {
             handleAddGoodsModal () {
                 // 父组件需要调用
@@ -240,15 +210,37 @@
                 let arr = this.goodsList.map(item => item.id);
                 this.allGoodsList.forEach(element => {
                     if (arr.indexOf(element.id) === -1) {
-                        this.goodsList.push(element);
+                        if (this.isFormCombi) { // 商品组合页面专用的
+                            this.goodsList.push({
+                                goodsId: element.id,
+                                goodsNumber: element.number,
+                                goodsName: element.name,
+                                goodsSpecification: element.specification,
+                                goodsUnit: element.unit,
+                                goodsPrice: element.price,
+                                num: '',
+                                usageId: '',
+                                dosage: '',
+                                barCode: element.barCode,
+                                remark: element.remark
+                            });
+                        } else {
+                            this.goodsList.push(element);
+                        }
                     }
                 });
             },
             removeSelect () {
                 var selectIds = this.$refs.addGoodsTable.getSelection();
                 selectIds.forEach(element => {
-                    let arr = this.goodsList.map(item => item.id);
-                    this.goodsList.splice(arr.indexOf(element.id), 1);
+                    let arr = []
+                    if (this.isFormCombi) {
+                        arr = this.goodsList.map(item => item.goodsId);
+                        this.goodsList.splice(arr.indexOf(element.goodsId), 1);
+                    } else {
+                        arr = this.goodsList.map(item => item.id);
+                        this.goodsList.splice(arr.indexOf(element.id), 1);
+                    }
                 });
             },
             addGoods () {
