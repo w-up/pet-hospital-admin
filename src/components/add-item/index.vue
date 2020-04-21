@@ -1436,8 +1436,9 @@
             },
             removeSelect () {
                 var selectIds = this.$refs.addDetailsTable.getSelection();
-                selectIds.forEach((element, index) => {
-                    this.detailsList.splice(index, 1);
+                selectIds.forEach(element => {
+                    let arr = this.detailsList.map(item => item.id);
+                    this.detailsList.splice(arr.indexOf(element.id), 1);
                 });
             },
             closePackageModal () {

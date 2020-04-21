@@ -246,8 +246,9 @@
             },
             removeSelect () {
                 var selectIds = this.$refs.addGoodsTable.getSelection();
-                selectIds.forEach((element, index) => {
-                    this.goodsList.splice(index, 1);
+                selectIds.forEach(element => {
+                    let arr = this.goodsList.map(item => item.id);
+                    this.goodsList.splice(arr.indexOf(element.id), 1);
                 });
             },
             addGoods () {
