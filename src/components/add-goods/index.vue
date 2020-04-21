@@ -151,7 +151,6 @@
         watch: {
             combiDetailData: {
                 handler (newValue, oldValue) {
-                    console.log(newValue)
                 },
                 deep: true
             }
