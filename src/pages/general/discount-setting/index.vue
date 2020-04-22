@@ -1,9 +1,7 @@
 <template>
   <div>
-    <Tabs value="name1">
-      <TabPane label="普通卡" name="name1"></TabPane>
-      <TabPane label="银卡" name="name2"></TabPane>
-      <TabPane label="金卡" name="name3"></TabPane>
+    <Tabs v-model="currentCardId" @on-click="changeType">
+      <TabPane v-for="(item, index) in cardList" :key="index" :label="item.name" :name="item.id"></TabPane>
     </Tabs>
     <Row>
       <Col span="6">
@@ -15,7 +13,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Tree :data="dataGoods"></Tree>
+              <Tree :data="treeData" @on-select-change="selectChange"></Tree>
             </Col>
           </Row>
         </Card>
@@ -29,24 +27,43 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table class="centerSty" border :columns="columns1" :data="data1"></Table>
+              <Table
+                class="centerSty"
+                border
+                :columns="discountGoodsColumns"
+                :data="discountGoodsData"
+                @on-selection-change="handleSelectGoods"
+              ></Table>
               <div class="ivu-mt ivu-text-right">
-                <Page :total="data1.length" :current.sync="current" />
+                <Page :total="total" :current.sync="current" :show-elevator="showElevator" />
               </div>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="warning" class="mr10" @click="handleOpenCreate">修改折扣</Button>
+              <Button type="warning" class="mr10" @click="showChangeDiscount">修改折扣</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal v-model="showCreate" title="修改折扣" @on-ok="handleCreate">
-      <Form ref="create" :label-width="100">
-        <FormItem label="折扣值：">
-          <Input />
+    <Modal
+      ref="changeDiscountModal"
+      v-model="showChangeDiscountModal"
+      title="修改折扣"
+      @on-ok="handleChangeDiscount"
+      :loading="true"
+    >
+      <Form
+        ref="changeDiscountForm"
+        :label-width="100"
+        :model="discountData"
+        :rules="discountRules"
+      >
+        <FormItem label="折扣值：" prop="discount">
+          <Input v-model="discountData.discount">
+            <span slot="append">%</span>
+          </Input>
         </FormItem>
       </Form>
     </Modal>
@@ -56,43 +73,27 @@
     export default {
         name: 'list-table-list',
         data () {
+            const validateDiscount = (rule, value, callback) => {
+                var r = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/;
+                if (!value) {
+                    return callback(new Error('折扣不能为空'));
+                } else if (!r.test(value)) {
+                    callback(new Error('请输入数字，最多保留两位小数'));
+                } else if (value > 100) {
+                    callback(new Error('折扣不能大于100%'));
+                } else {
+                    callback();// 必须加上。否则填写成功后会一直转圈，点击不成功
+                }
+            };
             return {
-                dataGoods: [
-                    {
-                        title: '所有',
-                        expand: false
-                    },
-                    {
-                        title: '挂号',
-                        expand: true,
-                        children: [
-                            {
-                                title: '挂号服务',
-                                expand: false
-                            },
-                            {
-                                title: '住院费用',
-                                expand: false
-                            }
-                        ]
-                    },
-                    {
-                        title: '处方',
-                        expand: true,
-                        children: [
-                            {
-                                title: '口服类',
-                                expand: false
-                            },
-                            {
-                                title: '疫苗服务',
-                                expand: false
-                            }
-                        ]
-                    }
-                ],
+                discountData: {
+                    discount: '10'
+                },
+                currentCardId: '',
+                cardList: [],
                 current: 1,
-                columns1: [
+                total: 0,
+                discountGoodsColumns: [
                     {
                         type: 'selection',
                         width: 60,
@@ -101,7 +102,7 @@
                     {
                         title: '编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'number'
                     },
                     {
                         title: '条形码',
@@ -116,12 +117,12 @@
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'specification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'unit'
                     },
                     {
                         title: '单价',
@@ -131,39 +132,132 @@
                     {
                         title: '折扣',
                         minWidth: 84,
-                        key: 'discount '
+                        key: 'discount',
+                        render: (h, params) => {
+                            return h('div', [params.row.discount ? params.row.discount + '%' : '']);
+                        }
                     }
                 ],
-                data1: [
-                    {
-                        code: 'P00001',
-                        barCode: '黑猫',
-                        name: 'HM',
-                        size: '',
-                        unti: '',
-                        price: '',
-                        discount: ''
-                    },
-                    {
-                        code: 'P00001',
-                        barCode: '白猫',
-                        name: 'BM',
-                        size: '',
-                        unti: '',
-                        price: '',
-                        discount: ''
-                    }
+                discountGoodsData: [
                 ],
-                showCreate: false
+                showElevator: false,
+                discountRules: {
+                    discount: [
+                        { validator: validateDiscount, trigger: 'blur' }
+                    ]
+                },
+                showChangeDiscountModal: false,
+                treeData: [],
+                selectListGoods: [],
+                currentGoodsId: ''
             };
         },
         methods: {
-            handleOpenCreate () {
-                this.showCreate = true;
+            selectChange (selectedNodesList, selectedNode) {
+                this.currentGoodsId = selectedNode.id ? selectedNode.id : '';
             },
-            handleCreate () {}
+            // 切换tab类型
+            changeType (id) {
+                this.currentCardId = id;
+                this.getDiscountGoodsList();
+            },
+            getCardList () {
+                this.$get('/admin/general/card/page', {}, response => {
+                    this.cardList = response.data.data;
+                    this.currentCardId = response.data.data[0].id;
+                    this.getDiscountGoodsList();
+                });
+            },
+            getDiscountGoodsList () {
+                var data = {
+                    cardId: this.currentCardId
+                };
+                this.$get('/admin/goods/discount/pageFromGoods', data, response => {
+                    this.discountGoodsData = response.data.data;
+                    this.total = response.data.totalElements;
+                    if (Number(this.total) / 10 > 9) {
+                        this.showElevator = true;
+                    }
+                });
+            },
+            getTreeData () {
+                this.$get('/admin/goods/category/pageWithType', {}, response => {
+                    // 处理树结构数据
+                    this.treeData = [];
+                    var list = response.data;
+                    if (list.length > 0) {
+                        for (var i = 0; i < list.length; i++) {
+                            var obj = {};
+                            obj.id = list[i].type.code;
+                            obj.title = list[i].type.name;
+                            if (list[i].categoryBos.length > 0) {
+                                var childList = list[i].categoryBos;
+                                var childArr = [];
+                                for (var j = 0; j < childList.length; j++) {
+                                    var childObj = {};
+                                    childObj.title = childList[j].name;
+                                    childObj.id = childList[j].id;
+                                    childArr.push(childObj);
+                                }
+                                obj.children = childArr;
+                            } else {
+                                obj.children = [];
+                            }
+                            this.treeData.push(obj);
+                        }
+                    }
+                });
+            },
+            showChangeDiscount () {
+                if (this.currentGoodsId === '') {
+                    this.$Message.error('请选择左侧树');
+                } else if (this.selectListGoods.length === 0) {
+                    this.$Message.error('请选择表格中的数据');
+                } else {
+                    this.$refs.changeDiscountForm.resetFields();
+                    // this.discountData = {};
+                    this.discountData.id = this.selectListGoods[0].discountId
+                        ? this.selectListGoods[0].discountId
+                        : '';
+                    this.discountData.goodsId = this.currentGoodsId;
+                    this.discountData.cardId = this.currentCardId;
+                    this.discountData.discount = this.selectListGoods[0].discount
+                        ? this.selectListGoods[0].discount
+                        : '10';
+                    this.showChangeDiscountModal = true;
+                }
+            },
+            handleChangeDiscount () {
+                this.$refs.changeDiscountModal.buttonLoading = false;
+                this.$refs.changeDiscountForm.validate(valid => {
+                    if (valid) {
+                        this.$post(
+                            '/admin/goods/discount/save',
+                            this.discountData,
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getDiscountGoodsList();
+                                    this.showChangeDiscountModal = false;
+                                    this.selectListGoods = []
+                                } else {
+                                    this.$Message.error(response.message);
+                                }
+                            }
+                        );
+                    } else {
+                    }
+                });
+            },
+            handleSelectGoods (selection) {
+                this.selectListGoods = JSON.parse(JSON.stringify(selection));
+                console.log(this.selectListGoods);
+            }
         },
-        mounted () {}
+        mounted () {
+            this.getCardList();
+            this.getTreeData();
+        }
     };
 </script>
 <style lang="less" scoped>

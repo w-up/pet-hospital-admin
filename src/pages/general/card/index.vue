@@ -138,7 +138,7 @@
                         callback(new Error('请输入数字，最多保留两位小数'));
                     }
                     if (value > 100) {
-                        callback(new Error('折扣不能等于或大于100%'));
+                        callback(new Error('折扣不能大于100%'));
                     }
                 }
                 callback();
