@@ -223,8 +223,8 @@
         </FormItem>
       </Form>
     </Modal>
- <!-- 商品组合设置 -->
-    <addGoods ref="addGoods" :goodsList="planGoodsData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true"></addGoods>
+ <!-- 添加商品 -->
+    <addGoods ref="addGoods" :goodsList="planGoodsData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true" title="添加商品"></addGoods>
   </div>
 </template>
 <script>

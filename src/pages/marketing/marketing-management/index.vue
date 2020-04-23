@@ -255,8 +255,8 @@
       </Col>
     </Row>
 
-    <!-- 商品组合设置 -->
-    <addGoods ref="addGoods" :goodsList="goodsList" :goodsColumns="goodsColumns"></addGoods>
+    <!-- 添加商品 -->
+    <addGoods ref="addGoods" :goodsList="goodsList" :goodsColumns="goodsColumns" title="添加商品"></addGoods>
 
     <Modal title="删除" v-model="removeModal" @on-ok="removeMarketing">
       <div>确认删除吗？</div>

@@ -65,7 +65,7 @@
       </Col>
     </Row>
       <!-- 商品组合设置 -->
-    <addGoods ref="addGoods" :goodsList="combiDetailData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true"></addGoods>
+    <addGoods ref="addGoods" :goodsList="combiDetailData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true" title="商品组合设置"></addGoods>
     <Modal ref="addCombiModal" v-model="showAddCombiModal" :title="isAddCombi?'新增商品组合':'编辑商品组合'" @on-ok="handleCreateCombi"  :loading="true">
       <Form ref="addCombiForm" :label-width="180" :rules="combiRules" :model="combiData">
         <FormItem label="商品组合名称" prop="name">

@@ -3,7 +3,7 @@
     <!-- 添加商品 -->
     <Modal v-model="addGoodsModal" width="60%" class="mymodal">
       <p slot="header">
-        <Col span="24">商品组合设置</Col>
+        <Col span="24">{{title}}</Col>
       </p>
 
       <Row :gutter="16">
@@ -82,7 +82,8 @@
         props: {
             goodsList: Array,
             goodsColumns: Array,
-            isFormCombi: Boolean
+            isFormCombi: Boolean,
+            title: String
         },
         data () {
             return {
@@ -127,6 +128,29 @@
                         title: '备注',
                         minWidth: 84,
                         key: 'description'
+                    },
+                    {
+                        title: '操作',
+                        minWidth: 84,
+                        render: (h, params) => {
+                            return h('div', [
+                                h(
+                                    'Button',
+                                    {
+                                        props: {
+                                            type: 'info',
+                                            size: 'small'
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.singleAdd(params.row)
+                                            }
+                                        }
+                                    },
+                                    '添加'
+                                )
+                            ]);
+                        }
                     }
                 ],
                 allGoodsCategoryTreeData: [],
@@ -205,7 +229,12 @@
                 });
             },
             quickAdd () {
-                let arr = this.goodsList.map(item => item.id);
+                let arr = []
+                if (this.isFormCombi) { // 商品组合页面、医生提成页面用到
+                    arr = this.goodsList.map(item => item.goodsId);
+                } else {
+                    arr = this.goodsList.map(item => item.id);
+                }
                 this.allGoodsList.forEach(element => {
                     if (arr.indexOf(element.id) === -1) {
                         if (this.isFormCombi) { // 商品组合页面、医生提成页面用到
@@ -227,6 +256,31 @@
                         }
                     }
                 });
+            },
+            singleAdd (element) {
+                if (this.isFormCombi) { // 商品组合页面、医生提成页面用到
+                    let arr = this.goodsList.map(item => item.goodsId);
+                    if (arr.indexOf(element.id) === -1) {
+                        this.goodsList.push({
+                            goodsId: element.id,
+                            goodsNumber: element.number,
+                            goodsName: element.name,
+                            goodsSpecification: element.specification,
+                            goodsUnit: element.unit,
+                            goodsPrice: element.price,
+                            num: '',
+                            usageId: '',
+                            dosage: '',
+                            barCode: element.barCode,
+                            remark: element.remark
+                        });
+                    }
+                } else {
+                    let arr = this.goodsList.map(item => item.id);
+                    if (arr.indexOf(element.id) === -1) {
+                        this.goodsList.push(element);
+                    }
+                }
             },
             removeSelect () {
                 var selectIds = this.$refs.addGoodsTable.getSelection();
