@@ -12,24 +12,24 @@
             <Col span="24">
               <List class="plan-list">
                 <ListItem
-                  v-for="(item, index) in list"
-                  :key="index"
-                  :class="item.name===currentName?'active':''"
+                  v-for="item in list"
+                  :key="item.id"
+                  :class="item.id===currentPlanData.id?'active':''"
                 >
-                  <p @click="switchList(item.name)" class="list">{{ item.name }}</p>
+                  <p @click="switchList(item)" class="list">{{ item.name }}</p>
                 </ListItem>
               </List>
             </Col>
           </Row>
-           <Row :gutter="16" type="flex" justify="end" class="mtb15">
+          <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
-              <Button type="success" @click="showAddPlanModal=true">+方案</Button>
+              <Button type="success" @click="showCreatePlanName">+方案</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="primary" >修改</Button>
+              <Button type="primary" @click="showEditPlanName">修改</Button>
             </Col>
-             <Col span="8" class="ivu-text-center">
-              <Button type="error" >删除</Button>
+            <Col span="8" class="ivu-text-center">
+              <Button type="error">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -41,84 +41,149 @@
               <span class="module-title">提成方案</span>
             </Col>
           </Row>
-          <Row :gutter="32" type="flex" class="mtb15">
-            <Col span="12">
-              <Row>
-                <Col span="4">
-                  <strong>一级提成</strong>
-                </Col>
-                <Col span="4">销售提成</Col>
-                <Col span="6">
-                  <Checkbox>按比例(%)</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="0.00"></Input>
-                </Col>
-              </Row>
-              <Row class="mtb15">
-                <Col span="6" offset="8">
-                  <Checkbox>固定金额</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="￥0.00"></Input>
-                </Col>
-              </Row>
-              <Row>
-                <Col span="4" offset="4">服务提成</Col>
-                <Col span="6">
-                  <Checkbox>按比例(%)</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="0.00"></Input>
-                </Col>
-              </Row>
-              <Row class="mtb15">
-                <Col span="6" offset="8">
-                  <Checkbox>固定金额</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="￥0.00"></Input>
-                </Col>
-              </Row>
-            </Col>
-            <Col span="12">
-              <Row>
-                <Col span="4">
-                  <strong>二级提成</strong>
-                </Col>
-                <Col span="4">销售提成</Col>
-                <Col span="6">
-                  <Checkbox>按比例(%)</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="0.00"></Input>
-                </Col>
-              </Row>
-              <Row class="mtb15">
-                <Col span="6" offset="8">
-                  <Checkbox>固定金额</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="￥0.00"></Input>
-                </Col>
-              </Row>
-              <Row>
-                <Col span="4" offset="4">服务提成</Col>
-                <Col span="6">
-                  <Checkbox>按比例(%)</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="0.00"></Input>
-                </Col>
-              </Row>
-              <Row class="mtb15">
-                <Col span="6" offset="8">
-                  <Checkbox>固定金额</Checkbox>
-                </Col>
-                <Col span="10">
-                  <Input size="small" placeholder="￥0.00"></Input>
-                </Col>
-              </Row>
+          <Row :gutter="32" type="flex" class="mtb15 planForm">
+            <Form
+              ref="planDetailForm"
+              :model="currentPlanData"
+              :rules="planDetailRules"
+              :label-width="100"
+              style="width:100%"
+            >
+              <Col span="12">
+                <RadioGroup v-model="currentPlanData.salesCommissionType.code">
+                  <Row>
+                    <Col span="4">
+                      <strong>一级提成</strong>
+                    </Col>
+                    <Col span="4">销售提成</Col>
+                    <Col span="16">
+                      <FormItem class="lb0" prop="salesCommissionPro">
+                        <Radio
+                          label="proportion"
+                          style="width:100px;margin:0;padding-right:12px"
+                        >按比例(%)</Radio>
+                        <Input
+                          v-model="currentPlanData.salesCommissionPro"
+                          placeholder="0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="16" offset="8">
+                      <FormItem class="lb0" prop="salesCommissionAmo">
+                        <Radio label="amount" style="width:100px;margin:0;padding-right:12px">固定金额</Radio>
+                        <Input
+                          v-model="currentPlanData.salesCommissionAmo"
+                          placeholder="￥0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                </RadioGroup>
+                <RadioGroup v-model="currentPlanData.serviceCommissionType.code">
+                  <Row>
+                    <Col span="4" offset="4">服务提成</Col>
+                    <Col span="16">
+                      <FormItem class="lb0" prop="serviceCommissionPro">
+                        <Radio
+                          label="proportion"
+                          style="width:100px;margin:0;padding-right:12px"
+                        >按比例(%)</Radio>
+                        <Input
+                          v-model="currentPlanData.serviceCommissionPro"
+                          placeholder="0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="16" offset="8">
+                      <FormItem class="lb0" prop="serviceCommissionAmo">
+                        <Radio label="amount" style="width:100px;margin:0;padding-right:12px">固定金额</Radio>
+                        <Input
+                          v-model="currentPlanData.serviceCommissionAmo"
+                          placeholder="￥0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                </RadioGroup>
+              </Col>
+              <Col span="12">
+                <RadioGroup v-model="currentPlanData.secondSalesCommissionType.code">
+                  <Row>
+                    <Col span="4">
+                      <strong>二级提成</strong>
+                    </Col>
+                    <Col span="4">销售提成</Col>
+                    <Col span="16">
+                      <FormItem class="lb0" prop="secondSalesCommissionPro">
+                        <Radio
+                          label="proportion"
+                          style="width:100px;margin:0;padding-right:12px"
+                        >按比例(%)</Radio>
+                        <Input
+                          v-model="currentPlanData.secondSalesCommissionPro"
+                          placeholder="0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="16" offset="8">
+                      <FormItem class="lb0" prop="secondSalesCommissionAmo">
+                        <Radio label="amount" style="width:100px;margin:0;padding-right:12px">固定金额</Radio>
+                        <Input
+                          v-model="currentPlanData.secondSalesCommissionAmo"
+                          placeholder="￥0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                </RadioGroup>
+                <RadioGroup v-model="currentPlanData.secondServiceCommissionType.code">
+                  <Row>
+                    <Col span="4" offset="4">服务提成</Col>
+                    <Col span="16">
+                      <FormItem class="lb0" prop="secondServiceCommissionPro">
+                        <Radio
+                          label="proportion"
+                          style="width:100px;margin:0;padding-right:12px"
+                        >按比例(%)</Radio>
+                        <Input
+                          v-model="currentPlanData.secondServiceCommissionPro"
+                          placeholder="0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="16" offset="8">
+                      <FormItem class="lb0" prop="secondServiceCommissionAmo">
+                        <Radio label="amount" style="width:100px;margin:0;padding-right:12px">固定金额</Radio>
+                        <Input
+                          v-model="currentPlanData.secondServiceCommissionAmo"
+                          placeholder="￥0.00"
+                          style="width:calc(100% - 100px)"
+                        />
+                      </FormItem>
+                    </Col>
+                  </Row>
+                </RadioGroup>
+              </Col>
+            </Form>
+          </Row>
+          <Row>
+            <Col span="24" class="ivu-text-right">
+              <Button type="info">保存</Button>
             </Col>
           </Row>
         </Card>
@@ -208,10 +273,16 @@
         </Col>
       </Row>
     </Modal>
-       <Modal v-model="showAddPlanModal" title="添加方案" @on-ok="handleCreatePlan">
-      <Form ref="create" :label-width="150">
-        <FormItem label="方案名称">
-          <Input style="width:70%" />
+    <Modal
+      ref="createPlanModal"
+      v-model="showAddPlanModal"
+      :title="isAddPlan?'添加方案':'编辑方案'"
+      @on-ok="hanSavePlan"
+      :loading="true"
+    >
+      <Form ref="createPlanForm" :label-width="150" :model="planData" :rules="planRules">
+        <FormItem label="方案名称" prop="name">
+          <Input style="width:70%" v-model="planData.name" />
         </FormItem>
       </Form>
     </Modal>
@@ -220,16 +291,53 @@
 <script>
     export default {
         data () {
+            const validatePlanDetail = (rule, value, callback) => {
+                var r = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/;
+                if (value) {
+                    if (!r.test(value)) {
+                        callback(new Error('请输入数字，最多保留两位小数'));
+                    } else {
+                        callback(); // 必须加上。否则填写成功后会一直转圈，点击不成功
+                    }
+                } else {
+                    callback();
+                }
+            };
             return {
+                currentPlanData: {},
+                planDetailRules: {
+                    salesCommissionPro: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    salesCommissionAmo: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    serviceCommissionPro: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    serviceCommissionAmo: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    secondSalesCommissionPro: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    secondSalesCommissionAmo: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    secondServiceCommissionPro: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ],
+                    secondServiceCommissionAmo: [
+                        { validator: validatePlanDetail, trigger: 'blur' }
+                    ]
+                },
+                planRules: {
+                    name: [{ required: true, message: '请输入方案名称', trigger: 'change' }]
+                },
+                isAddPlan: false,
+                planData: {},
+                list: [],
                 showAddPlanModal: false,
-                list: [
-                    { name: '方案一' },
-                    { name: '方案二' },
-                    { name: '方案三' },
-                    { name: '方案四' },
-                    { name: '方案五' }
-                ],
-                currentName: '方案一',
                 columns1: [
                     {
                         type: 'selection',
@@ -439,16 +547,120 @@
             };
         },
         methods: {
+            getPlanList () {
+                this.$get('/admin/commission/plan/page', {}, response => {
+                    this.list = response.data.data;
+                    this.currentPlanData =
+                        response.data.data.length > 0
+                            ? JSON.parse(JSON.stringify(response.data.data[0]))
+                            : {};
+                    this.setDetail(response.data.data[0])
+                    // this.getPetSpeciesList();
+                });
+            },
+            switchList (item) {
+                this.currentPlanData = item;
+                // this.setDetail(item)
+                // this.getPetSpeciesList();
+            },
+            setDetail (item) {
+                if (item.salesCommissionType) {
+                    if (item.salesCommissionType.code === 'proportion') {
+                        this.currentPlanData.salesCommissionPro = item.salesCommission
+                    } else {
+                        this.currentPlanData.salesCommissionAmo = item.salesCommission
+                    }
+                } else {
+                    this.currentPlanData.salesCommissionType = {
+                        code: ''
+                    }
+                    this.currentPlanData.salesCommissionPro = ''
+                    this.currentPlanData.salesCommissionAmo = ''
+                }
+
+                if (item.serviceCommissionType) {
+                    if (item.serviceCommissionType.code === 'proportion') {
+                        this.currentPlanData.serviceCommissionPro = item.salesCommission
+                    } else {
+                        this.currentPlanData.serviceCommissionAmo = item.salesCommission
+                    }
+                } else {
+                    this.currentPlanData.serviceCommissionType = {
+                        code: ''
+                    }
+                    this.currentPlanData.serviceCommissionPro = ''
+                    this.currentPlanData.serviceCommissionAmo = ''
+                }
+
+                if (item.secondSalesCommissionType) {
+                    if (item.secondSalesCommissionType.code === 'proportion') {
+                        this.currentPlanData.secondSalesCommissionPro = item.salesCommission
+                    } else {
+                        this.currentPlanData.secondSalesCommissionAmo = item.salesCommission
+                    }
+                } else {
+                    this.currentPlanData.secondSalesCommissionType = {
+                        code: ''
+                    }
+                    this.currentPlanData.secondSalesCommissionPro = ''
+                    this.currentPlanData.secondSalesCommissionAmo = ''
+                }
+
+                if (item.secondServiceCommissionType) {
+                    if (item.secondServiceCommissionType.code === 'proportion') {
+                        this.currentPlanData.secondServiceCommissionPro = item.salesCommission
+                    } else {
+                        this.currentPlanData.secondServiceCommissionAmo = item.salesCommission
+                    }
+                } else {
+                    this.currentPlanData.secondServiceCommissionType = {
+                        code: ''
+                    }
+                    this.currentPlanData.secondServiceCommissionPro = ''
+                    this.currentPlanData.secondServiceCommissionAmo = ''
+                }
+            },
+            showCreatePlanName () {
+                this.isAddPlan = true;
+                this.$refs.createPlanForm.resetFields();
+                this.planData = {};
+                this.showAddPlanModal = true;
+            },
+            showEditPlanName () {
+                if (!this.currentPlanData.id) {
+                    this.$Message.error('无可修改项');
+                    return false;
+                }
+                this.isAddPlan = false;
+                this.planData = JSON.parse(JSON.stringify(this.currentPlanData));
+                this.showAddPlanModal = true;
+            },
+            hanSavePlan () {
+                this.$refs.createPlanModal.buttonLoading = false;
+                this.$refs.createPlanForm.validate(valid => {
+                    if (valid) {
+                        this.$post('/admin/commission/plan/save', this.planData, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getPlanList();
+                                this.showAddPlanModal = false;
+                            } else {
+                                this.$Message.error(response.message);
+                            }
+                        });
+                    } else {
+                    }
+                });
+            },
+
             handleOpenEditCombination () {
                 this.editCombination = true;
             },
-            handleCreate () {},
-            handleCreatePlan () {},
-            switchList (name) {
-                this.currentName = name;
-            }
+            handleCreate () {}
         },
-        mounted () {}
+        mounted () {
+            this.getPlanList();
+        }
     };
 </script>
 <style lang="less" scoped>
@@ -465,11 +677,17 @@
   height: 265px;
   overflow: auto;
 }
-//使所有页面的表格的td和th都居中
 .ivu-table-wrapper td {
   text-align: center;
 }
 .ivu-table-wrapper th {
   text-align: center;
+}
+.lb0 .ivu-form-item-content {
+  margin: 1px 0;
+  margin-left: 0 !important;
+}
+.planForm .ivu-radio-group {
+  display: block;
 }
 </style>
