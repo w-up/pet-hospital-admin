@@ -438,6 +438,9 @@
             };
         },
         methods: {
+            handelReload () {
+                this.getPlanGoodsList()
+            },
             getGoodsList (list) {
                 if (list.length > 0) {
                     for (var i = 0; i < list.length; i++) {

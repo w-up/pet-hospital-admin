@@ -158,8 +158,12 @@
                 handler (newValue, oldValue) {
                 },
                 deep: true
+            },
+            'addGoodsModal': function change () {
+                if (this.addGoodsModal === false) {
+                    this.$parent.handelReload();
+                }
             }
-
         },
         methods: {
             handleAddGoodsModal () {

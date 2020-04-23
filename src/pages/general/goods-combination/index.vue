@@ -583,6 +583,9 @@
                 }
                 this.combiDetailData = []
                 this.$refs.addGoods.handleAddGoodsModal();
+            },
+            handelReload () {
+                this.getCombiDetailList()
             }
         },
         mounted () {
