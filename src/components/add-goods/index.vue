@@ -153,6 +153,11 @@
                 handler (newValue, oldValue) {
                 },
                 deep: true
+            },
+            planGoodsData: {
+                handler (newValue, oldValue) {
+                },
+                deep: true
             }
 
         },
@@ -209,7 +214,7 @@
                 let arr = this.goodsList.map(item => item.id);
                 this.allGoodsList.forEach(element => {
                     if (arr.indexOf(element.id) === -1) {
-                        if (this.isFormCombi) { // 商品组合页面专用的
+                        if (this.isFormCombi) { // 商品组合页面、医生提成页面用到
                             this.goodsList.push({
                                 goodsId: element.id,
                                 goodsNumber: element.number,
@@ -244,6 +249,7 @@
             },
             addGoods () {
                 this.addGoodsModal = false;
+                console.log(this.goodsList)
                 this.$parent.getGoodsList(this.goodsList);
             }
         }

@@ -183,7 +183,7 @@
           </Row>
           <Row>
             <Col span="24" class="ivu-text-right">
-              <Button type="info">保存</Button>
+              <Button type="info" @click="hanSavePlanDetail">保存</Button>
             </Col>
           </Row>
         </Card>
@@ -195,84 +195,21 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table border :columns="columns1" :data="data1"></Table>
+              <Table border :columns="planGoodsColumns" :data="planGoodsData"></Table>
               <div class="ivu-mt ivu-text-right">
-                <Page :total="data1.length" :current.sync="current" />
+                <Page :total="total" :show-elevator="showElevator" :current.sync="current" />
               </div>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
-              <Button type="warning" @click="handleOpenEditCombination">添加商品</Button>
+              <Button type="warning" @click="handleAddGoodsModal">添加商品</Button>
               <Button type="error">删除</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
-    <Modal v-model="editCombination" title="商品组合设置" @on-ok="handleCreate" width="80%">
-      <Row>
-        <Col span="5">
-          <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="24">
-                <span class="module-title">消费项目分类</span>
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end">
-              <Col span="24">
-                <Tree :data="consumptionTypeData"></Tree>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-        <Col span="19" class="box">
-          <Card>
-            <Row
-              type="flex"
-              justify="center"
-              :gutter="1"
-              align="top"
-              class-name="module-title-wrapper"
-            >
-              <Col span="15">
-                <span class="module-title">消费项目列表</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="warning" class="mr10">快速添加</Button>
-              </Col>
-              <Col span="5" class="ivu-text-right">
-                <Input prefix="ios-search" placeholder="名称，编号，条形码" />
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end" class="mtb15">
-              <Col span="24">
-                <Table border :columns="consumptionProjectColumns" :data="consumptionProjectData"></Table>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-      <Row class="mtb15">
-        <Col span="24">
-          <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="20">
-                <span class="module-title">消费单</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="error" class="mr10">删除</Button>
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end" class="mtb15">
-              <Col span="24">
-                <Table border :columns="consumptionOrderColumns" :data="consumptionOrderData"></Table>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-    </Modal>
     <Modal
       ref="createPlanModal"
       v-model="showAddPlanModal"
@@ -286,10 +223,14 @@
         </FormItem>
       </Form>
     </Modal>
+ <!-- 商品组合设置 -->
+    <addGoods ref="addGoods" :goodsList="planGoodsData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true"></addGoods>
   </div>
 </template>
 <script>
+    import addGoods from '@/components/add-goods';
     export default {
+        components: { addGoods },
         data () {
             const validatePlanDetail = (rule, value, callback) => {
                 var r = /(^[1-9](\d+)?(\.\d{1,2})?$)|(^0$)|(^\d\.\d{1,2}$)/;
@@ -338,7 +279,7 @@
                 planData: {},
                 list: [],
                 showAddPlanModal: false,
-                columns1: [
+                planGoodsColumns: [
                     {
                         type: 'selection',
                         width: 60,
@@ -357,7 +298,7 @@
                     {
                         title: '名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'goodsName'
                     },
                     {
                         title: '规格',
@@ -375,7 +316,7 @@
                         key: 'price'
                     }
                 ],
-                data1: [
+                planGoodsData: [
                     {
                         code: '0000',
                         barCode: '黑猫',
@@ -392,82 +333,8 @@
                     }
                 ],
                 current: 1,
-                editCombination: false,
-                consumptionTypeData: [
-                    {
-                        title: '检验',
-                        expand: true,
-                        children: [
-                            {
-                                title: '尿常规(犬类)',
-                                expand: false
-                            },
-                            {
-                                title: '尿常规(猫类)',
-                                expand: false
-                            }
-                        ]
-                    }
-                ],
-                consumptionProjectColumns: [
-                    {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
-                    },
-                    {
-                        title: '编号',
-                        minWidth: 84,
-                        key: 'code'
-                    },
-                    {
-                        title: '条形码',
-                        minWidth: 84,
-                        key: 'barCode'
-                    },
-                    {
-                        title: '名称',
-                        minWidth: 84,
-                        key: 'name'
-                    },
-                    {
-                        title: '规格',
-                        minWidth: 84,
-                        key: 'size'
-                    },
-                    {
-                        title: '单位',
-                        minWidth: 84,
-                        key: 'unti'
-                    },
-                    {
-                        title: '单价',
-                        minWidth: 84,
-                        key: 'price'
-                    },
-                    {
-                        title: '厂家',
-                        minWidth: 84,
-                        key: 'factory'
-                    },
-                    {
-                        title: '备注',
-                        minWidth: 84,
-                        key: 'remark'
-                    }
-                ],
-                consumptionProjectData: [
-                    {
-                        code: '',
-                        barCode: '',
-                        name: '复合维生素B片',
-                        size: '',
-                        unti: '片',
-                        price: '',
-                        factory: '',
-                        remark: ''
-                    }
-                ],
+                total: 0,
+                showElevator: false,
                 consumptionOrderColumns: [
                     {
                         type: 'selection',
@@ -477,7 +344,7 @@
                     {
                         title: '编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'goodsNumber'
                     },
                     {
                         title: '条形码',
@@ -487,66 +354,120 @@
                     {
                         title: '名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'goodsName'
                     },
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'goodsSpecification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'goodsUnit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'price'
+                        key: 'goodsPrice'
                     },
                     {
                         title: '数量',
                         minWidth: 84,
-                        key: 'num'
+                        key: 'num',
+                        render: (h, params) => {
+                            let vm = this;
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        // 将单元格的值给Input
+                                        value: params.row.num
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            // 值改变时
+                                            // 将渲染后的值重新赋值给单元格值
+                                            vm.planGoodsData[params.row._index].num = event.target.value
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
                     },
                     {
                         title: '用量',
                         minWidth: 84,
-                        key: 'useNum'
+                        key: 'dosage',
+                        render: (h, params) => {
+                            let vm = this
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        value: params.row.dosage
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            vm.planGoodsData[params.row._index].dosage = event.target.value
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
                     },
                     {
                         title: '备注',
                         minWidth: 84,
-                        key: 'remark'
-                    }
-                ],
-                consumptionOrderData: [
-                    {
-                        code: 'P00001',
-                        barCode: '000001',
-                        name: '宠物补血膏',
-                        size: '20ml',
-                        unti: 'ml',
-                        price: '5',
-                        num: '5',
-                        useNum: '1.0',
-                        remark: ''
-                    },
-                    {
-                        code: 'P00001',
-                        barCode: '000001',
-                        name: '宠物补血膏',
-                        size: '20ml',
-                        unti: 'ml',
-                        price: '5',
-                        num: '5',
-                        useNum: '1.0',
-                        remark: ''
+                        key: 'remark',
+                        render: (h, params) => {
+                            let vm = this
+                            return h('div', [
+                                h('Input', {
+                                    props: {
+                                        value: params.row.remark
+                                    },
+                                    on: {
+                                        'on-change' (event) {
+                                            vm.planGoodsData[params.row._index].remark = event.target.value
+                                        }
+                                    }
+                                })
+                            ]);
+                        }
                     }
                 ]
             };
         },
         methods: {
+            getGoodsList (list) {
+                if (list.length > 0) {
+                    for (var i = 0; i < list.length; i++) {
+                        var obj = {}
+                        obj.planId = this.currentPlanData.id
+                        obj.goodsId = list[i].goodsId
+                        obj.num = list[i].num
+                        obj.dosage = list[i].dosage
+                        obj.remark = list[i].remark
+                        this.$post(
+                            '/admin/goods/commission/plan/save',
+                            obj,
+                            response => {
+                                if (response.success) {
+
+                                } else {
+                                }
+                            }
+                        );
+                    }
+                    setTimeout(() => {
+                        // 设置延迟执行
+                        this.getPlanGoodsList()
+                    }, 500)
+                }
+            },
+            handleAddGoodsModal () {
+                this.planGoodsData = []
+                this.$refs.addGoods.handleAddGoodsModal();
+            },
             getPlanList () {
                 this.$get('/admin/commission/plan/page', {}, response => {
                     this.list = response.data.data;
@@ -555,13 +476,22 @@
                             ? JSON.parse(JSON.stringify(response.data.data[0]))
                             : {};
                     this.setDetail(response.data.data[0])
-                    // this.getPetSpeciesList();
+                    this.getPlanGoodsList();
+                });
+            },
+            getPlanGoodsList () {
+                this.$get('/admin/goods/commission/plan/page?planId=' + this.currentPlanData.id, {}, response => {
+                    this.planGoodsData = response.data.data;
+                    this.total = response.data.totalElements;
+                    if (Number(this.total) / 10 > 9) {
+                        this.showElevator = true;
+                    }
                 });
             },
             switchList (item) {
-                this.currentPlanData = item;
-                // this.setDetail(item)
-                // this.getPetSpeciesList();
+                this.currentPlanData = JSON.parse(JSON.stringify(item));
+                this.setDetail(item)
+                this.getPlanGoodsList();
             },
             setDetail (item) {
                 if (item.salesCommissionType) {
@@ -574,50 +504,42 @@
                     this.currentPlanData.salesCommissionType = {
                         code: ''
                     }
-                    this.currentPlanData.salesCommissionPro = ''
-                    this.currentPlanData.salesCommissionAmo = ''
                 }
 
                 if (item.serviceCommissionType) {
                     if (item.serviceCommissionType.code === 'proportion') {
-                        this.currentPlanData.serviceCommissionPro = item.salesCommission
+                        this.currentPlanData.serviceCommissionPro = item.serviceCommission
                     } else {
-                        this.currentPlanData.serviceCommissionAmo = item.salesCommission
+                        this.currentPlanData.serviceCommissionAmo = item.serviceCommission
                     }
                 } else {
                     this.currentPlanData.serviceCommissionType = {
                         code: ''
                     }
-                    this.currentPlanData.serviceCommissionPro = ''
-                    this.currentPlanData.serviceCommissionAmo = ''
                 }
 
                 if (item.secondSalesCommissionType) {
                     if (item.secondSalesCommissionType.code === 'proportion') {
-                        this.currentPlanData.secondSalesCommissionPro = item.salesCommission
+                        this.currentPlanData.secondSalesCommissionPro = item.secondSalesCommission
                     } else {
-                        this.currentPlanData.secondSalesCommissionAmo = item.salesCommission
+                        this.currentPlanData.secondSalesCommissionAmo = item.secondSalesCommission
                     }
                 } else {
                     this.currentPlanData.secondSalesCommissionType = {
                         code: ''
                     }
-                    this.currentPlanData.secondSalesCommissionPro = ''
-                    this.currentPlanData.secondSalesCommissionAmo = ''
                 }
 
                 if (item.secondServiceCommissionType) {
                     if (item.secondServiceCommissionType.code === 'proportion') {
-                        this.currentPlanData.secondServiceCommissionPro = item.salesCommission
+                        this.currentPlanData.secondServiceCommissionPro = item.secondServiceCommission
                     } else {
-                        this.currentPlanData.secondServiceCommissionAmo = item.salesCommission
+                        this.currentPlanData.secondServiceCommissionAmo = item.secondServiceCommission
                     }
                 } else {
                     this.currentPlanData.secondServiceCommissionType = {
                         code: ''
                     }
-                    this.currentPlanData.secondServiceCommissionPro = ''
-                    this.currentPlanData.secondServiceCommissionAmo = ''
                 }
             },
             showCreatePlanName () {
@@ -652,11 +574,80 @@
                     }
                 });
             },
+            hanSavePlanDetail () {
+                this.$refs.planDetailForm.validate(valid => {
+                    if (valid) {
+                        // 处理传参
+                        if (this.currentPlanData.salesCommissionType.code === 'proportion') {
+                            this.currentPlanData.salesCommission = this.currentPlanData.salesCommissionPro
+                            this.currentPlanData.salesCommissionType = 'proportion'
+                        } else if (this.currentPlanData.salesCommissionType.code === 'amount') {
+                            this.currentPlanData.salesCommission = this.currentPlanData.salesCommissionAmo
+                            this.currentPlanData.salesCommissionType = 'amount'
+                        } else {
+                            this.currentPlanData.salesCommissionType = ''
+                            this.currentPlanData.salesCommission = ''
+                        }
+                        delete this.currentPlanData.salesCommissionPro
+                        delete this.currentPlanData.salesCommissionAmo
 
-            handleOpenEditCombination () {
-                this.editCombination = true;
-            },
-            handleCreate () {}
+                        if (this.currentPlanData.serviceCommissionType.code === 'proportion') {
+                            this.currentPlanData.serviceCommission = this.currentPlanData.serviceCommissionPro
+                            this.currentPlanData.serviceCommissionType = 'proportion'
+                        } else if (this.currentPlanData.serviceCommissionType.code === 'amount') {
+                            this.currentPlanData.serviceCommission = this.currentPlanData.serviceCommissionAmo
+                            this.currentPlanData.serviceCommissionType = 'amount'
+                        } else {
+                            this.currentPlanData.serviceCommissionType = ''
+                            this.currentPlanData.serviceCommission = ''
+                        }
+                        delete this.currentPlanData.serviceCommissionPro
+                        delete this.currentPlanData.serviceCommissionAmo
+
+                        if (this.currentPlanData.secondSalesCommissionType.code === 'proportion') {
+                            this.currentPlanData.secondSalesCommission = this.currentPlanData.secondSalesCommissionPro
+                            this.currentPlanData.secondSalesCommissionType = 'proportion'
+                        } else if (this.currentPlanData.secondSalesCommissionType.code === 'amount') {
+                            this.currentPlanData.secondSalesCommission = this.currentPlanData.secondSalesCommissionAmo
+                            this.currentPlanData.secondSalesCommissionType = 'amount'
+                        } else {
+                            this.currentPlanData.secondSalesCommissionType = ''
+                            this.currentPlanData.secondSalesCommission = ''
+                        }
+                        delete this.currentPlanData.secondSalesCommissionPro
+                        delete this.currentPlanData.secondSalesCommissionAmo
+
+                        if (this.currentPlanData.secondServiceCommissionType.code === 'proportion') {
+                            this.currentPlanData.secondServiceCommission = this.currentPlanData.secondServiceCommissionPro
+                            this.currentPlanData.secondServiceCommissionType = 'proportion'
+                        } else if (this.currentPlanData.secondServiceCommissionType.code === 'amount') {
+                            this.currentPlanData.secondServiceCommission = this.currentPlanData.secondServiceCommissionAmo
+                            this.currentPlanData.secondServiceCommissionType = 'amount'
+                        } else {
+                            this.currentPlanData.secondServiceCommissionType = ''
+                            this.currentPlanData.secondServiceCommission = ''
+                        }
+                        delete this.currentPlanData.secondServiceCommissionPro
+                        delete this.currentPlanData.secondServiceCommissionAmo
+
+                        delete this.currentPlanData.thirdSalesCommissionType
+                        delete this.currentPlanData.thirdSalesCommissionType
+                        delete this.currentPlanData.thirdServiceCommissionType
+                        delete this.currentPlanData.thirdServiceCommissionType
+
+                        this.$post('/admin/commission/plan/save', this.currentPlanData, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.$refs.planDetailForm.resetFields();
+                                this.getPlanList();
+                            } else {
+                                this.$Message.error(response.message);
+                            }
+                        });
+                    } else {
+                    }
+                });
+            }
         },
         mounted () {
             this.getPlanList();

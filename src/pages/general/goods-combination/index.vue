@@ -295,7 +295,7 @@
                         remark: ''
                     }
                 ],
-                consumptionOrderColumns: [// 传给组件用到
+                consumptionOrderColumns: [ // 传给组件用到
                     {
                         type: 'selection',
                         minWidth: 60,
@@ -581,6 +581,7 @@
                     this.$Message.error('左侧商品组合列表无数据');
                     return false
                 }
+                this.combiDetailData = []
                 this.$refs.addGoods.handleAddGoodsModal();
             }
         },
