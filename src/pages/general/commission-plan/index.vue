@@ -288,7 +288,7 @@
                     {
                         title: '编号',
                         minWidth: 84,
-                        key: 'code'
+                        key: 'goodsNumber'
                     },
                     {
                         title: '条形码',
@@ -303,34 +303,20 @@
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'size'
+                        key: 'goodsSpecification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unti'
+                        key: 'goodsUnit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'price'
+                        key: 'goodsPrice'
                     }
                 ],
                 planGoodsData: [
-                    {
-                        code: '0000',
-                        barCode: '黑猫',
-                        name: 'HM',
-                        size: '',
-                        unti: ''
-                    },
-                    {
-                        code: '0009',
-                        barCode: '白猫',
-                        name: 'BM',
-                        size: '',
-                        unti: ''
-                    }
                 ],
                 current: 1,
                 total: 0,
