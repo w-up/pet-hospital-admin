@@ -149,16 +149,6 @@
         created () {},
         computed: {},
         watch: {
-            combiDetailData: {
-                handler (newValue, oldValue) {
-                },
-                deep: true
-            },
-            planGoodsData: {
-                handler (newValue, oldValue) {
-                },
-                deep: true
-            },
             'addGoodsModal': function change () {
                 if (this.addGoodsModal === false) {
                     this.$parent.handelReload();
