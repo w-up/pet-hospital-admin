@@ -50,9 +50,15 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" calss="check-set-table">
-              <Table border :columns="checkItemColumns" :data="checkItemData" :loading="loadingTable" @on-selection-change="handleSelect"></Table>
+              <Table
+                border
+                :columns="checkItemColumns"
+                :data="checkItemData"
+                :loading="loadingTable"
+                @on-selection-change="handleSelect"
+              ></Table>
               <div class="ivu-mt ivu-text-right">
-                <Page  :total="total"  :current.sync="current" :show-elevator="showElevator"/>
+                <Page :total="total" :current.sync="current" :show-elevator="showElevator" />
               </div>
             </Col>
           </Row>
@@ -79,202 +85,88 @@
         </FormItem>
         <RadioGroup v-model="checkTypeData.hasReference">
           <FormItem label="结果类型" style="margin-bottom: 0px;">
-            <Radio :label="1">有参考值范围结果类型</Radio>
+            <Radio label="true">有参考值范围结果类型</Radio>
           </FormItem>
           <FormItem label>
-            <Radio :label="0">其他结果类型(如阴阳或其他)</Radio>
+            <Radio label="false">其他结果类型(如阴阳或其他)</Radio>
           </FormItem>
         </RadioGroup>
       </Form>
     </Modal>
+
+    <!-- 有参考值范围的添加Modal-start -->
     <Modal
-      v-model="rangeTypeModal"
-      title="新增检验项"
+    ref="rangeTypeModal"
+      v-model="showRangeTypeModal"
+      :title="isAddCheckItem?'新增检验项':'编辑检验项'"
       @on-ok="createRangeType"
       width="962px"
       class="modalCla"
+      :loading="true"
     >
       <Row>
-        <Col span="24" class="mt23">
-          <Col span="12">
-            <Col span="5">
-              <span>指标名称</span>
-            </Col>
-            <Col span="10">
-              <Input size="small" />
-            </Col>
-          </Col>
-          <Col span="12">
-            <Col span="5">
-              <span>标准名称</span>
-            </Col>
-            <Col span="10">
-              <Input size="small" />
-            </Col>
-          </Col>
-        </Col>
-        <Col span="24" class="mt23">
-          <Col span="12">
-            <Col span="5">
-              <span>指标单位</span>
-            </Col>
-            <Col span="10">
-              <Input size="small" />
-            </Col>
-          </Col>
-          <Col span="12">
-            <Col span="5">
-              <span>描述</span>
-            </Col>
-            <Col span="10">
-              <Input size="small" />
-            </Col>
-          </Col>
-        </Col>
-        <Col span="24" class="mt12 mtop12">
-          <Row :gutter="16">
+        <Form ref="rangeTypeForm"  :label-width="80" :model="batchsaveDetail" :rules="rangeTypeRules">
+          <Col span="24">
             <Col span="8">
-              <div class="bcandpadding">
-                <p>幼年</p>
-                <Row class="mt12">
-                  <Col span="10" class="ivu-text-right">最小值</Col>
-                  <Col span="10" class="ivu-text-right">最大值</Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">犬</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">猫</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">其他</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4" style="color:#F2F2F2">nothing</Col>
-                  <Col span="9" class="ivu-text-center">
-                    <Button type="warning" size="small">复制本栏</Button>
-                  </Col>
-                  <Col span="9" class="ivu-text-center" offset="1">
-                    <Button type="info" size="small">粘贴本栏</Button>
-                  </Col>
-                </Row>
-              </div>
+              <FormItem label="指标名称" prop="indexName">
+                <Input placeholder="必填" v-model="batchsaveDetail.indexName"/>
+              </FormItem>
             </Col>
+            <Col span="8" offset="2">
+              <FormItem label="标准名称">
+                <Input v-model="batchsaveDetail.standardName"/>
+              </FormItem>
+            </Col>
+          </Col>
+          <Col span="24">
             <Col span="8">
-              <div class="bcandpadding">
-                <p>成年</p>
-                <Row class="mt12">
-                  <Col span="10" class="ivu-text-right">最小值</Col>
-                  <Col span="10" class="ivu-text-right">最大值</Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">犬</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">猫</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">其他</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4" style="color:#F2F2F2">nothing</Col>
-                  <Col span="9" class="ivu-text-center">
-                    <Button type="warning" size="small">复制本栏</Button>
-                  </Col>
-                  <Col span="9" class="ivu-text-center" offset="1">
-                    <Button type="info" size="small">粘贴本栏</Button>
-                  </Col>
-                </Row>
-              </div>
+              <FormItem label="指标单位">
+                <Input v-model="batchsaveDetail.indexUnit"/>
+              </FormItem>
             </Col>
-            <Col span="8">
-              <div class="bcandpadding">
-                <p>老年</p>
-                <Row class="mt12">
-                  <Col span="10" class="ivu-text-right">最小值</Col>
-                  <Col span="10" class="ivu-text-right">最大值</Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">犬</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">猫</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4">其他</Col>
-                  <Col span="9">
-                    <Input size="small" />
-                  </Col>
-                  <Col span="9" offset="1">
-                    <Input size="small" />
-                  </Col>
-                </Row>
-                <Row class="mt12">
-                  <Col span="4" style="color:#F2F2F2">nothing</Col>
-                  <Col span="9" class="ivu-text-center">
-                    <Button type="warning" size="small">复制本栏</Button>
-                  </Col>
-                  <Col span="9" class="ivu-text-center" offset="1">
-                    <Button type="info" size="small">粘贴本栏</Button>
-                  </Col>
-                </Row>
-              </div>
+            <Col span="8" offset="2">
+              <FormItem label="描述">
+                <Input v-model="batchsaveDetail.explain"/>
+              </FormItem>
             </Col>
-          </Row>
-        </Col>
+          </Col>
+          <Col span="24" class="mt12 mtop12 fimb9">
+            <Row :gutter="16">
+              <Col span="8" v-for="(item1, index1) in ageGroupList" :key="'age-'+index1">
+                <div class="bcandpadding">
+                  <p>{{ageGroupChList[index1]}}</p>
+                  <Row class="mt12">
+                    <Col span="10" class="ivu-text-right">最小值</Col>
+                    <Col span="10" class="ivu-text-right">最大值</Col>
+                  </Row>
+                  <Row class="mt12" v-for="(item2, index2) in speciesKeyList" :key="'species-'+index2">
+                    <Col span="4">{{speciesNameList[index2]}}</Col>
+                    <Col span="9" v-for="(item3, index3) in limitList" :key="'limit-'+index3" :offset="index3===1?1:0">
+                      <FormItem :label-width="0" :prop="item1+'_'+item2+'_'+item3" :rules="[{ message: '请输入数字', trigger: 'change', pattern: /^(([1-9]\d{0,3})|0)(\.\d{0,2})?$/ }]">
+                        <Input v-model="batchsaveDetail[item1+'-'+item2+'-'+item3]"/>
+                      </FormItem>
+                    </Col>
+                  </Row>
+                  <Row class="mt12">
+                    <Col span="9" class="ivu-text-center" offset="4">
+                      <Button type="warning" size="small">复制本栏</Button>
+                    </Col>
+                    <Col span="9" class="ivu-text-center" offset="1">
+                      <Button type="info" size="small">粘贴本栏</Button>
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Form>
       </Row>
     </Modal>
+     <!-- 有参考值的添加Modal-end -->
+
     <Modal
       v-model="showOtherTypeModal"
-      :title="isAddOtherTypeItem?'新增检验项':'编辑检验项'"
+      :title="isAddCheckItem?'新增检验项':'编辑检验项'"
       @on-ok="createOtherType"
       width="700px"
       class="modalCla"
@@ -282,43 +174,55 @@
       ref="otherTypeModal"
     >
       <Row>
-          <Form ref="otherTypeForm" :label-width="80" class="labelLefForm" :rules="otherTypeRules" :model="otherTypeFormData">
-            <Col span="11">
-              <FormItem label="指标名称" prop="indexName">
-                <Input placeholder="必填" v-model="otherTypeFormData.indexName"/>
-              </FormItem>
-            </Col>
-            <Col span="11" offset="2">
-              <FormItem label="标准名称">
-                <Input v-model="otherTypeFormData.standardName"/>
-              </FormItem>
-            </Col>
-            <Col span="11">
-              <FormItem label="指标单位">
-                <Input v-model="otherTypeFormData.indexUnit"/>
-              </FormItem>
-            </Col>
-            <Col span="11" offset="2">
-              <FormItem label="描述">
-                <Input  v-model="otherTypeFormData.explain"/>
-              </FormItem>
-            </Col>
-            <Col span="19">
-              <FormItem label="结果值">
-                <Input v-model="otherTypeFormData.resultValue"/>
-              </FormItem>
-            </Col>
-            <Col span="5" class="ivu-text-right">
-              <FormItem :label-width="0">
-                 <Button type="info">+可选结果</Button>
-              </FormItem>
-            </Col>
-            <div style="width: 100%;display: inline-block;">
-                    <Tag closable class="tag-com" @on-close="handleClose">阴性</Tag>
-                    <Tag closable class="tag-com" @on-close="handleClose">阳性</Tag>
-            </div>
-          </Form>
-        </Row>
+        <Form
+          ref="otherTypeForm"
+          :label-width="80"
+          class="labelLefForm"
+          :rules="otherTypeRules"
+          :model="otherTypeFormData"
+        >
+          <Col span="11">
+            <FormItem label="指标名称" prop="indexName">
+              <Input placeholder="必填" v-model="otherTypeFormData.indexName" />
+            </FormItem>
+          </Col>
+          <Col span="11" offset="2">
+            <FormItem label="标准名称">
+              <Input v-model="otherTypeFormData.standardName" />
+            </FormItem>
+          </Col>
+          <Col span="11">
+            <FormItem label="指标单位">
+              <Input v-model="otherTypeFormData.indexUnit" />
+            </FormItem>
+          </Col>
+          <Col span="11" offset="2">
+            <FormItem label="描述">
+              <Input v-model="otherTypeFormData.explain" />
+            </FormItem>
+          </Col>
+          <Col span="19">
+            <FormItem label="结果值">
+              <Input v-model="otherTypeFormData.resultValue" clearable />
+            </FormItem>
+          </Col>
+          <Col span="5" class="ivu-text-right">
+            <FormItem :label-width="0">
+              <Button type="info" @click="addToResultValueList">+可选结果</Button>
+            </FormItem>
+          </Col>
+          <div style="width: 100%;display: inline-block;">
+            <Tag
+              :name="item"
+              closable
+              class="tag-com"
+              @on-close="handleCloseTag"
+              v-for="(item, index) in resultValueList"
+              :key="'result-'+index"
+            >{{item}}</Tag>
+          </div>
+        </Form>
+      </Row>
     </Modal>
   </div>
 </template>
@@ -326,8 +230,25 @@
     export default {
         data () {
             return {
+                ageGroupList: ['childhood', 'adult', 'oldage'],
+                ageGroupChList: ['幼年', '成年', '老年'],
+                speciesKeyList: ['dog', 'cat', 'other'],
+                speciesNameList: ['犬', '猫', '其他'],
+                limitList: ['lowerLimit', 'upperLimit'],
+                batchsaveDetail: {
+                    indexName: '',
+                    standardName: '',
+                    indexUnit: '',
+                    explain: ''
+                },
+                rangeTypeRules: {
+                    indexName: [
+                        { required: true, message: '请输入指标名称', trigger: 'blur' }
+                    ]
+                },
+                resultValueList: [],
                 selectList: [],
-                isAddOtherTypeItem: false,
+                isAddCheckItem: false,
                 otherTypeFormData: {
                     indexName: '',
                     standardName: '',
@@ -340,7 +261,7 @@
                 showElevator: false,
                 checkTypeData: {
                     name: '',
-                    hasReference: true
+                    hasReference: 'true'
                 },
                 currentCheckTypeData: {
                     id: '',
@@ -350,7 +271,9 @@
                     name: [{ required: true, message: '请输入名称', trigger: 'change' }]
                 },
                 otherTypeRules: {
-                    indexName: [{ required: true, message: '请输入指标名称', trigger: 'change' }]
+                    indexName: [
+                        { required: true, message: '请输入指标名称', trigger: 'change' }
+                    ]
                 },
                 nameLike: '',
                 loadingList: true,
@@ -379,7 +302,14 @@
                     {
                         title: '可选结果值',
                         minWidth: 84,
-                        key: 'resultValue'
+                        key: 'resultValue',
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.resultValue
+                                    ? params.row.resultValue.replace(/,/g, '/')
+                                    : ''
+                            ]);
+                        }
                     },
                     {
                         title: '说明',
@@ -418,18 +348,17 @@
                                 'Select',
                                 {
                                     props: {
-                                        value: params.row.species.key, // 获取选择的下拉框的值
+                                        value: params.row.pet, // 获取选择的下拉框的值
                                         size: 'small',
                                         transfer: true
                                     },
                                     on: {
                                         'on-change': e => {
-                                            params.row.species.key = e; // 改变下拉框赋值
+                                            this.checkItemData[params.row._index].pet = e
                                         }
                                     }
                                 },
                                 vm.petTypeList.map(item => {
-                                    // this.productTypeList下拉框里的data
                                     return h('Option', {
                                         // 下拉框的值
                                         props: {
@@ -451,13 +380,13 @@
                                 'Select',
                                 {
                                     props: {
-                                        value: params.row.ageGroup.code, // 获取选择的下拉框的值
+                                        value: params.row.age, // 获取选择的下拉框的值
                                         size: 'small',
                                         transfer: true
                                     },
                                     on: {
                                         'on-change': e => {
-                                            params.row.ageGroup.code = e; // 改变下拉框赋值
+                                            this.checkItemData[params.row._index].age = e
                                         }
                                     }
                                 },
@@ -476,12 +405,24 @@
                     {
                         title: '参考值下线',
                         minWidth: 84,
-                        key: 'lowerLimit'
+                        key: 'lowerLimit',
+                        render: (h, params) => {
+                            var lower = params.row[params.row.age + '-' + params.row.pet + '-lowerLimit']
+                            return h('div', [
+                                lower || ''
+                            ]);
+                        }
                     },
                     {
                         title: '参考值上线',
                         minWidth: 84,
-                        key: 'upperLimit'
+                        key: 'upperLimit',
+                        render: (h, params) => {
+                            var upper = params.row[params.row.age + '-' + params.row.pet + '-upperLimit']
+                            return h('div', [
+                                upper || ''
+                            ]);
+                        }
                     },
                     {
                         title: '说明',
@@ -489,24 +430,32 @@
                         key: 'explain'
                     }
                 ],
-                checkItemData: [
-                ],
+                checkItemData: [],
                 current: 1,
                 total: 0,
                 showCheckTypeModal: false,
-                petTypeList: [
-                ],
+                petTypeList: [],
                 ageTypeList: [
-                    { code: 'adult', name: '成年' }
+                    { code: 'childhood', name: '幼年' },
+                    { code: 'adult', name: '成年' },
+                    { code: 'oldage', name: '老年' }
                 ],
-                rangeTypeModal: false,
+                showRangeTypeModal: false,
                 showOtherTypeModal: false
             };
         },
         methods: {
+            addToResultValueList () {
+                if (this.otherTypeFormData.resultValue === '') {
+                    this.$Message.error('请填写结果值');
+                    return false;
+                }
+                this.resultValueList.push(this.otherTypeFormData.resultValue);
+                this.otherTypeFormData.resultValue = '';
+            },
             switchList (item) {
-                this.currentCheckTypeData = JSON.parse(JSON.stringify(item))
-                this.getCheckItemList()
+                this.currentCheckTypeData = JSON.parse(JSON.stringify(item));
+                this.getCheckItemList();
             },
             getCheckList () {
                 var data = {
@@ -519,28 +468,29 @@
                             ? JSON.parse(JSON.stringify(response.data.data[0]))
                             : {};
                     this.loadingList = false;
-                    this.getCheckItemList()
+                    this.getCheckItemList();
                 });
             },
             getCheckItemList () {
                 if (this.currentCheckTypeData.hasReference) {
-                    this.checkItemColumns = this.checkItemRangeColumns
+                    this.checkItemColumns = this.checkItemRangeColumns;
                 } else {
-                    this.checkItemColumns = this.checkItemOtherColumns
+                    this.checkItemColumns = this.checkItemOtherColumns;
                 }
-                this.selectList = []
+                this.selectList = [];
                 var data = {
                     settingId: this.currentCheckTypeData.id,
                     start: this.current - 1,
                     size: 10
                 };
                 this.$get('/admin/general/checkSetting/item/page', data, response => {
-                    this.checkItemData = response.data.data;
+                    // this.checkItemData = response.data.data;
+                    this.setBatchsaveDetail(response.data.data)
                     this.total = response.data.totalElements;
                     if (Number(this.total) / 10 > 9) {
-                        this.showElevator = true
+                        this.showElevator = true;
                     }
-                    this.loadingTable = false
+                    this.loadingTable = false;
                 });
             },
             getPetTypeList () {
@@ -575,61 +525,156 @@
                     }
                 });
             },
+            createOtherType () {
+                // 保存无参考值的
+                this.$refs.otherTypeModal.buttonLoading = false;
+                this.$refs.otherTypeForm.validate(valid => {
+                    if (valid) {
+                        this.otherTypeFormData.settingId = this.currentCheckTypeData.id;
+                        this.otherTypeFormData.resultValue = this.resultValueList.join(',');
+                        this.$post(
+                            '/admin/general/checkSetting/item/save',
+                            this.otherTypeFormData,
+                            response => {
+                                if (response.success) {
+                                    this.$Message.info('保存成功');
+                                    this.getCheckItemList();
+                                    this.showOtherTypeModal = false;
+                                }
+                            }
+                        );
+                    } else {
+                    }
+                });
+            },
+            handleSelect (selection) {
+                this.selectList = JSON.parse(JSON.stringify(selection));
+            },
             handleCreateCheckItem () {
+                this.isAddCheckItem = true
                 if (this.currentCheckTypeData.hasReference) {
-                    this.rangeTypeModal = true
+                    this.$refs.rangeTypeForm.resetFields();
+                    this.batchsaveDetail = {
+                        indexName: '',
+                        standardName: '',
+                        indexUnit: '',
+                        explain: ''
+                    }
+                    this.setObj()
+                    this.showRangeTypeModal = true;
                 } else {
-                    this.isAddOtherTypeItem = true
-                    this.$refs.otherTypeForm.resetFields()
+                    this.$refs.otherTypeForm.resetFields();
+                    this.resultValueList = [];
                     this.otherTypeFormData = {
                         indexName: '',
                         standardName: '',
                         indexUnit: '',
                         explain: '',
                         resultValue: ''
-                    }
-                    this.showOtherTypeModal = true
+                    };
+                    this.showOtherTypeModal = true;
                 }
-            },
-            createOtherType () {
-                this.$refs.otherTypeModal.buttonLoading = false;
-                this.$refs.otherTypeForm.validate(valid => {
-                    if (valid) {
-                        this.otherTypeFormData.settingId = this.currentCheckTypeData.id
-                        this.$post('/admin/general/checkSetting/item/save', this.otherTypeFormData, response => {
-                            if (response.success) {
-                                this.$Message.info('保存成功');
-                                this.getCheckItemList();
-                                this.showOtherTypeModal = false
-                            }
-                        });
-                    } else {
-                    }
-                });
-            },
-            handleSelect (selection) {
-                this.selectList = JSON.parse(JSON.stringify(selection))
             },
             handleEditCheckItem () {
                 if (this.selectList.length === 0) {
                     this.$Message.error('请选择表格中的数据');
-                    return false
+                    return false;
                 }
+                this.isAddCheckItem = false
                 if (this.currentCheckTypeData.hasReference) {
-                    this.rangeTypeModal = true
+                    this.$refs.rangeTypeForm.resetFields();
+                    this.batchsaveDetail = JSON.parse(JSON.stringify(this.selectList[0]));
+                    this.showRangeTypeModal = true;
                 } else {
-                    this.isAddOtherTypeItem = false
-                    this.$refs.otherTypeForm.resetFields()
-                    this.otherTypeFormData = JSON.parse(JSON.stringify(this.selectList[0]))
-                    this.showOtherTypeModal = true
+                    this.$refs.otherTypeForm.resetFields();
+                    this.resultValueList = [];
+                    this.otherTypeFormData = JSON.parse(JSON.stringify(this.selectList[0]));
+                    this.otherTypeFormData.resultValue = '';
+                    this.resultValueList = this.selectList[0].resultValue
+                        ? this.selectList[0].resultValue.split(',')
+                        : [];
+                    this.showOtherTypeModal = true;
                 }
             },
-            handleClose () {},
-            createRangeType () {}
+            handleCloseTag (event, name) {
+                var newArr = [];
+                for (var i = 0; i < this.resultValueList.length; i++) {
+                    if (this.resultValueList[i] !== name) {
+                        newArr.push(this.resultValueList[i]);
+                    }
+                }
+                this.resultValueList = newArr;
+            },
+            setObj () {
+                for (var i = 0; i < this.ageGroupList.length; i++) {
+                    for (var j = 0; j < this.speciesKeyList.length; j++) {
+                        for (var z = 0; z < this.limitList.length; z++) {
+                            this.batchsaveDetail[this.ageGroupList[i] + '-' + this.speciesKeyList[j] + '-' + this.limitList[z]] = ''
+                        }
+                    }
+                }
+            },
+            setBatchsaveDetail (data) { // 处理获取的单项列表数据
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].details) {
+                        for (var j = 0; j < data[i].details.length; j++) {
+                            for (var z = 0; z < data[i].details[j].spec.length; z++) {
+                                data[i][data[i].details[j].ageGroup.code + '-' + data[i].details[j].spec[z].species.key + '-lowerLimit'] = data[i].details[j].spec[z].lowerLimit// 例：data[childhood-dog-lowerLimit]=返回数据里对应的lowerLimit
+                                data[i][data[i].details[j].ageGroup.code + '-' + data[i].details[j].spec[z].species.key + '-upperLimit'] = data[i].details[j].spec[z].upperLimit
+                            }
+                        }
+                        data[i].pet = 'dog'
+                        data[i].age = 'childhood'
+                    }
+                }
+                this.checkItemData = data
+            },
+            createRangeType () {
+                // 保存有参考值范围的
+                this.$refs.rangeTypeModal.buttonLoading = false;
+                this.$refs.rangeTypeForm.validate(valid => {
+                    if (valid) {
+                        // 处理数据
+                        var detailsArr = []
+                        let vm = this
+                        for (var i = 0; i < vm.ageGroupList.length; i++) {
+                            var detailsItemObj = {}
+                            detailsItemObj.ageGroup = vm.ageGroupList[i]
+                            var specArr = []
+                            for (var j = 0; j < vm.speciesKeyList.length; j++) {
+                                var speciesObj = {}
+                                var specItemObj = {}
+                                speciesObj.name = vm.speciesNameList[j]
+                                speciesObj.key = vm.speciesKeyList[j]
+                                specItemObj.species = speciesObj
+                                for (var z = 0; z < vm.limitList.length; z++) {
+                                    specItemObj[vm.limitList[z]] = vm.batchsaveDetail[vm.ageGroupList[i] + '-' + vm.speciesKeyList[j] + '-' + vm.limitList[z]]
+                                    // 删除多余键值对
+                                    delete vm.batchsaveDetail[vm.ageGroupList[i] + '-' + vm.speciesKeyList[j] + '-' + vm.limitList[z]]
+                                }
+                                specArr.push(specItemObj)
+                            }
+                            detailsItemObj.spec = specArr
+                            detailsArr.push(detailsItemObj)
+                        }
+                        this.batchsaveDetail.details = detailsArr
+                        this.batchsaveDetail.settingId = this.currentCheckTypeData.id
+                        this.$post('/admin/general/checkSetting/item/batchsave', this.batchsaveDetail, response => {
+                            if (response.success) {
+                                this.$Message.info('保存成功');
+                                this.getCheckItemList();
+                                this.showRangeTypeModal = false
+                            }
+                        }, false);
+                    } else {
+                    }
+                });
+            }
         },
         mounted () {
             this.getCheckList();
-            this.getPetTypeList()
+            this.getPetTypeList();
+            this.setObj();
         }
     };
 </script>
@@ -669,7 +714,10 @@
 .modalCla .ivu-modal-body {
   padding: 19px 35px;
 }
-.labelLefForm .ivu-form-item-label{
-text-align: left;
+.labelLefForm .ivu-form-item-label {
+  text-align: left;
+}
+.fimb9 .ivu-form-item{
+      // margin-bottom: 12px;
 }
 </style>
