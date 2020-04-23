@@ -213,7 +213,7 @@
                     {
                         title: '条形码',
                         minWidth: 84,
-                        key: 'barCode'
+                        key: 'goodsBarCode'
                     },
                     {
                         title: '备注',
@@ -250,7 +250,7 @@
                     {
                         title: '条形码',
                         minWidth: 84,
-                        key: 'barCode'
+                        key: 'goodsBarCode'
                     },
                     {
                         title: '名称',
@@ -309,7 +309,7 @@
                     {
                         title: '条形码',
                         minWidth: 84,
-                        key: 'barCode'
+                        key: 'goodsBarCode'
                     },
                     {
                         title: '名称',
@@ -430,7 +430,7 @@
                 consumptionOrderData: [
                     {
                         code: 'P00001',
-                        barCode: '000001',
+                        goodsBarCode: '000001',
                         name: '宠物补血膏',
                         size: '20ml',
                         unti: 'ml',
@@ -442,7 +442,7 @@
                     },
                     {
                         code: 'P00001',
-                        barCode: '000001',
+                        goodsBarCode: '000001',
                         name: '宠物补血膏',
                         size: '20ml',
                         unti: 'ml',
