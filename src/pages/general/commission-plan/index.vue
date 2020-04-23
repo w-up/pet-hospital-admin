@@ -293,7 +293,7 @@
                     {
                         title: '条形码',
                         minWidth: 84,
-                        key: 'barCode'
+                        key: 'goodsBarCode'
                     },
                     {
                         title: '名称',
@@ -335,7 +335,7 @@
                     {
                         title: '条形码',
                         minWidth: 84,
-                        key: 'barCode'
+                        key: 'goodsBarCode'
                     },
                     {
                         title: '名称',
