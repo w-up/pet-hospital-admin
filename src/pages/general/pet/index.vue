@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="petCardDiv">
     <Row>
       <Col span="6">
         <Card>
@@ -42,7 +42,7 @@
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
-            <Col span="24">
+            <Col span="24" style="height: 616px;">
               <Table border :columns="speciesColumns" :data="speciesData" @on-selection-change="handleSelect"></Table>
               <div class="ivu-mt ivu-text-right">
                 <Page :total="total" :current.sync="current" :show-elevator="showElevator"  @on-change="getPetSpeciesList"/>
@@ -190,8 +190,8 @@
             getPetSpeciesList () {
                 var data = {
                     speciesId: this.currentPetTypeData.id,
-                    start: this.current - 1,
-                    size: 10
+                    pageNumber: this.current - 1,
+                    pageSize: 10
                 };
                 this.$get('/admin/pet/species/breed/page', data, response => {
                     this.speciesData = response.data.data;
@@ -287,7 +287,10 @@
 </style>
 <style lang="less">
 .pet-list {
-  height: 265px;
+  height: 632px;
   overflow: auto;
 }
+// .petCardDiv .ivu-card-body{
+// height:742px
+// }
 </style>

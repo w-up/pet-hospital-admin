@@ -10,7 +10,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Tree ref="tree" :data="treeData" @on-select-change="selectChange"></Tree>
+              <Tree ref="tree" :data="treeData" @on-select-change="selectChange" class="backColorRow"></Tree>
             </Col>
           </Row>
           <Row :gutter="16" class="mtb15">
@@ -181,5 +181,11 @@
 
 .leftRecordCard .ivu-card-body {
   height: 570px;
+}
+.backColorRow .ivu-tree-title-selected, .ivu-tree-title-selected:hover{
+  width:96%
+}
+.backColorRow .ivu-tree-title-selected:hover{
+  width:96%
 }
 </style>
