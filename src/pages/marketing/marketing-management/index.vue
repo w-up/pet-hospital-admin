@@ -703,6 +703,9 @@
             },
             getGoodsList (list) {
                 this.goodsList = list
+            },
+            handelReload () {
+
             }
         },
         mounted () {
