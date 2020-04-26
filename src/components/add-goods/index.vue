@@ -82,7 +82,7 @@
         props: {
             goodsList: Array,
             goodsColumns: Array,
-            isFormCombi: Boolean,
+            isFormCombi: Boolean, // 商品组合页面、医生提成设置页面（点击modal右下角按钮就调接口保存）传来的isFormCombi为true，其他页面(点击modal右下角按钮不调接口保存，静态保存)不传
             title: String
         },
         data () {
