@@ -35,11 +35,11 @@ export default {
             title: '模板设置'
         },
         {
-            path: `${pre}appointment`,
+            path: `${pre}appointment-type`,
             title: '预约类型'
         },
         {
-            path: `${pre}subject`,
+            path: `${pre}treatment-item`,
             title: '诊疗科目'
         },
         {

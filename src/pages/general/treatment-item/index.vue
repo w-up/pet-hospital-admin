@@ -96,7 +96,7 @@
         },
         methods: {
             getSubjectList () {
-                this.$get('/admin/subject/type/page', {}, response => {
+                this.$get('/admin/general/treatment/item/page', {}, response => {
                     this.subjectData = response.data.data
                 });
             },
@@ -104,7 +104,7 @@
                 this.$refs.addSubjectModal.buttonLoading = false;
                 this.$refs.createSubjectForm.validate(valid => {
                     if (valid) {
-                        this.$post('/admin/subject/type/save', this.subjectForm, response => {
+                        this.$post('/admin/general/treatment/item/save', this.subjectForm, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功')
                                 this.getSubjectList()

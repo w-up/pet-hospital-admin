@@ -89,22 +89,22 @@ export default {
             component: () => import('@/pages/general/template')
         },
         {
-            path: 'appointment',
-            name: `${pre}appointment`,
+            path: 'appointment-type',
+            name: `${pre}appointment-type`,
             meta: {
                 ...meta,
                 title: '预约类型'
             },
-            component: () => import('@/pages/general/appointment')
+            component: () => import('@/pages/general/appointment-type')
         },
         {
-            path: 'subject',
-            name: `${pre}subject`,
+            path: 'treatment-item',
+            name: `${pre}treatment-item`,
             meta: {
                 ...meta,
                 title: '诊疗科目'
             },
-            component: () => import('@/pages/general/subject')
+            component: () => import('@/pages/general/treatment-item')
         },
         {
             path: 'position',
