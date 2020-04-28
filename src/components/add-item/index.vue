@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Modal v-model="addGoodsModal" title="添加项目" width="60%" @on-cancel="closeAddGoodsModal">
+    <Modal v-model="addGoodsModal" :title="showTab==null?'添加项目':'编辑项目'" width="60%" @on-cancel="closeAddGoodsModal">
       <Tabs v-model="addType" name="add" class="mytabs" :animated="false">
-        <TabPane label="添加商品" name="goods" tab="add">
+        <TabPane :label="showTab==null?'添加商品':'编辑商品'" name="goods" tab="add" v-if="showTab==null||showTab">
           <Row :gutter="16">
             <Form
               ref="addGoodsForm"
@@ -17,7 +17,7 @@
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem class="lb0">
+                <FormItem class="lb0" prop="alias">
                   <Checkbox
                     v-model="addGoodsForm.enableAlias"
                     style="width:100px;margin:0;padding-right:12px;text-align:right"
@@ -30,32 +30,32 @@
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="拼音搜索">
+                <FormItem label="拼音搜索" prop="namePy">
                   <Input v-model="addGoodsForm.namePy" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="商品条码">
+                <FormItem label="商品条码" prop="barCode">
                   <Input v-model="addGoodsForm.barCode" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="商品编号">
+                <FormItem label="商品编号" prop="number">
                   <Input v-model="addGoodsForm.number" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="商品单位">
+                <FormItem label="商品单位" prop="unit">
                   <Input v-model="addGoodsForm.unit" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="生产厂家">
+                <FormItem label="生产厂家" prop="factory">
                   <Input v-model="addGoodsForm.factory" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="商品规格">
+                <FormItem label="商品规格" prop="specification">
                   <Input v-model="addGoodsForm.specification" />
                 </FormItem>
               </Col>
@@ -291,43 +291,43 @@
             </TabPane>
           </Tabs>
         </TabPane>
-        <TabPane label="添加套餐" name="packages" tab="add">
+        <TabPane :label="showTab==null?'添加套餐':'编辑套餐'" name="packages" tab="add" v-if="showTab==null||!showTab">
           <Row :gutter="16">
             <Form
-              ref="addGoodsCombinationForm"
-              :model="addGoodsCombinationForm"
-              :rules="addGoodsCombinationFormRules"
+              ref="addPackagesForm"
+              :model="addPackagesForm"
+              :rules="addPackagesFormRules"
               :label-width="100"
               class="myform"
             >
               <Col span="12">
                 <FormItem label="套餐名称" prop="name">
-                  <Input v-model="addGoodsCombinationForm.name" />
+                  <Input v-model="addPackagesForm.name" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="套餐编号">
-                  <Input v-model="addGoodsCombinationForm.number" />
+                <FormItem label="套餐编号" prop="number">
+                  <Input v-model="addPackagesForm.number" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="套餐条码">
-                  <Input v-model="addGoodsCombinationForm.barCode" />
+                <FormItem label="套餐条码" prop="barCode">
+                  <Input v-model="addPackagesForm.barCode" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="套餐规格">
-                  <Input v-model="addGoodsCombinationForm.specification" />
+                <FormItem label="套餐规格" prop="specification">
+                  <Input v-model="addPackagesForm.specification" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="套餐单位">
-                  <Input v-model="addGoodsCombinationForm.unit" />
+                <FormItem label="套餐单位" prop="unit">
+                  <Input v-model="addPackagesForm.unit" />
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="套餐说明">
-                  <Input v-model="addGoodsCombinationForm.description" />
+                <FormItem label="套餐说明" prop="description">
+                  <Input v-model="addPackagesForm.description" />
                 </FormItem>
               </Col>
             </Form>
@@ -360,7 +360,7 @@
       </Tabs>
       <div slot="footer">
         <Button type="success" v-if="addType=='goods'" @click="saveGoods(false)">保存</Button>
-        <Button type="success" v-if="addType=='packages'" @click="saveGoodsCombination">保存</Button>
+        <Button type="success" v-if="addType=='packages'" @click="savePackages">保存</Button>
         <Button
           type="info"
           v-if="addType=='goods'&&goodsTabPane!='pane6'"
@@ -449,7 +449,7 @@
               <span class="module-title">商品列表</span>
             </Col>
             <Col span="4" class="ivu-text-right">
-              <Button type="warning" class="mr10" @click="quickAdd">快速添加</Button>
+              <Button type="warning" class="mr10">快速添加</Button>
             </Col>
             <Col span="6" class="ivu-text-right">
               <Input
@@ -462,7 +462,7 @@
             </Col>
           </Row>
           <Row>
-            <Table border :columns="allGoodsColumns" :data="allGoodsList"></Table>
+            <Table border :columns="allGoodsColumns" :data="allGoodsList" @on-row-dblclick="handleAllGoodsRowClick"></Table>
             <div class="ivu-mt ivu-text-right">
               <Page
                 :total="total"
@@ -919,7 +919,8 @@
                     description: '',
                     remindDays: '',
                     usageId: '',
-                    sourRegurgitation: ''
+                    sourRegurgitation: '',
+                    combinationType: 'goods'
                 },
                 addGoodsFormRules: {
                     name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
@@ -981,7 +982,7 @@
                 addGoodsSupplierFormRules: {
                     price: [{ validator: validateNumber, trigger: 'blur' }]
                 },
-                addGoodsCombinationForm: {
+                addPackagesForm: {
                     id: '',
                     type: '',
                     combinationType: 'packages',
@@ -992,7 +993,7 @@
                     unit: '',
                     description: ''
                 },
-                addGoodsCombinationFormRules: {
+                addPackagesFormRules: {
                     name: [{ required: true, message: '请输入套餐名称', trigger: 'blur' }]
                 },
                 detailsList: [], // 商品组合列表
@@ -1015,7 +1016,8 @@
                 editIndex: -1,
                 addGoodsHospitalFormRules: {
                     price: [{ validator: validateNumber, trigger: 'blur' }]
-                }
+                },
+                showTab: null// 显示的tab
             };
         },
         mounted () {
@@ -1051,6 +1053,7 @@
                 this.$refs.addGoodsForm.resetFields();
                 this.addGoodsForm.id = '';
                 this.addGoodsModal = true;
+                this.showTab = null
             },
             handleEditPackageModal (id) {
                 this.getGoodsDetail(id);
@@ -1058,11 +1061,15 @@
             },
             closeAddGoodsModal () {
                 this.addGoodsModal = false;
-                this.$refs.addGoodsForm.resetFields();
                 this.addGoodsForm.id = '';
 
-                this.$refs.addGoodsCombinationForm.resetFields();
-                this.addGoodsCombinationForm.id = '';
+                if (this.addType === 'goods') {
+                    this.$refs.addGoodsForm.resetFields();
+                } else {
+                    this.$refs.addPackagesForm.resetFields();
+                }
+
+                this.addPackagesForm.id = '';
                 this.detailsList = [];
                 // 需要调用父组件方法
                 this.$parent.getGoodsList();
@@ -1164,11 +1171,11 @@
                 }
             },
             // 保存套餐
-            saveGoodsCombination () {
-                this.addGoodsCombinationForm.type = this.type;
-                console.log(this.addGoodsCombinationForm);
+            savePackages () {
+                this.addPackagesForm.type = this.type;
+                this.addPackagesForm.totalPrice = this.totalPrice
                 var flag = true;
-                this.$refs.addGoodsCombinationForm.validate(valid => {
+                this.$refs.addPackagesForm.validate(valid => {
                     if (valid) {
                         this.detailsList.forEach((element, index) => {
                             var ref = 'detailsForm' + index;
@@ -1183,10 +1190,10 @@
                     }
                 });
                 if (flag) {
-                    this.addGoodsCombinationForm.detailForms = this.detailsList;
+                    this.addPackagesForm.detailForms = this.detailsList;
                     this.$post(
-                        '/admin/goods/combination/batchsave',
-                        this.addGoodsCombinationForm,
+                        '/admin/goods/batchsave',
+                        this.addPackagesForm,
                         response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
@@ -1200,15 +1207,39 @@
             },
             getGoodsDetail (id) {
                 this.$get('/admin/goods/detail/' + id, {}, response => {
-                    this.addGoodsForm = this._.mapValues(response.data, function (o) {
-                        if (typeof o === 'object') {
-                            return o.code;
-                        } else {
-                            return o;
-                        }
-                    });
-                    console.log(this.addGoodsForm);
+                    if (response.data.combinationType && response.data.combinationType.code === 'goods') {
+                        this.addGoodsForm = this._.mapValues(response.data, function (o) {
+                            if (typeof o === 'object') {
+                                return o.code;
+                            } else {
+                                return o;
+                            }
+                        });
+                        this.showTab = true
+                        this.addType = 'goods'
+                    } else {
+                        this.addPackagesForm = this._.mapValues(response.data, function (o) {
+                            if (typeof o === 'object') {
+                                return o.code;
+                            } else {
+                                return o;
+                            }
+                        });
+                        this.showTab = false
+                        this.addType = 'packages'
+                        this.getGoodsDetailList()
+                    }
                 });
+            },
+            // 获取套餐下商品列表
+            getGoodsDetailList () {
+                this.$get(
+                    '/admin/goods/detail/search',
+                    { limit: 100, goodId: this.addPackagesForm.id },
+                    response => {
+                        this.detailsList = response.data
+                    }
+                );
             },
             // 获取处方用法列表
             getUsageList () {
@@ -1417,25 +1448,24 @@
                     this.allGoodsList = response.data.data;
                 });
             },
-            quickAdd () {
+            handleAllGoodsRowClick (element) {
                 let arr = this.detailsList.map(item => item.goodsId);
-                this.allGoodsList.forEach(element => {
-                    if (arr.indexOf(element.id) === -1) {
-                        this.detailsList.push({
-                            id: '',
-                            goodsId: element.id,
-                            name: element.name,
-                            number: element.number,
-                            specification: element.specification,
-                            unit: element.unit,
-                            price: element.price,
-                            num: ''
-                        });
-                    }
-                });
+                if (arr.indexOf(element.id) === -1) {
+                    this.detailsList.push({
+                        id: '',
+                        goodsId: element.id,
+                        name: element.name,
+                        number: element.number,
+                        specification: element.specification,
+                        unit: element.unit,
+                        price: element.price,
+                        num: ''
+                    });
+                }
             },
             removeSelect () {
                 var selectIds = this.$refs.addDetailsTable.getSelection();
+                console.log(selectIds)
                 selectIds.forEach(element => {
                     let arr = this.detailsList.map(item => item.id);
                     this.detailsList.splice(arr.indexOf(element.id), 1);

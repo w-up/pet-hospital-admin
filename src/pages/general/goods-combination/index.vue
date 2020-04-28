@@ -475,7 +475,7 @@
                 });
             },
             getLeftGoodsList () {
-                this.$get('/admin/goods/combination/page?combinationType=combination&type=' + this.currentTypeCode + '&nameLike=' + this.nameLike, {}, response => {
+                this.$get('/admin/goods/combination/page?type=' + this.currentTypeCode + '&nameLike=' + this.nameLike, {}, response => {
                     this.goodsList = response.data.data
                     this.isloadinglist = false
                     this.currentGoodsData =
@@ -507,7 +507,6 @@
                 this.$refs.addCombiForm.resetFields()
                 this.combiData = {
                     type: this.currentTypeCode,
-                    combinationType: 'combination',
                     name: ''
                 }
                 this.showAddCombiModal = true;
@@ -522,7 +521,6 @@
                 this.combiData = JSON.parse(JSON.stringify(this.currentGoodsData));
                 this.combiData = {
                     type: this.currentGoodsData.type.code,
-                    combinationType: 'combination',
                     name: this.currentGoodsData.name,
                     id: this.currentGoodsData.id
                 }
