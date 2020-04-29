@@ -535,7 +535,8 @@
                     this.getMarketingList();
                 }
             },
-            getChild (data) {
+            getChild (data, selectedNode) {
+                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 if (data && data.length > 0) {
                     var obj = JSON.parse(JSON.stringify(data[0]));
                     obj.type = obj.type && obj.type.code;

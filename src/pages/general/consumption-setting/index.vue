@@ -208,69 +208,6 @@
         <Button type="info">保存并继续</Button>
       </div>
     </Modal>-->
-    <Modal v-model="addPackageModal" title="添加套餐" @on-ok="handleCreate" width="80%">
-      <Row>
-        <Col span="5">
-          <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="24">
-                <span class="module-title">商品分类列表</span>
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end">
-              <Col span="24">
-                <Tree :data="goodsTypeModalData"></Tree>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-        <Col span="19" class="box">
-          <Card>
-            <Row
-              type="flex"
-              justify="center"
-              :gutter="1"
-              align="top"
-              class-name="module-title-wrapper"
-            >
-              <Col span="15">
-                <span class="module-title">商品列表</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="warning" class="mr10">快速添加</Button>
-              </Col>
-              <Col span="5" class="ivu-text-right">
-                <Input prefix="ios-search" placeholder="名称，编号，条形码" />
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end" class="mtb15">
-              <Col span="24">
-                <Table border :columns="goodsListModalColumns" :data="goodsListModalData"></Table>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-      <Row class="mtb15">
-        <Col span="24">
-          <Card>
-            <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
-              <Col span="20">
-                <span class="module-title">已选商品列表</span>
-              </Col>
-              <Col span="4" class="ivu-text-right">
-                <Button type="error" class="mr10">删除</Button>
-              </Col>
-            </Row>
-            <Row :gutter="16" type="flex" justify="end" class="mtb15">
-              <Col span="24">
-                <Table border :columns="hasGoodsListColumns" :data="hasGoodsListData"></Table>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
-    </Modal>
     <Modal v-model="importDataModal" title="导入数据">
       <Form :label-width="100">
         <FormItem label="导入类型" class="importDataFormItem">
@@ -615,7 +552,6 @@
                 current: 1,
                 total: 0,
                 addGoodsModal: false,
-                addPackageModal: false,
                 importDataModal: false,
                 systemHintModal: false,
 
@@ -680,9 +616,6 @@
             showAddGoodsModalModal () {
                 this.addGoodsModal = true;
             },
-            addPackage () {
-                this.addPackageModal = true;
-            },
             handleCreate () {},
             importData () {
                 this.importDataModal = true;
@@ -697,7 +630,8 @@
                 this.getGoodsList();
             },
             // 点击树
-            getChild (data) {
+            getChild (data, selectedNode) {
+                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 if (data && data.length > 0) {
                     this.treeId = data[0].id;
                     var obj = JSON.parse(JSON.stringify(data[0]));
@@ -711,8 +645,6 @@
                     this.addGoodsCategoryForm.partakeDiscount =
                         obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
-                    // this.treeId = '';
-                    // this.$refs.addGoodsCategoryForm.resetFields();
                 }
                 this.getGoodsList();
             },

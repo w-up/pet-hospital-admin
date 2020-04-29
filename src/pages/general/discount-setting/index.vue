@@ -154,6 +154,7 @@
         },
         methods: {
             selectChange (selectedNodesList, selectedNode) {
+                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 this.currentGoodsId = selectedNode.id ? selectedNode.id : '';
             },
             // 切换tab类型

@@ -1432,7 +1432,8 @@
                 });
             },
             // 点击树
-            getAllGoodsCategoryTreeChild (data) {
+            getAllGoodsCategoryTreeChild (data, selectedNode) {
+                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 if (data && data.length > 0) {
                     this.search.type = data[0].type && data[0].type.code;
                     this.search.categoryId = data[0].id;

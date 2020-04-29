@@ -237,7 +237,8 @@
             };
         },
         methods: {
-            getChild (data) {
+            getChild (data, selectedNode) {
+                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 this.userInfo = data[0]
             },
             handleHeaderUrlSuccess (response, file, fileList) {

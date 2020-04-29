@@ -10,7 +10,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Tree :data="problemData"></Tree>
+              <Tree :data="problemData" @on-select-change="selectChange"></Tree>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
@@ -98,6 +98,9 @@
             };
         },
         methods: {
+            selectChange (selectedNodesList, selectedNode) {
+                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
+            },
             handleOpenCreate () {
                 this.showCreate = true;
             },
