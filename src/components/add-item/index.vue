@@ -822,27 +822,27 @@
                     {
                         title: '商品名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'goodsName'
                     },
                     {
                         title: '商品编号',
                         minWidth: 84,
-                        key: 'number'
+                        key: 'goodsNumber'
                     },
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'specification'
+                        key: 'goodsSpecification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unit'
+                        key: 'goodsUnit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'price'
+                        key: 'goodsPrice'
                     },
                     {
                         title: '组合数量',
@@ -859,27 +859,27 @@
                     {
                         title: '商品名称',
                         minWidth: 84,
-                        key: 'name'
+                        key: 'goodsName'
                     },
                     {
                         title: '商品编号',
                         minWidth: 84,
-                        key: 'number'
+                        key: 'goodsNumber'
                     },
                     {
                         title: '规格',
                         minWidth: 84,
-                        key: 'specification'
+                        key: 'goodsSpecification'
                     },
                     {
                         title: '单位',
                         minWidth: 84,
-                        key: 'unit'
+                        key: 'goodsUnit'
                     },
                     {
                         title: '单价',
                         minWidth: 84,
-                        key: 'price'
+                        key: 'goodsPrice'
                     },
                     {
                         title: '组合数量',
@@ -1227,6 +1227,7 @@
                         });
                         this.showTab = false
                         this.addType = 'packages'
+                        this.totalPrice = response.data.totalPrice
                         this.getGoodsDetailList()
                     }
                 });
@@ -1454,21 +1455,29 @@
                     this.detailsList.push({
                         id: '',
                         goodsId: element.id,
-                        name: element.name,
-                        number: element.number,
-                        specification: element.specification,
-                        unit: element.unit,
-                        price: element.price,
+                        goodsName: element.name,
+                        goodsNumber: element.number,
+                        goodsSpecification: element.specification,
+                        goodsUnit: element.unit,
+                        goodsPrice: element.price,
                         num: ''
                     });
                 }
             },
             removeSelect () {
                 var selectIds = this.$refs.addDetailsTable.getSelection();
-                console.log(selectIds)
                 selectIds.forEach(element => {
-                    let arr = this.detailsList.map(item => item.id);
-                    this.detailsList.splice(arr.indexOf(element.id), 1);
+                    let arr = this.detailsList.map(item => item.goodsId);
+                    this.detailsList.splice(arr.indexOf(element.goodsId), 1);
+                    var id = this.detailsList[arr.indexOf(element.goodsId)].id
+                    if (id != null && id !== '') {
+                        this.removeGoodsDetail(id)
+                    }
+                });
+                this.countTotalPrice()
+            },
+            removeGoodsDetail (id) {
+                this.$get('/admin/goods/detail/remove/' + id, {}, response => {
                 });
             },
             closePackageModal () {
@@ -1489,7 +1498,7 @@
             countTotalPrice () {
                 var totalPrice = 0;
                 this.detailsList.forEach(element => {
-                    var price = element.price || 0;
+                    var price = element.goodsPrice || 0;
                     var num = element.num || 0;
                     totalPrice += price * num;
                 });
