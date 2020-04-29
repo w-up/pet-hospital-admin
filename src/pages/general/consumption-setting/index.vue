@@ -645,6 +645,7 @@
                     this.addGoodsCategoryForm.partakeDiscount =
                         obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
+                    this.treeId = ''
                 }
                 this.getGoodsList();
             },

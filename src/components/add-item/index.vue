@@ -1173,6 +1173,7 @@
             // 保存套餐
             savePackages () {
                 this.addPackagesForm.type = this.type;
+                this.addPackagesForm.categoryId = this.categoryId;
                 this.addPackagesForm.totalPrice = this.totalPrice
                 var flag = true;
                 this.$refs.addPackagesForm.validate(valid => {
