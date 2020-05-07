@@ -149,10 +149,10 @@
                   </Row>
                   <Row class="mt12">
                     <Col span="9" class="ivu-text-center" offset="4">
-                      <Button type="warning" size="small">复制本栏</Button>
+                      <Button type="warning" size="small" @click="copyMin(item1)">复制本栏</Button>
                     </Col>
                     <Col span="9" class="ivu-text-center" offset="1">
-                      <Button type="info" size="small">粘贴本栏</Button>
+                      <Button type="info" size="small" @click="setMax(item1)">粘贴本栏</Button>
                     </Col>
                   </Row>
                 </div>
@@ -235,6 +235,9 @@
                 speciesKeyList: ['dog', 'cat', 'other'],
                 speciesNameList: ['犬', '猫', '其他'],
                 limitList: ['lowerLimit', 'upperLimit'],
+                minDog: '',
+                minCat: '',
+                minOther: '',
                 batchsaveDetail: {
                     indexName: '',
                     standardName: '',
@@ -669,6 +672,17 @@
                     } else {
                     }
                 });
+            },
+            copyMin (ago) {
+                this.minDog = this.batchsaveDetail[ago + '-dog-lowerLimit']
+                this.minCat = this.batchsaveDetail[ago + '-cat-lowerLimit']
+                this.minOther = this.batchsaveDetail[ago + '-other-lowerLimit']
+            },
+            setMax (ago) {
+                this.batchsaveDetail[ago + '-dog-upperLimit'] = this.minDog
+                this.batchsaveDetail[ago + '-cat-upperLimit'] = this.minCat
+                this.batchsaveDetail[ago + '-other-upperLimit'] = this.minOther
+                this.$forceUpdate()
             }
         },
         mounted () {
