@@ -107,6 +107,15 @@ export default {
             component: () => import('@/pages/general/treatment-item')
         },
         {
+            path: 'record-classification',
+            name: `${pre}record-classification`,
+            meta: {
+                ...meta,
+                title: '病情分类'
+            },
+            component: () => import('@/pages/general/record-classification')
+        },
+        {
             path: 'position',
             name: `${pre}position`,
             meta: {

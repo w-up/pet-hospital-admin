@@ -1,21 +1,21 @@
 <template>
   <div>
     <Table class="centerSty" border :columns="subjectColumns" :data="subjectData">
-      <p slot="header" style="padding:0 16px">科目列表</p>
+      <p slot="header" style="padding:0 16px">分类列表</p>
     </Table>
     <Row :gutter="16" type="flex" class="mtb15">
       <Col span="24" class="ivu-text-left">
-        <Button type="success" @click="handleAdd">+诊疗科目</Button>
+        <Button type="success" @click="handleAdd">+病情分类</Button>
       </Col>
     </Row>
-    <Modal ref="addSubjectModal" v-model="showSubjectModal" :title="isEdit?'编辑诊疗科目':'添加诊疗科目'" @on-ok="handleSaveSubject" :loading="true">
+    <Modal ref="addSubjectModal" v-model="showSubjectModal" :title="isEdit?'编辑病情分类':'添加病情分类'" @on-ok="handleSaveSubject" :loading="true">
       <Form ref="createSubjectForm" :label-width="187" :rules="rules" :model="subjectForm">
-        <FormItem label="诊疗科目"  prop="name">
+        <FormItem label="病情分类"  prop="name">
           <Input style="width: 150px" v-model="subjectForm.name"/>
         </FormItem>
-        <FormItem label="诊疗科目代码"  prop="key">
+        <!-- <FormItem label="病情分类代码"  prop="name">
           <Input style="width: 150px" v-model="subjectForm.key"/>
-        </FormItem>
+        </FormItem> -->
       </Form>
     </Modal>
   </div>
@@ -27,16 +27,15 @@
                 isEdit: false,
                 subjectForm: {
                     name: '',
-                    code: '',
                     id: ''
                 },
                 rules: {
                     name: [
-                        { required: true, message: '请输入诊疗科目', trigger: 'blur' }
-                    ],
-                    key: [
-                        { required: true, message: '请输入诊疗科目代码', trigger: 'blur' }
+                        { required: true, message: '请输入病情分类', trigger: 'blur' }
                     ]
+                    // key: [
+                    //     { required: true, message: '请输入病情分类代码', trigger: 'blur' }
+                    // ]
                 },
                 showSubjectModal: false,
                 subjectColumns: [
@@ -45,11 +44,11 @@
                         minWidth: 84,
                         key: 'name'
                     },
-                    {
-                        title: '类型代码',
-                        minWidth: 84,
-                        key: 'key'
-                    },
+                    // {
+                    //     title: '类型代码',
+                    //     minWidth: 84,
+                    //     key: 'key'
+                    // },
                     {
                         title: '操作',
                         minWidth: 84,
@@ -98,7 +97,7 @@
         },
         methods: {
             getSubjectList () {
-                this.$get('/admin/general/treatment/item/page', {}, response => {
+                this.$get('/admin/general/medical/record/classification/page', {}, response => {
                     this.subjectData = response.data.data
                 });
             },
@@ -106,7 +105,7 @@
                 this.$refs.addSubjectModal.buttonLoading = false;
                 this.$refs.createSubjectForm.validate(valid => {
                     if (valid) {
-                        this.$post('/admin/general/treatment/item/save', this.subjectForm, response => {
+                        this.$post('/admin/general/medical/record/classification/save', this.subjectForm, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功')
                                 this.getSubjectList()
@@ -121,7 +120,7 @@
                 this.isEdit = true
                 this.$refs.createSubjectForm.resetFields()
                 this.subjectForm.name = rowData.name
-                this.subjectForm.key = rowData.key
+                // this.subjectForm.key = rowData.key
                 this.subjectForm.id = rowData.id
                 this.showSubjectModal = true
             },
@@ -130,14 +129,14 @@
                 this.$refs.createSubjectForm.resetFields()
                 this.subjectForm = {
                     name: '',
-                    key: '',
+                    // key: '',
                     id: ''
                 }
                 this.showSubjectModal = true
             },
-            // 删除科目
+            // 删除病情
             handleDelRecord (id) {
-                this.$get('/admin/general/treatment/item/remove/' + id, {}, response => {
+                this.$get('/admin/general/medical/record/classification/remove/' + id, {}, response => {
                     if (response.success) {
                         this.$Message.info('删除成功')
                         this.getSubjectList()

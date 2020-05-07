@@ -43,6 +43,10 @@ export default {
             title: '诊疗科目'
         },
         {
+            path: `${pre}record-classification`,
+            title: '病情分类'
+        },
+        {
             path: `${pre}position`,
             title: '职位设置'
         },
