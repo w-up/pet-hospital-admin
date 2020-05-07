@@ -79,7 +79,12 @@
             </Row>
             <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
-                <Table border :columns="goodsColumns" :data="goodsList" @on-selection-change="handleSelect"></Table>
+                <Table
+                  border
+                  :columns="goodsColumns"
+                  :data="goodsList"
+                  @on-selection-change="handleSelect"
+                ></Table>
                 <div class="ivu-mt ivu-text-right">
                   <Page
                     :total="total"
@@ -99,6 +104,7 @@
                 <Button type="warning">剪切</Button>
                 <Button type="info">粘贴</Button>
                 <Button>批量设置</Button>
+                <Button v-show="type=='check'" type="primary" ghost @click="setCheck">检验项设置</Button>
               </Col>
               <Col span="10" class="ivu-text-right">
                 <Button type="success" @click="importData">导入明细</Button>
@@ -200,14 +206,7 @@
         <Button type="primary" @click="handleAddGoodsCategory('changeGoodsCategoryForm')">保存</Button>
       </div>
     </Modal>
-    <!-- <Modal v-model="addGoodsModal" title="添加项目" width="60%"> -->
-    <!-- 添加项目modal -->
     <addItem ref="addItem" :type="type" :categoryId="treeId"></addItem>
-    <!-- <div slot="footer">
-        <Button type="success" @click="handleAddGoods">保存</Button>
-        <Button type="info">保存并继续</Button>
-      </div>
-    </Modal>-->
     <Modal v-model="importDataModal" title="导入数据">
       <Form :label-width="100">
         <FormItem label="导入类型" class="importDataFormItem">
@@ -253,6 +252,74 @@
     <Modal title="删除" v-model="removeGoodsModal" @on-ok="removeGoods">
       <div>确认删除商品吗？</div>
     </Modal>
+    <Modal v-model="showSetCheckModal" title="检验项设置" width="1000" class="checkListModal">
+      <Table ref="checkTable" border :columns="checkColumns" :data="checkData">
+        <p slot="header" style="padding:0 16px">检验项列表</p>
+      </Table>
+      <div slot="footer">
+        <Row>
+          <Col span="12" class="ivu-text-left">
+            <Button type="info" @click="addCheckItem">+检验项</Button>
+            <Button type="error" @click="delCheckRow">删除行</Button>
+          </Col>
+          <Col span="12" class="ivu-text-right">
+            <Button type="success" @click="showSetCheckModal=false">确定</Button>
+          </Col>
+        </Row>
+      </div>
+    </Modal>
+    <!-- 添加检验项 -->
+    <Modal v-model="showAddCheckItemModal" width="60%" title="添加检验项">
+      <Row :gutter="16">
+        <Col span="5">
+          <Row class-name="module-title-wrapper">
+            <Col>
+              <span class="module-title">检查检验类别</span>
+            </Col>
+          </Row>
+          <Row>
+            <Col style="padding:8px 16px;border:1px solid #ccc">
+              <Tree :data="checkTypeListData" @on-select-change="selectChange"></Tree>
+            </Col>
+          </Row>
+        </Col>
+        <Col span="19">
+          <Row class-name="module-title-wrapper">
+            <Col span="24">
+              <span class="module-title">单项</span>
+            </Col>
+          </Row>
+          <Row>
+            <Table border :columns="checkItemColumns" :data="checkItemData"></Table>
+          </Row>
+        </Col>
+      </Row>
+
+      <Row class-name="module-title-wrapper ivu-mt">
+        <Col span="8">
+          <span class="module-title">已选检验项</span>
+        </Col>
+        <Col span="16" class="ivu-text-right">
+          <Button type="error" @click="removeSelect">删除</Button>
+        </Col>
+      </Row>
+      <Row>
+        <Table
+          ref="checkItemTable"
+          border
+          :columns="selectCheckItemColumns"
+          :data="selectCheckItemData"
+        ></Table>
+      </Row>
+
+      <div slot="footer">
+        <Row>
+          <Col span="24" class="ivu-text-right">
+            <Button type="success" @click="saveGoodsCheck">保存</Button>
+          </Col>
+        </Row>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -273,6 +340,196 @@
                 }
             };
             return {
+                checkItemOtherColumns: [
+                    {
+                        title: '指标名称',
+                        minWidth: 84,
+                        key: 'indexName'
+                    },
+                    {
+                        title: '标准名称',
+                        minWidth: 84,
+                        key: 'standardName'
+                    },
+                    {
+                        title: '指标单位',
+                        minWidth: 84,
+                        key: 'indexUnit'
+                    },
+                    {
+                        title: '可选结果值',
+                        minWidth: 84,
+                        key: 'resultValue',
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.resultValue
+                                    ? params.row.resultValue.replace(/,/g, '/')
+                                    : ''
+                            ]);
+                        }
+                    },
+                    {
+                        title: '说明',
+                        minWidth: 84,
+                        key: 'explain'
+                    },
+                    {
+                        title: '操作',
+                        minWidth: 84,
+                        render: (h, params) => {
+                            return h('div', [
+                                h(
+                                    'Button',
+                                    {
+                                        props: {
+                                            type: 'info',
+                                            size: 'small'
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.singleAdd(params.row);
+                                            }
+                                        }
+                                    },
+                                    '添加'
+                                )
+                            ]);
+                        }
+                    }
+                ],
+                checkItemRangeColumns: [
+                    {
+                        title: '指标名称',
+                        minWidth: 84,
+                        key: 'indexName'
+                    },
+                    {
+                        title: '标准名称',
+                        minWidth: 84,
+                        key: 'standardName'
+                    },
+                    {
+                        title: '指标单位',
+                        minWidth: 84,
+                        key: 'indexUnit'
+                    },
+                    {
+                        title: '宠物种类',
+                        minWidth: 84,
+                        key: 'type',
+                        render: (h, params) => {
+                            let vm = this;
+                            return h(
+                                'Select',
+                                {
+                                    props: {
+                                        value: params.row.pet, // 获取选择的下拉框的值
+                                        size: 'small',
+                                        transfer: true
+                                    },
+                                    on: {
+                                        'on-change': e => {
+                                            this.checkItemData[params.row._index].pet = e;
+                                        }
+                                    }
+                                },
+                                vm.petTypeList.map(item => {
+                                    return h('Option', {
+                                        // 下拉框的值
+                                        props: {
+                                            value: item.key,
+                                            label: item.name
+                                        }
+                                    });
+                                })
+                            );
+                        }
+                    },
+                    {
+                        title: '年龄段',
+                        minWidth: 84,
+                        key: 'age',
+                        render: (h, params) => {
+                            let vm = this;
+                            return h(
+                                'Select',
+                                {
+                                    props: {
+                                        value: params.row.age, // 获取选择的下拉框的值
+                                        size: 'small',
+                                        transfer: true
+                                    },
+                                    on: {
+                                        'on-change': e => {
+                                            this.checkItemData[params.row._index].age = e;
+                                        }
+                                    }
+                                },
+                                vm.ageTypeList.map(item => {
+                                    return h('Option', {
+                                        // 下拉框的值
+                                        props: {
+                                            value: item.code,
+                                            label: item.name
+                                        }
+                                    });
+                                })
+                            );
+                        }
+                    },
+                    {
+                        title: '参考值下线',
+                        minWidth: 84,
+                        key: 'lowerLimit',
+                        render: (h, params) => {
+                            var lower =
+                                params.row[params.row.age + '-' + params.row.pet + '-lowerLimit'];
+                            return h('div', [lower || '']);
+                        }
+                    },
+                    {
+                        title: '参考值上线',
+                        minWidth: 84,
+                        key: 'upperLimit',
+                        render: (h, params) => {
+                            var upper =
+                                params.row[params.row.age + '-' + params.row.pet + '-upperLimit'];
+                            return h('div', [upper || '']);
+                        }
+                    },
+                    {
+                        title: '说明',
+                        minWidth: 84,
+                        key: 'explain'
+                    },
+                    {
+                        title: '操作',
+                        minWidth: 84,
+                        render: (h, params) => {
+                            return h('div', [
+                                h(
+                                    'Button',
+                                    {
+                                        props: {
+                                            type: 'info',
+                                            size: 'small'
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.singleAdd(params.row);
+                                            }
+                                        }
+                                    },
+                                    '添加'
+                                )
+                            ]);
+                        }
+                    }
+                ],
+                checkItemColumns: [],
+                checkItemData: [],
+                currentCheckTypeData: {},
+                showSetCheckModal: false,
                 resource: this.$store.state.admin.user.resource,
                 headers: this.$store.state.admin.user.headers,
                 goodsColumns: [
@@ -351,55 +608,6 @@
                     }
                 ],
                 goodsList: [],
-                // goodsColumns: [
-                //     {
-                //         title: '商品名称',
-                //         minWidth: 84,
-                //         key: 'name'
-                //     },
-                //     {
-                //         title: '编号',
-                //         minWidth: 84,
-                //         key: 'code'
-                //     },
-                //     {
-                //         title: '规格',
-                //         minWidth: 84,
-                //         key: 'size'
-                //     },
-                //     {
-                //         title: '单位',
-                //         minWidth: 84,
-                //         key: 'unti'
-                //     },
-                //     {
-                //         title: '单价',
-                //         minWidth: 84,
-                //         key: 'price'
-                //     },
-                //     {
-                //         title: '组合数量',
-                //         key: 'num',
-                //         minWidth: 95,
-                //         render: (h, params) => {
-                //             return h('div', [
-                //                 h('Input', {
-                //                     props: {
-                //                         // 将单元格的值给Input
-                //                         value: params.row.num
-                //                     },
-                //                     on: {
-                //                         'on-change' (event) {
-                //                             // 值改变时
-                //                             // 将渲染后的值重新赋值给单元格值
-                //                             params.row.num = event.target.value;
-                //                         }
-                //                     }
-                //                 })
-                //             ]);
-                //         }
-                //     }
-                // ],
                 goodsListData: [
                     {
                         name: '',
@@ -549,6 +757,528 @@
                         num: ''
                     }
                 ],
+                checkColumns: [
+                    {
+                        type: 'selection',
+                        align: 'center',
+                        minWidth: 60
+                    },
+                    {
+                        title: '指标名称',
+                        minWidth: 84,
+                        key: 'indexName',
+                        render: (h, params) => {
+                            return h('div', [params.row.item ? params.row.item.indexName : '']);
+                        }
+                    },
+                    {
+                        title: '标准名称',
+                        minWidth: 84,
+                        key: 'standardName',
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.item.standardName ? params.row.item.standardName : ''
+                            ]);
+                        }
+                    },
+                    {
+                        title: '指标单位',
+                        minWidth: 84,
+                        key: 'indexUnit',
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.item.indexUnit ? params.row.item.indexUnit : ''
+                            ]);
+                        }
+                    },
+                    {
+                        title: '宠物种类',
+                        minWidth: 84,
+                        key: 'type',
+                        render: (h, params) => {
+                            let vm = this;
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.item.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            return h('div', [
+                                h(
+                                    'Select',
+                                    {
+                                        props: {
+                                            value: params.row.pet, // 获取选择的下拉框的值
+                                            size: 'small',
+                                            transfer: true
+                                        },
+                                        style: {
+                                            display: showSelect
+                                        },
+                                        on: {
+                                            'on-change': e => {
+                                                this.checkData[params.row._index].pet = e;
+                                            }
+                                        }
+                                    },
+                                    vm.petTypeList.map(item => {
+                                        return h('Option', {
+                                            // 下拉框的值
+                                            props: {
+                                                value: item.key,
+                                                label: item.name
+                                            }
+                                        });
+                                    })
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '年龄段',
+                        minWidth: 84,
+                        key: 'age',
+                        render: (h, params) => {
+                            let vm = this;
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.item.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            return h('div', [
+                                h(
+                                    'Select',
+                                    {
+                                        props: {
+                                            value: params.row.age, // 获取选择的下拉框的值
+                                            size: 'small',
+                                            transfer: true
+                                        },
+                                        style: {
+                                            display: showSelect
+                                        },
+                                        on: {
+                                            'on-change': e => {
+                                                this.checkData[params.row._index].age = e;
+                                            }
+                                        }
+                                    },
+                                    vm.ageTypeList.map(item => {
+                                        return h('Option', {
+                                            // 下拉框的值
+                                            props: {
+                                                value: item.code,
+                                                label: item.name
+                                            }
+                                        });
+                                    })
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '参考值下线',
+                        minWidth: 84,
+                        key: 'lowerLimit',
+                        render: (h, params) => {
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.item.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            var lower =
+                                params.row[params.row.age + '-' + params.row.pet + '-lowerLimit'];
+                            return h('div', [
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showSelect
+                                        }
+                                    },
+                                    lower || ''
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '参考值上线',
+                        minWidth: 84,
+                        key: 'upperLimit',
+                        render: (h, params) => {
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.item.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            var upper =
+                                params.row[params.row.age + '-' + params.row.pet + '-upperLimit'];
+                            return h('div', [
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showSelect
+                                        }
+                                    },
+                                    upper || ''
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '可选结果值',
+                        minWidth: 84,
+                        key: 'resultValue',
+                        render: (h, params) => {
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.item.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            return h('div', [
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    params.row.item.resultValue
+                                        ? params.row.item.resultValue.replace(/,/g, '/')
+                                        : ''
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showSelect
+                                        }
+                                    },
+                                    '/'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '说明',
+                        minWidth: 84,
+                        key: 'explain',
+                        render: (h, params) => {
+                            return h('div', [
+                                params.row.item.explain ? params.row.item.explain : ''
+                            ]);
+                        }
+                    }
+                ],
+                selectCheckItemData: [],
+                selectCheckItemColumns: [
+                    {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    },
+                    {
+                        title: '指标名称',
+                        minWidth: 84,
+                        key: 'indexName'
+                    },
+                    {
+                        title: '标准名称',
+                        minWidth: 84,
+                        key: 'standardName'
+                    },
+                    {
+                        title: '指标单位',
+                        minWidth: 84,
+                        key: 'indexUnit'
+                    },
+                    {
+                        title: '宠物种类',
+                        minWidth: 84,
+                        key: 'type',
+                        render: (h, params) => {
+                            let vm = this;
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            return h('div', [
+                                h(
+                                    'Select',
+                                    {
+                                        props: {
+                                            value: params.row.pet, // 获取选择的下拉框的值
+                                            size: 'small',
+                                            transfer: true
+                                        },
+                                        style: {
+                                            display: showSelect
+                                        },
+                                        on: {
+                                            'on-change': e => {
+                                                this.selectCheckItemData[params.row._index].pet = e;
+                                            }
+                                        }
+                                    },
+                                    vm.petTypeList.map(item => {
+                                        return h('Option', {
+                                            // 下拉框的值
+                                            props: {
+                                                value: item.key,
+                                                label: item.name
+                                            }
+                                        });
+                                    })
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '年龄段',
+                        minWidth: 84,
+                        key: 'age',
+                        render: (h, params) => {
+                            let vm = this;
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            return h('div', [
+                                h(
+                                    'Select',
+                                    {
+                                        props: {
+                                            value: params.row.age, // 获取选择的下拉框的值
+                                            size: 'small',
+                                            transfer: true
+                                        },
+                                        style: {
+                                            display: showSelect
+                                        },
+                                        on: {
+                                            'on-change': e => {
+                                                this.selectCheckItemData[params.row._index].age = e;
+                                            }
+                                        }
+                                    },
+                                    vm.ageTypeList.map(item => {
+                                        return h('Option', {
+                                            // 下拉框的值
+                                            props: {
+                                                value: item.code,
+                                                label: item.name
+                                            }
+                                        });
+                                    })
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '参考值下线',
+                        minWidth: 84,
+                        key: 'lowerLimit',
+                        render: (h, params) => {
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            var lower =
+                                params.row[params.row.age + '-' + params.row.pet + '-lowerLimit'];
+                            return h('div', [
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showSelect
+                                        }
+                                    },
+                                    lower || ''
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '参考值上线',
+                        minWidth: 84,
+                        key: 'upperLimit',
+                        render: (h, params) => {
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            var upper =
+                                params.row[params.row.age + '-' + params.row.pet + '-upperLimit'];
+                            return h('div', [
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    '/'
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showSelect
+                                        }
+                                    },
+                                    upper || ''
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '可选结果值',
+                        minWidth: 84,
+                        key: 'resultValue',
+                        render: (h, params) => {
+                            var showSelect = 'none';
+                            var showDiv = 'none';
+                            if (params.row.details) {
+                                showSelect = '';
+                                showDiv = 'none';
+                            } else {
+                                showSelect = 'none';
+                                showDiv = '';
+                            }
+                            return h('div', [
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showDiv
+                                        }
+                                    },
+                                    params.row.resultValue
+                                        ? params.row.resultValue.replace(/,/g, '/')
+                                        : ''
+                                ),
+                                h(
+                                    'div',
+                                    {
+                                        style: {
+                                            display: showSelect
+                                        }
+                                    },
+                                    '/'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: '说明',
+                        minWidth: 84,
+                        key: 'explain'
+                    }
+                ],
+                checkData: [],
                 current: 1,
                 total: 0,
                 addGoodsModal: false,
@@ -569,6 +1299,12 @@
                     up: '',
                     down: ''
                 },
+                petTypeList: [],
+                ageTypeList: [
+                    { code: 'childhood', name: '幼年' },
+                    { code: 'adult', name: '成年' },
+                    { code: 'oldage', name: '老年' }
+                ],
                 addGoodsCategoryRules: {
                     name: [{ required: true, message: '请输入类别名称', trigger: 'blur' }],
                     partakeDiscount: [
@@ -599,10 +1335,17 @@
                     goods: '商品',
                     foster: '寄养',
                     imageCheck: '影像检验'
-                }
+                },
+                showAddCheckItemModal: false,
+                checkTypeListData: []
             };
         },
         methods: {
+            getPetTypeList () {
+                this.$get('/admin/pet/species/page', {}, response => {
+                    this.petTypeList = response.data.data;
+                });
+            },
             showAddGoodsCategoryModal () {
                 this.$refs.addGoodsCategoryForm.resetFields();
                 this.addGoodsCategoryForm.id = '';
@@ -625,13 +1368,13 @@
             },
             // 切换tab类型
             changeType (name) {
-                this.currentTabName = this.tabObj[name]
+                this.currentTabName = this.tabObj[name];
                 this.getGoodsCategoryList();
                 this.getGoodsList();
             },
             // 点击树
             getChild (data, selectedNode) {
-                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
+                this.$set(selectedNode, 'expand', !selectedNode.expand); // 点击节点文字展开收起
                 if (data && data.length > 0) {
                     this.treeId = data[0].id;
                     var obj = JSON.parse(JSON.stringify(data[0]));
@@ -645,7 +1388,7 @@
                     this.addGoodsCategoryForm.partakeDiscount =
                         obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
-                    this.treeId = ''
+                    this.treeId = '';
                 }
                 this.getGoodsList();
             },
@@ -773,7 +1516,7 @@
                 );
             },
             getGoodsList () {
-                this.selectIds = []
+                this.selectIds = [];
                 var data = {
                     keywords: this.keywords,
                     type: this.type,
@@ -782,17 +1525,25 @@
                     pageNumber: this.current - 1
                 };
                 this.$get('/admin/goods/page', data, response => {
-                    this.total = response.data.total
+                    this.total = response.data.total;
                     this.goodsList = response.data.data;
+                });
+            },
+            getCheckList () {
+                var data = {
+                    goodsId: this.selectIds[0]
+                };
+                this.$get('/admin/goods/check/setting/item/page', data, response => {
+                    this.setBatchsaveDetailForItemDetail(response.data.data);
                 });
             },
             handleAddGoodsModal () {
                 this.$refs.addItem.handleAddGoodsModal();
             },
             handleSelect (val) {
-                this.selectIds = []
+                this.selectIds = [];
                 for (var i = 0; i < val.length; i++) {
-                    this.selectIds.push(val[i].id)
+                    this.selectIds.push(val[i].id);
                 }
             },
             handleRemoveGoods () {
@@ -802,17 +1553,22 @@
                 }
                 this.removeGoodsModal = true;
             },
+            // 检验项设置
+            setCheck () {
+                if (this.selectIds == null || this.selectIds.length === 0) {
+                    this.$Message.error('请选择商品');
+                    return false;
+                }
+                this.getCheckList();
+                this.showSetCheckModal = true;
+            },
             // 删除商品
             removeGoods () {
-                this.$get(
-                    '/admin/goods/remove',
-                    { ids: this.selectIds },
-                    response => {
-                        this.$Message.info('删除成功');
-                        this.getGoodsList();
-                        this.removeGoodsModal = false;
-                    }
-                );
+                this.$get('/admin/goods/remove', { ids: this.selectIds }, response => {
+                    this.$Message.info('删除成功');
+                    this.getGoodsList();
+                    this.removeGoodsModal = false;
+                });
             },
             handleEditGoods () {
                 if (this.selectIds == null || this.selectIds.length === 0) {
@@ -820,11 +1576,151 @@
                     return false;
                 }
                 this.$refs.addItem.handleEditPackageModal(this.selectIds[0]);
+            },
+            addCheckItem () {
+                this.getCheckTypeList();
+                this.checkItemData = [];
+                this.selectCheckItemData = [];
+                this.showAddCheckItemModal = true;
+            },
+            getCheckTypeList () {
+                this.$get('/admin/general/checkSetting/page', {}, response => {
+                    this.checkTypeListData = response.data.data;
+                    this.checkTypeListData.forEach(element => {
+                        element.title = element.name;
+                    });
+                });
+            },
+            selectChange (selectedNodesList, selectedNode) {
+                this.currentCheckTypeData = JSON.parse(JSON.stringify(selectedNode));
+                this.getCheckItemList();
+            },
+            getCheckItemList () {
+                if (this.currentCheckTypeData.hasReference) {
+                    this.checkItemColumns = this.checkItemRangeColumns;
+                } else {
+                    this.checkItemColumns = this.checkItemOtherColumns;
+                }
+                var data = {
+                    settingId: this.currentCheckTypeData.id
+                };
+                this.$get('/admin/general/checkSetting/item/page', data, response => {
+                    this.setBatchsaveDetail(response.data.data);
+                });
+            },
+            setBatchsaveDetail (data) {
+                // 处理获取的单项列表数据
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].details) {
+                        for (var j = 0; j < data[i].details.length; j++) {
+                            for (var z = 0; z < data[i].details[j].spec.length; z++) {
+                                // eslint-disable-next-line standard/computed-property-even-spacing
+                                data[i][
+                                    data[i].details[j].ageGroup.code +
+                                    '-' +
+                                    data[i].details[j].spec[z].species.key +
+                                    '-lowerLimit'
+                                ] = data[i].details[j].spec[z].lowerLimit; // 例：data[childhood-dog-lowerLimit]=返回数据里对应的lowerLimit
+                                // eslint-disable-next-line standard/computed-property-even-spacing
+                                data[i][
+                                    data[i].details[j].ageGroup.code +
+                                    '-' +
+                                    data[i].details[j].spec[z].species.key +
+                                    '-upperLimit'
+                                ] = data[i].details[j].spec[z].upperLimit;
+                            }
+                        }
+                        data[i].pet = 'dog';
+                        data[i].age = 'childhood';
+                    }
+                }
+                this.checkItemData = data;
+            },
+            setBatchsaveDetailForItemDetail (data) {
+                // 处理获取的单项列表数据,当返回的detail存在item里面时
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].item.details) {
+                        for (var j = 0; j < data[i].item.details.length; j++) {
+                            for (var z = 0; z < data[i].item.details[j].spec.length; z++) {
+                                // eslint-disable-next-line standard/computed-property-even-spacing
+                                data[i][
+                                    data[i].item.details[j].ageGroup.code +
+                                    '-' +
+                                    data[i].item.details[j].spec[z].species.key +
+                                    '-lowerLimit'
+                                ] = data[i].item.details[j].spec[z].lowerLimit; // 例：data[childhood-dog-lowerLimit]=返回数据里对应的lowerLimit
+                                // eslint-disable-next-line standard/computed-property-even-spacing
+                                data[i][
+                                    data[i].item.details[j].ageGroup.code +
+                                    '-' +
+                                    data[i].item.details[j].spec[z].species.key +
+                                    '-upperLimit'
+                                ] = data[i].item.details[j].spec[z].upperLimit;
+                            }
+                        }
+                        data[i].pet = 'dog';
+                        data[i].age = 'childhood';
+                    }
+                }
+                this.checkData = data;
+                console.log(data);
+            },
+            singleAdd (element) {
+                let arr = this.selectCheckItemData.map(item => item.id);
+                if (arr.indexOf(element.id) === -1) {
+                    this.selectCheckItemData.push(element);
+                }
+            },
+            saveGoodsCheck () {
+                let vm = this;
+                this.selectCheckItemData.forEach(element => {
+                    var data = {
+                        goodsId: this.selectIds[0],
+                        itemId: element.id
+                    };
+                    vm.$post('/admin/goods/check/setting/item/save', data, response => {});
+                });
+                this.showAddCheckItemModal = false;
+                this.getCheckList();
+                this.$Message.info('保存成功');
+            },
+            delCheckRow () {
+                var selectIds = this.$refs.checkTable.getSelection();
+                if (selectIds == null || selectIds.length === 0) {
+                    this.$Message.error('请选择要删除的数据');
+                    return false;
+                }
+                var arr = [];
+                selectIds.forEach(element => {
+                    arr.push(element.id);
+                });
+                var data = {
+                    ids: arr
+                };
+                this.$get('/admin/goods/check/setting/item/remove', data, response => {
+                    if (response.success) {
+                        this.$Message.info('删除成功');
+                        this.getCheckList();
+                    }
+                });
+            },
+            removeSelect () {
+                var selectIds = this.$refs.checkItemTable.getSelection();
+                if (selectIds.length == 0) {
+                    this.$Message.error('请选择要删除的数据')
+                    return false
+                }
+                selectIds.forEach(element => {
+                    let arr = [];
+                    arr = this.selectCheckItemData.map(item => item.id);
+                    this.selectCheckItemData.splice(arr.indexOf(element.id), 1);
+                });
             }
         },
         mounted () {
             this.getGoodsCategoryList();
             this.getGoodsList();
+            this.getPetTypeList();
         }
     };
 </script>
@@ -877,5 +1773,8 @@
 }
 .mytree .ivu-tree-title-selected .btn-tree {
   display: inline-block !important;
+}
+.checkListModal .ivu-modal-body {
+  padding-bottom: 20px;
 }
 </style>
