@@ -248,7 +248,12 @@
                 }
             };
             return {
-                currentPlanData: {},
+                currentPlanData: {
+                    salesCommissionType: { code: '' },
+                    serviceCommissionType: { code: '' },
+                    secondSalesCommissionType: { code: '' },
+                    secondServiceCommissionType: { code: '' }
+                },
                 planDetailRules: {
                     salesCommissionPro: [
                         { validator: validatePlanDetail, trigger: 'blur' }
