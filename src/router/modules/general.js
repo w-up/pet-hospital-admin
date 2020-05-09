@@ -11,7 +11,7 @@ export default {
     path: '/general',
     name: 'general',
     redirect: {
-        name: `${pre}module`
+        name: `${pre}consumption-setting`
     },
     meta,
     component: BasicLayout,

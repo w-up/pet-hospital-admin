@@ -75,10 +75,10 @@ export default {
         {
             path: `${pre}reminder-setting`,
             title: '提醒设置'
-        },
-        {
-            path: `${pre}module`,
-            title: '模块管理'
         }
+        // {
+        //     path: `${pre}module`,
+        //     title: '模块管理'
+        // }
     ]
 }
