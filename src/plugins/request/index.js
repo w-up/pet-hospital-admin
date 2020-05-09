@@ -75,6 +75,7 @@ service.interceptors.request.use(
 );
 
 // 响应拦截器
+var isAlert = false// 记录是否提示
 service.interceptors.response.use(
     response => {
         // dataAxios 是 axios 返回数据中的 data
@@ -110,7 +111,10 @@ service.interceptors.response.use(
             switch (error.response.status) {
             case 400: error.message = '请求错误'; break;
             case 401: error.message = '未授权，请登录';
-                      alert('未授权，请登录')
+                      if (!isAlert) {
+                          alert('未授权，请登录')
+                          isAlert = true
+                      }
                       location.href = '/login'
                       break;
             case 403: error.message = '拒绝访问'; break;
