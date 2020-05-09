@@ -97,7 +97,7 @@
               </Col>
             </Row>
             <Row type="flex" justify="end" class="mtb15">
-              <Col span="14" class="ivu-text-left">
+              <Col span="16" class="ivu-text-left">
                 <Button type="success" @click="handleAddGoodsModal">+项目</Button>
                 <Button type="error" @click="handleRemoveGoods">删除</Button>
                 <Button type="primary" @click="handleEditGoods">修改</Button>
@@ -106,7 +106,7 @@
                 <Button>批量设置</Button>
                 <Button v-show="type=='check'" type="primary" ghost @click="setCheck">检验项设置</Button>
               </Col>
-              <Col span="10" class="ivu-text-right">
+              <Col span="8" class="ivu-text-right">
                 <Button type="success" @click="importData">导入明细</Button>
                 <Button type="info">导出明细</Button>
                 <Button type="primary" @click="showSystemHint">初始化成本</Button>
@@ -1706,7 +1706,7 @@
             },
             removeSelect () {
                 var selectIds = this.$refs.checkItemTable.getSelection();
-                if (selectIds.length == 0) {
+                if (selectIds.length === 0) {
                     this.$Message.error('请选择要删除的数据')
                     return false
                 }
