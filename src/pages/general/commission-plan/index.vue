@@ -29,7 +29,7 @@
               <Button type="primary" @click="showEditPlanName">修改</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="error">删除</Button>
+              <Button type="error" @click="removeModal=true">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -195,7 +195,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table border :columns="planGoodsColumns" :data="planGoodsData"></Table>
+              <Table ref="planGoodsTable" border :columns="planGoodsColumns" :data="planGoodsData"></Table>
               <div class="ivu-mt ivu-text-right">
                 <Page :total="total" :show-elevator="showElevator" :current.sync="current" />
               </div>
@@ -204,7 +204,7 @@
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
               <Button type="warning" @click="handleAddGoodsModal">添加商品</Button>
-              <Button type="error">删除</Button>
+              <Button type="error" @click="removeGoods">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -222,6 +222,9 @@
           <Input style="width:70%" v-model="planData.name" />
         </FormItem>
       </Form>
+    </Modal>
+     <Modal title="删除" v-model="removeModal" @on-ok="removePlan">
+      <div>确认删除吗？</div>
     </Modal>
  <!-- 添加商品 -->
     <addGoods ref="addGoods" :goodsList="planGoodsData" :goodsColumns="consumptionOrderColumns" :isFormCombi="true" title="添加商品"></addGoods>
@@ -321,6 +324,7 @@
                 current: 1,
                 total: 0,
                 showElevator: false,
+                removeModal: false,
                 consumptionOrderColumns: [
                     {
                         type: 'selection',
@@ -545,6 +549,43 @@
                 this.isAddPlan = false;
                 this.planData = JSON.parse(JSON.stringify(this.currentPlanData));
                 this.showAddPlanModal = true;
+            },
+            removePlan () {
+                if (this.currentPlanData.id) {
+                    this.$get(
+                        '/admin/commission/plan/remove/' + this.currentPlanData.id,
+                        {},
+                        response => {
+                            if (response.success) {
+                                this.$Message.info('删除成功');
+                                this.getPlanList();
+                            }
+                        }
+                    );
+                } else {
+                    this.$Message.error('请选择数据');
+                }
+            },
+            removeGoods () {
+                var selectIds = this.$refs.planGoodsTable.getSelection();
+                var ids = []
+                console.log(selectIds)
+                if (selectIds.length > 0) {
+                    selectIds.forEach(element => {
+                        ids.push(element.planId);
+                    });
+                    console.log(ids)
+                    this.$get(
+                        '/admin/goods/commission/plan/remove',
+                        { ids: ids },
+                        response => {
+                            this.$Message.info('删除成功');
+                            this.getPlanList();
+                        }
+                    );
+                } else {
+                    this.$Message.error('请选择数据');
+                }
             },
             hanSavePlan () {
                 this.$refs.createPlanModal.buttonLoading = false;
