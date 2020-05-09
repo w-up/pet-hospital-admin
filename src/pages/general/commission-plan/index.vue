@@ -10,7 +10,7 @@
           </Row>
           <Row class="noplr">
             <Col span="24">
-              <List class="plan-list">
+              <List class="plan-list"  v-if="list.length!==0">
                 <ListItem
                   v-for="item in list"
                   :key="item.id"
@@ -18,6 +18,9 @@
                 >
                   <p @click="switchList(item)" class="list">{{ item.name }}</p>
                 </ListItem>
+              </List>
+              <List class="plan-list" v-else>
+                <p style="text-align:center;margin-top:15px">暂无数据</p>
               </List>
             </Col>
           </Row>
@@ -469,12 +472,11 @@
             getPlanList () {
                 this.$get('/admin/commission/plan/page', {}, response => {
                     this.list = response.data.data;
-                    this.currentPlanData =
-                        response.data.data.length > 0
-                            ? JSON.parse(JSON.stringify(response.data.data[0]))
-                            : {};
-                    this.setDetail(response.data.data[0])
-                    this.getPlanGoodsList();
+                    if (response.data.data.length > 0) {
+                        this.currentPlanData = JSON.parse(JSON.stringify(response.data.data[0]))
+                        this.setDetail(response.data.data[0])
+                        this.getPlanGoodsList();
+                    }
                 });
             },
             getPlanGoodsList () {
