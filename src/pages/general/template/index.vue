@@ -16,12 +16,12 @@
               <Tree ref="tree" :data="treeData" @on-select-change="selectChange"></Tree>
             </Col>
             <Col span="24" class="ivu-text-center">
-              <Button type="info">+添加新主诉</Button>
+              <Button type="info" @click="openAddTypeModal(2)">+添加新主诉</Button>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="8" class="ivu-text-center">
-              <Button type="success" @click="openAddTypeModal">+分类</Button>
+              <Button type="success" @click="openAddTypeModal(1)">+分类</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
               <Button type="primary" @click="openEditTypeModal">修改</Button>
@@ -77,7 +77,9 @@
                         { required: true, message: '请输入模板名称', trigger: 'change' }
                     ]
                 },
-                typeData: {}
+                typeData: {
+                    title: ''
+                }
             };
         },
         methods: {
@@ -106,26 +108,32 @@
                     this.treeData = response.data;
                 });
             },
-            openAddTypeModal: function () {
+            openAddTypeModal (num) {
                 this.$refs.addTypeForm.resetFields()
-                this.typeData = {}
-                var selectedNodesList = this.$refs.tree.getSelectedNodes()
-                if (selectedNodesList.length === 0) {
-                } else {
-                    this.typeData.parentId = selectedNodesList[0].id
+                if (num === 1) { // 添加分类（第一级）
+                    this.typeData.parentId = ''
+                    this.typeData.title = ''
+                    this.typeData.categoryId = this.currentCategoryId
+                    this.showAddTypeModal = true
+                } else { // 添加新主诉（第二级）
+                    var selectedNodesList = this.$refs.tree.getSelectedNodes()
+                    if (selectedNodesList.length === 0) {
+                        this.$Message.error('请选择分类');
+                    } else {
+                        this.typeData.parentId = selectedNodesList[0].id
+                        this.typeData.title = ''
+                        this.typeData.categoryId = this.currentCategoryId
+                        this.showAddTypeModal = true
+                    }
                 }
-                this.typeData.title = ''
-                this.typeData.categoryId = this.currentCategoryId
-                this.showAddTypeModal = true
             },
             openEditTypeModal: function () {
                 var selectedNodesList = this.$refs.tree.getSelectedNodes()
                 if (selectedNodesList.length === 0) {
-                    this.$Message.error('请选择需要修改的分类');
+                    this.$Message.error('请选择需要修改的数据');
                     return false
                 }
                 this.$refs.addTypeForm.resetFields()
-                this.typeData = {}
                 this.typeData.id = selectedNodesList[0].id
                 this.typeData.parentId = selectedNodesList[0].parentId
                 this.typeData.title = selectedNodesList[0].title
