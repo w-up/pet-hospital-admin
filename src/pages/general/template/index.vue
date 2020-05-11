@@ -162,7 +162,6 @@
                     this.$Message.error('请选择左侧树');
                     return false
                 }
-                this.typeData = {}
                 this.typeData.id = selectedNodesList[0].id
                 this.typeData.parentId = selectedNodesList[0].parentId
                 this.typeData.content = this.description
