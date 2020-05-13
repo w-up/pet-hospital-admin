@@ -142,7 +142,7 @@
                 userInfo: {
                     portrait: '',
                     position: {
-                        code: 'caiwu'
+                        code: ''
                     },
                     master: '张三'
                 },
@@ -240,6 +240,11 @@
             getChild (data, selectedNode) {
                 this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 this.userInfo = data[0]
+                if (!this.userInfo.position) {
+                    this.userInfo.position = {
+                        code: ''
+                    }
+                }
             },
             handleHeaderUrlSuccess (response, file, fileList) {
                 this.$set(this.userInfo, 'portrait', response.data);
