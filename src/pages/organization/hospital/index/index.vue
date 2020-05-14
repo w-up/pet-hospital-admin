@@ -16,7 +16,11 @@
           <Row class="mt6 noplr">
             <Col span="24">
               <List class="hospital-list">
-                <ListItem v-for="(item, index) in hospitalListData" :key="index"  :class="currentId==item.id?'active':''">
+                <ListItem
+                  v-for="(item, index) in hospitalListData"
+                  :key="index"
+                  :class="currentId==item.id?'active':''"
+                >
                   <div @click="showHospital(item);currentId=item.id" class="list">
                     <p>
                       医院名称：{{ item.name }}
@@ -94,20 +98,24 @@
                             <Input v-width="'100%'" v-model="data.password" placeholder="必填" />
                           </FormItem>
                         </Col>
-                        <Col v-bind="grid">
-                          <FormItem label="短信医院名称">
-                            <Input
-                              v-width="'100%'"
-                              v-model="data.shortMessageName"
-                              placeholder="请输入"
-                            />
-                          </FormItem>
-                        </Col>
-                        <Col v-bind="gridForTip" class="ivu-text-left">
-                          <Checkbox v-model="data.ifShortMessage">签名</Checkbox>
-                          <span>
-                            <code style="color:red">*</code>用于医院短信签名,方便顾客知晓短信发送方
-                          </span>
+                        <Col span="24">
+                          <Col span="2" class="ivu-text-right ivu-text-item">
+                              <Checkbox v-model="data.ifShortMessage"></Checkbox>
+                          </Col>
+                          <Col span="12">
+                            <FormItem label="短信医院名称">
+                              <Input
+                                v-width="'100%'"
+                                v-model="data.shortMessageName"
+                                placeholder="请输入"
+                              />
+                            </FormItem>
+                          </Col>
+                          <Col span="10" class="ivu-text-left ivu-text-item pl16">
+                            <span>
+                              <code style="color:red">*</code>用于医院短信签名,方便顾客知晓短信发送方
+                            </span>
+                          </Col>
                         </Col>
                         <Col span="7">
                           <FormItem label="地址" prop="country">
@@ -237,7 +245,11 @@
                       <Button type="info">进入医院管理</Button>
                     </Col>
                     <Col span="2" class="ivu-text-left">
-                      <Button type="primary" :loading="loading" @click="handleSubmit">{{isAdd?'保存':'编辑'}}</Button>
+                      <Button
+                        type="primary"
+                        :loading="loading"
+                        @click="handleSubmit"
+                      >{{isAdd?'保存':'编辑'}}</Button>
                     </Col>
                   </Row>
                 </Form>
@@ -257,8 +269,7 @@
             return {
                 isAdd: false,
                 currentId: '',
-                hospitalListData: [
-                ],
+                hospitalListData: [],
                 resource: this.$store.state.admin.user.resource,
                 headers: this.$store.state.admin.user.headers,
                 defaultImg: require('../../../../assets/images/default.png'),
@@ -354,18 +365,19 @@
             },
             addHospital () {
                 this.data = {};
-                this.isAdd = true
+                this.isAdd = true;
             },
             getHispitalDetail () {
                 this.$get('/admin/hospital/myhospital', {}, response => {
                     console.log(response);
                     this.data = response.data;
+                    this.currentId = response.data.id
                 });
             },
             getHispitalList () {
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalListData = response.data.data;
-                    this.currentId = this.hospitalListData && this.hospitalListData[0].id
+                    // this.currentId = this.hospitalListData && this.hospitalListData[0].id;
                 });
             },
             handleSubmit () {
@@ -457,9 +469,16 @@
 .mt15 {
   margin: 15px 0 0;
 }
+.pl16 {
+  padding-left: 16px;
+}
 .hospital-list {
   height: 570px;
   overflow: auto;
+}
+.ivu-text-item{
+  height: 34px;
+  line-height: 34px;
 }
 </style>
 <style lang="less">
