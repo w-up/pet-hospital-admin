@@ -25,7 +25,7 @@
                     <p>
                       医院名称：{{ item.name }}
                       <span style="margin-left: 7px">
-                        <Button size="small" type="success" @click="enableDistrict(item.id)" v-if="item.status&&item.status.code==='termination'">启用</Button>
+                        <Button size="small" type="success" @click="enableHispital(item.id)" v-if="item.status&&item.status.code==='termination'">启用</Button>
                       </span>
                     </p>
                     <p>院长：{{ item.contactor }}</p>
@@ -40,7 +40,7 @@
               <Button type="info" @click="addHospital">+新增医院</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="error">删除</Button>
+              <Button type="error" @click="handleRemoveHospital">删除</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
               <Button type="warning" @click="handleDisableHospital">停用</Button>
@@ -239,7 +239,7 @@
                       </Upload>
                     </Col>
                     <Col span="12" class="ivu-text-left">
-                      <Button type="default" @click="handleReset">刷新</Button>
+                      <Button type="default" @click="getCurrentHospitalDetail">刷新</Button>
                     </Col>
                     <Col span="10" class="ivu-text-right">
                       <Button type="info">进入医院管理</Button>
@@ -271,6 +271,7 @@
     import util from '@/libs/util';
     export default {
         name: 'list-table-list',
+        inject: ['reload'],
         data () {
             return {
                 removeModal: false,
@@ -363,7 +364,7 @@
         },
         methods: {
             showHospital (item) {
-                this.data = item;
+                this.data = JSON.parse(JSON.stringify(item))
                 this.$refs.licenseUrl.clearFiles();
                 this.$refs.logoUrl.clearFiles();
                 this.$refs.idCardFrontUrl.clearFiles();
@@ -374,7 +375,6 @@
             },
             getHispitalDetail () {
                 this.$get('/admin/hospital/myhospital', {}, response => {
-                    console.log(response);
                     this.data = response.data;
                     this.currentId = response.data.id
                 });
@@ -408,10 +408,6 @@
                         this.loading = false;
                     }
                 });
-            },
-            handleReset () {
-                this.$refs.form.resetFields();
-                this.getHispitalDetail();
             },
             handleFileFormatErr (file) {
                 this.$Notice.warning({
@@ -454,7 +450,6 @@
             handleBeforeIdCardBackUrlUpload () {
                 this.$refs.idCardBackUrl.clearFiles();
             },
-            // 删除医院，暂时不用
             handleRemoveHospital () {
                 if (this.currentId == null || this.currentId === '') {
                     this.$Message.error('请选择要删除的数据');
@@ -468,6 +463,7 @@
                     {},
                     response => {
                         this.$Message.info('删除成功');
+                        this.currentId = ''
                         this.getHispitalList()
                     }
                 );
@@ -488,11 +484,16 @@
                 });
             },
             enableHispital () {
-                this.$post('/admin/hospital/save', { id: this.currentId, status: 'normal' }, response => {
+                this.$post('/admin/hospital/save', { id: this.currentId, status: 'actived' }, response => {
                     if (response.success) {
                         this.$Message.info('启用成功');
                         this.getHispitalList();
                     }
+                });
+            },
+            getCurrentHospitalDetail () {
+                this.$get('/admin/hospital/detail/' + this.currentId, {}, response => {
+                    this.data = response.data
                 });
             }
         },
