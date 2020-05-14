@@ -25,7 +25,7 @@
                     <p>
                       医院名称：{{ item.name }}
                       <span style="margin-left: 7px">
-                        <Button size="small" type="success">启用</Button>
+                        <Button size="small" type="success" @click="enableDistrict(item.id)" v-if="item.status&&item.status.code==='termination'">启用</Button>
                       </span>
                     </p>
                     <p>院长：{{ item.contactor }}</p>
@@ -43,7 +43,7 @@
               <Button type="error">删除</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="warning">停用</Button>
+              <Button type="warning" @click="handleDisableHospital">停用</Button>
             </Col>
           </Row>
         </Card>
@@ -259,6 +259,12 @@
         </Card>
       </Col>
     </Row>
+     <Modal title="删除" v-model="removeModal" @on-ok="removeHospita">
+      <div>确认删除吗？</div>
+    </Modal>
+        <Modal title="停用大区" v-model="disableModal" @on-ok="disableHospital">
+      <div>确认停用吗？</div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -267,6 +273,8 @@
         name: 'list-table-list',
         data () {
             return {
+                removeModal: false,
+                disableModal: false,
                 currentId: '',
                 hospitalListData: [],
                 resource: this.$store.state.admin.user.resource,
@@ -445,6 +453,47 @@
             },
             handleBeforeIdCardBackUrlUpload () {
                 this.$refs.idCardBackUrl.clearFiles();
+            },
+            // 删除医院，暂时不用
+            handleRemoveHospital () {
+                if (this.currentId == null || this.currentId === '') {
+                    this.$Message.error('请选择要删除的数据');
+                    return false;
+                }
+                this.removeModal = true;
+            },
+            removeHospita () {
+                this.$get(
+                    '/admin/hospital/remove/' + this.currentId,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getHispitalList()
+                    }
+                );
+            },
+            handleDisableHospital () {
+                if (this.currentId == null || this.currentId === '') {
+                    this.$Message.error('请选择要停用的数据');
+                    return false;
+                }
+                this.disableModal = true;
+            },
+            disableHospital () {
+                this.$post('/admin/hospital/save', { id: this.currentId, status: 'termination' }, response => {
+                    if (response.success) {
+                        this.$Message.info('停用成功');
+                        this.getHispitalList();
+                    }
+                });
+            },
+            enableHispital () {
+                this.$post('/admin/hospital/save', { id: this.currentId, status: 'normal' }, response => {
+                    if (response.success) {
+                        this.$Message.info('启用成功');
+                        this.getHispitalList();
+                    }
+                });
             }
         },
         created () {
