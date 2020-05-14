@@ -109,7 +109,7 @@ service.interceptors.response.use(
     error => {
         if (error && error.response) {
             switch (error.response.status) {
-            case 400: error.message = '请求错误'; break;
+            case 400: error.message = (error.response.data && error.response.data.message) || '请求错误'; break;
             case 401: error.message = '未授权，请登录';
                       if (!isAlert) {
                           alert('未授权，请登录')
