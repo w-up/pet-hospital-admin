@@ -32,11 +32,13 @@
             <i-menu-head v-if="headerMenu && isMobile" />
               <i-header-notice v-if="showNotice" />
             <i-header-more />
-            <i-header-log v-if="isDesktop && showLog" />
+                  <i-header-logout />
+            <span style="padding:0px 0px 0px 12px">当前医院：{{hospitalName}}</span>
+            <!-- <i-header-log v-if="isDesktop && showLog" /> -->
             <i-header-fullscreen v-if="isDesktop && showFullscreen" />
             <!-- <i-header-user /> -->
-            <i-header-i18n v-if="showI18n" />
-            <i-header-setting v-if="enableSetting && !isMobile" />
+            <!-- <i-header-i18n v-if="showI18n" />
+            <i-header-setting v-if="enableSetting && !isMobile" /> -->
           </div>
         </Header>
       </transition>
@@ -71,6 +73,7 @@
     import iHeaderFullscreen from './header-fullscreen';
     import iHeaderNotice from './header-notice';
     import iHeaderMore from './header-more';
+    import iHeaderLogout from './header-logout';
     import iHeaderUser from './header-user';
     import iHeaderI18n from './header-i18n';
     import iHeaderSetting from './header-setting';
@@ -100,6 +103,7 @@
             iHeaderSetting,
             iHeaderNotice,
             iHeaderMore,
+            iHeaderLogout,
             iTabs
         },
         data () {
@@ -109,7 +113,8 @@
                 headerVisible: true,
                 oldScrollTop: 0,
                 isDelayHideSider: false, // hack，当从隐藏侧边栏的 header 切换到正常 header 时，防止 Logo 抖动
-                loadRouter: true
+                loadRouter: true,
+                hospitalName: ''
             };
         },
         computed: {
@@ -226,6 +231,11 @@
             }
         },
         methods: {
+            getHispitalDetail () {
+                this.$get('/admin/hospital/myhospital', {}, response => {
+                    this.hospitalName = response.data.name;
+                })
+            },
             ...mapMutations('admin/layout', ['updateMenuCollapse']),
             ...mapMutations('admin/page', ['keepAlivePush', 'keepAliveRemove']),
             handleToggleDrawer (state) {
@@ -285,6 +295,7 @@
         },
         mounted () {
             document.addEventListener('scroll', this.handleScroll, { passive: true });
+            this.getHispitalDetail();
         },
         beforeDestroy () {
             document.removeEventListener('scroll', this.handleScroll);

@@ -14,7 +14,7 @@ export default {
             },
             logout: {
                 confirmTitle: '退出登录确认',
-                confirmContent: '您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。'
+                confirmContent: '您确定退出登录当前账户吗？'
             },
             tabs: {
                 left: '关闭左侧',
@@ -37,7 +37,7 @@ export default {
             },
             logout: {
                 confirmTitle: 'Logout confirmation',
-                confirmContent: 'Are you sure you are logged out of your current account? Open tabs and personal settings will be saved.'
+                confirmContent: 'Are you sure you are logged out of your current account?'
             },
             tabs: {
                 left: 'Close left',
