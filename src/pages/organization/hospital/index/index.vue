@@ -379,7 +379,7 @@
                     this.currentId = response.data.id
                 });
             },
-            getHispitalList () {
+            getHospitalList () {
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalListData = response.data.data;
                     if (this.currentId == null || this.currentId === '') {
@@ -400,7 +400,7 @@
                                 this.currentId = response.data.id
                                 this.data.id = response.data.id
                                 this.$Message.info('保存成功');
-                                this.getHispitalList();
+                                this.getHospitalList();
                             }
                             this.loading = false;
                         });
@@ -464,7 +464,7 @@
                     response => {
                         this.$Message.info('删除成功');
                         this.currentId = ''
-                        this.getHispitalList()
+                        this.getHospitalList()
                     }
                 );
             },
@@ -479,15 +479,15 @@
                 this.$post('/admin/hospital/save', { id: this.currentId, status: 'termination' }, response => {
                     if (response.success) {
                         this.$Message.info('停用成功');
-                        this.getHispitalList();
+                        this.getHospitalList();
                     }
                 });
             },
-            enableHispital () {
-                this.$post('/admin/hospital/save', { id: this.currentId, status: 'actived' }, response => {
+            enableHispital (id) {
+                this.$post('/admin/hospital/save', { id: id, status: 'actived' }, response => {
                     if (response.success) {
                         this.$Message.info('启用成功');
-                        this.getHispitalList();
+                        this.getHospitalList();
                     }
                 });
             },
@@ -505,7 +505,7 @@
         },
         mounted () {
             this.getHispitalDetail();
-            this.getHispitalList();
+            this.getHospitalList();
         }
     };
 </script>
