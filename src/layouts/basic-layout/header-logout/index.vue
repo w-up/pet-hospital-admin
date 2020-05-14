@@ -1,8 +1,8 @@
 <template>
   <div class="i-layout-header-trigger i-layout-header-trigger-min" @click="handelLogout" style="padding:0 0 0 6px">
-    <Button type="primary" size="small" class="native-smalll-button">退出</Button>
+    <Button type="primary" size="small">退出</Button>
   </div>
-</template>handelLogout
+</template>
 <script>
     import { mapState, mapActions } from 'vuex';
     export default {
