@@ -197,6 +197,8 @@
                     if (valid) {
                         this.$post('/admin/district/save', this.data, response => {
                             if (response.success) {
+                                this.currentId = response.data.id
+                                this.data.id = response.data.id
                                 this.$Message.info('保存成功');
                                 this.getDistrictList();
                             }

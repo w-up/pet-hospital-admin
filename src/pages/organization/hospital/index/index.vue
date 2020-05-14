@@ -249,7 +249,7 @@
                         type="primary"
                         :loading="loading"
                         @click="handleSubmit"
-                      >{{isAdd?'保存':'编辑'}}</Button>
+                      >{{data.id?'编辑':'保存'}}</Button>
                     </Col>
                   </Row>
                 </Form>
@@ -267,7 +267,6 @@
         name: 'list-table-list',
         data () {
             return {
-                isAdd: false,
                 currentId: '',
                 hospitalListData: [],
                 resource: this.$store.state.admin.user.resource,
@@ -357,7 +356,6 @@
         methods: {
             showHospital (item) {
                 this.data = item;
-                this.isAdd = false;
                 this.$refs.licenseUrl.clearFiles();
                 this.$refs.logoUrl.clearFiles();
                 this.$refs.idCardFrontUrl.clearFiles();
@@ -365,7 +363,6 @@
             },
             addHospital () {
                 this.data = {};
-                this.isAdd = true;
             },
             getHispitalDetail () {
                 this.$get('/admin/hospital/myhospital', {}, response => {
@@ -377,7 +374,13 @@
             getHispitalList () {
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalListData = response.data.data;
-                    // this.currentId = this.hospitalListData && this.hospitalListData[0].id;
+                    if (this.currentId == null || this.currentId === '') {
+                        this.currentId =
+                            this.hospitalListData && this.hospitalListData[0].id;
+                        this.data = JSON.parse(
+                            JSON.stringify(this.hospitalListData && this.hospitalListData[0])
+                        );
+                    }
                 });
             },
             handleSubmit () {
@@ -385,8 +388,9 @@
                     this.loading = true;
                     if (valid) {
                         this.$post('/admin/hospital/save', this.data, response => {
-                            console.log(response);
                             if (response.success) {
+                                this.currentId = response.data.id
+                                this.data.id = response.data.id
                                 this.$Message.info('保存成功');
                                 this.getHispitalList();
                             }
