@@ -1,5 +1,5 @@
 <template>
-  <div class="i-layout-header-trigger i-layout-header-trigger-min">
+  <div class="i-layout-header-trigger i-layout-header-trigger-min" style="padding:0 0 0 6px">
     <Poptip width="100" placement="bottom" class="morePoptip">
       <Button type="info" size="small">更多</Button>
       <div class="api" slot="content">

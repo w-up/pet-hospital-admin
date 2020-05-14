@@ -1,6 +1,6 @@
 <template>
-  <div class="i-layout-header-trigger i-layout-header-trigger-min" @click="showNewsModal=true">
-    <Button type="primary" size="small">消息</Button>
+  <div class="i-layout-header-trigger i-layout-header-trigger-min" @click="showNewsModal=true" style="padding:0">
+    <Button type="success" size="small">消息</Button>
     <Modal v-model="showNewsModal" title="消息通信" class="newsModal" width="700px">
       <Row>
         <Col span="5" style="border-right: 1px solid #e8eaec;">
