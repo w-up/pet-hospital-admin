@@ -32,11 +32,14 @@
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
-            <Col span="12" class="ivu-text-center">
+            <Col span="8" class="ivu-text-center">
               <Button type="success" @click="handleOpenCreateType">+添加分类</Button>
             </Col>
-            <Col span="12" class="ivu-text-center">
-              <Button type="error">删除分类</Button>
+            <Col span="8" class="ivu-text-center">
+              <Button type="info" @click="handleEditType">编辑分类</Button>
+            </Col>
+            <Col span="8" class="ivu-text-center">
+              <Button type="error" @click="handleRemoveType">删除分类</Button>
             </Col>
           </Row>
         </Card>
@@ -76,14 +79,14 @@
       ref="checkTypeModal"
       v-model="showCheckTypeModal"
       :loading="true"
-      title="添加分类"
+      :title="isAddType?'添加分类':'编辑分类'"
       @on-ok="addCheckType"
     >
       <Form ref="checkTypeForm" :label-width="180" :model="checkTypeData" :rules="checkTypeRules">
         <FormItem label="分类名称" prop="name">
           <Input style="width: 150px" v-model="checkTypeData.name" />
         </FormItem>
-        <RadioGroup v-model="checkTypeData.hasReference">
+        <RadioGroup v-model="checkTypeData.hasReference" v-if="isAddType">
           <FormItem label="结果类型" style="margin-bottom: 0px;">
             <Radio label="true">有参考值范围结果类型</Radio>
           </FormItem>
@@ -224,12 +227,17 @@
         </Form>
       </Row>
     </Modal>
+     <Modal title="删除" v-model="removeModal" @on-ok="handleRemove">
+      <div>确认删除吗？</div>
+    </Modal>
   </div>
 </template>
 <script>
     export default {
         data () {
             return {
+                isAddType: true,
+                removeModal: false,
                 ageGroupList: ['childhood', 'adult', 'oldage'],
                 ageGroupChList: ['幼年', '成年', '老年'],
                 speciesKeyList: ['dog', 'cat', 'other'],
@@ -502,11 +510,22 @@
                 });
             },
             handleOpenCreateType () {
+                this.isAddType = true
                 this.$refs.checkTypeForm.resetFields();
                 this.checkTypeData = {
                     name: '',
-                    hasReference: 1
+                    hasReference: 'true'
                 };
+                this.showCheckTypeModal = true;
+            },
+            handleEditType () {
+                if (this.currentCheckTypeData.id == null || this.currentCheckTypeData.id === '') {
+                    this.$Message.error('请选择要修改的数据');
+                    return false;
+                }
+                this.isAddType = false
+                this.$refs.checkTypeForm.resetFields();
+                this.checkTypeData = JSON.parse(JSON.stringify(this.currentCheckTypeData))
                 this.showCheckTypeModal = true;
             },
             addCheckType () {
@@ -527,6 +546,24 @@
                     } else {
                     }
                 });
+            },
+            // 移除分类
+            handleRemoveType () {
+                if (this.currentCheckTypeData.id == null || this.currentCheckTypeData.id === '') {
+                    this.$Message.error('请选择要删除的数据');
+                    return false;
+                }
+                this.removeModal = true;
+            },
+            handleRemove () {
+                this.$get(
+                    '/admin/general/checkSetting/remove/' + this.currentCheckTypeData.id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getCheckList();
+                    }
+                );
             },
             createOtherType () {
                 // 保存无参考值的
