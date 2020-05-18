@@ -114,7 +114,7 @@
                 oldScrollTop: 0,
                 isDelayHideSider: false, // hack，当从隐藏侧边栏的 header 切换到正常 header 时，防止 Logo 抖动
                 loadRouter: true,
-                hospitalName: this.$store.state.hospitalName
+                hospitalName: ''
             };
         },
         computed: {
@@ -231,6 +231,11 @@
             }
         },
         methods: {
+            getHispitalDetail () {
+                this.$get('/admin/hospital/myhospital', {}, response => {
+                    this.hospitalName = response.data.name;
+                })
+            },
             ...mapMutations('admin/layout', ['updateMenuCollapse']),
             ...mapMutations('admin/page', ['keepAlivePush', 'keepAliveRemove']),
             handleToggleDrawer (state) {
@@ -290,6 +295,7 @@
         },
         mounted () {
             document.addEventListener('scroll', this.handleScroll, { passive: true });
+            this.getHispitalDetail();
         },
         beforeDestroy () {
             document.removeEventListener('scroll', this.handleScroll);
