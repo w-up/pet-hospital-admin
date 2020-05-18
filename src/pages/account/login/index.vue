@@ -58,19 +58,32 @@
                     };
                     request({ url: '/server/sso/auth/login', method: 'post', data }).then(
                         res => {
-                            console.log(res.token);
                             util.cookies.set('token', res.token);
                             // 首次登录需要重新赋值
                             this.$store.state.admin.user.headers = {
                                 'X-TENANT-ID': 'jiawen:pethos@2020',
                                 authorization: 'Bearer ' + res.token
                             };
-                            this.$Message.info('登录成功！');
-                            // 重定向对象不存在则返回顶层路径
-                            this.$router.replace(this.$route.query.redirect || '/');
+                            this.getMyhospital()
                         }
                     );
                 }
+            },
+            getMyhospital () {
+                this.$get('/admin/hospital/myhospital', {}, response => {
+                    if (response.data.status.code === 'termination') {
+                        this.$Message.error(response.data.name + '医院已停用，请联系管理员重新启用！');
+                        return false
+                    }
+                    if (response.data.adminType) { // 总部端，如果adminType为true时，允许登录，如果不为true，则提示登录医院端
+                        this.$Message.info('登录成功！');
+                        this.$store.commit('setHospitalName', response.data.name);
+                        // 重定向对象不存在则返回顶层路径
+                        this.$router.replace(this.$route.query.redirect || '/');
+                    } else {
+                        this.$Message.error('请登录医院端');
+                    }
+                })
             }
         }
     };
