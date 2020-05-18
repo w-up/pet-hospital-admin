@@ -10,12 +10,8 @@ const store = new Vuex.Store({
         admin
     },
     state: {
-        hospitalName: ''
     },
     mutations: {
-        setHospitalName (state, name) {
-            state.hospitalName = name
-        }
     }
 });
 

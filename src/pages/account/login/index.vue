@@ -77,7 +77,6 @@
                     }
                     if (response.data.adminType) { // 总部端，如果adminType为true时，允许登录，如果不为true，则提示登录医院端
                         this.$Message.info('登录成功！');
-                        this.$store.commit('setHospitalName', response.data.name);
                         // 重定向对象不存在则返回顶层路径
                         this.$router.replace(this.$route.query.redirect || '/');
                     } else {
