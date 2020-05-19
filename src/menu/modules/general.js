@@ -47,6 +47,10 @@ export default {
             title: '病情分类'
         },
         {
+            path: `${pre}check-position`,
+            title: '体位管理'
+        },
+        {
             path: `${pre}position`,
             title: '职位设置'
         },

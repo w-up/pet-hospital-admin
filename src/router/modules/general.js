@@ -116,6 +116,15 @@ export default {
             component: () => import('@/pages/general/record-classification')
         },
         {
+            path: 'check-position',
+            name: `${pre}check-position`,
+            meta: {
+                ...meta,
+                title: '体位管理'
+            },
+            component: () => import('@/pages/general/check-position')
+        },
+        {
             path: 'position',
             name: `${pre}position`,
             meta: {
