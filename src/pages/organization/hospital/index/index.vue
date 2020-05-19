@@ -395,6 +395,7 @@
                 this.$refs.form.validate(valid => {
                     this.loading = true;
                     if (valid) {
+                        delete this.data.status
                         this.$post('/admin/hospital/save', this.data, response => {
                             if (response.success) {
                                 this.currentId = response.data.id
