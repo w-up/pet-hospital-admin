@@ -268,6 +268,7 @@
   </div>
 </template>
 <script>
+    import rules from '@/api/rules.js'
     import util from '@/libs/util';
     export default {
         name: 'list-table-list',
@@ -341,12 +342,7 @@
                     ],
                     managerTel: [
                         { required: true, message: '请输入院长电话', trigger: 'blur' },
-                        {
-                            type: 'string',
-                            pattern: /^\d+$/,
-                            message: '请输入数字',
-                            trigger: 'change'
-                        }
+                        { validator: rules.FormValidate.Form().validateMobile, trigger: 'blur' }
                     ],
                     addressDetail: [
                         { max: 200, message: '详细地址不得超过200个字符', trigger: 'change' }

@@ -109,6 +109,7 @@
   </div>
 </template>
 <script>
+    import rules from '@/api/rules.js'
     export default {
         name: 'district-list',
         inject: ['reload'],
@@ -147,12 +148,7 @@
                     ],
                     tel: [
                         { required: true, message: '请输入联系电话', trigger: 'blur' },
-                        {
-                            type: 'string',
-                            pattern: /^\d+$/,
-                            message: '请输入数字',
-                            trigger: 'change'
-                        }
+                        { validator: rules.FormValidate.Form().validateMobile, trigger: 'blur' }
                     ],
                     password: [
                         { required: true, message: '请输入登录密码', trigger: 'blur' }
