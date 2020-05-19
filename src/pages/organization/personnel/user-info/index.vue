@@ -80,9 +80,12 @@
                   <Input v-model="userInfo.code" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="授业恩师" prop="master">
-                  <Select v-model="userInfo.master" placeholder="请选择" element-id="master">
-                    <Option value="张三">张三</Option>
-                    <Option value="李四">李四</Option>
+                  <Select v-model="userInfo.masterId" :label-in-value='true' placeholder="请选择" @on-change="setMasterName">
+                    <Option
+                      v-for="(it, index) in masterList"
+                      :key="index"
+                      :value="it.id"
+                    >{{ it.name }}</Option>
                   </Select>
                 </FormItem>
                 <FormItem label="密码" prop="password">
@@ -117,6 +120,7 @@
         inject: ['reload'], // 注入App里的reload方法
         data () {
             return {
+                masterList: [],
                 treeOfUserData: [],
                 resource: this.$store.state.admin.user.resource,
                 headers: this.$store.state.admin.user.headers,
@@ -240,11 +244,15 @@
             getChild (data, selectedNode) {
                 this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
                 this.userInfo = data[0]
+                this.getMasterList(data[0].hospitalId)
                 if (!this.userInfo.position) {
                     this.userInfo.position = {
                         code: ''
                     }
                 }
+            },
+            setMasterName (obj) {
+                this.userInfo.masterName = obj.label
             },
             handleHeaderUrlSuccess (response, file, fileList) {
                 this.$set(this.userInfo, 'portrait', response.data);
@@ -275,8 +283,8 @@
                     // 处理左侧树数据
                     for (var i = 0; i < rtn.length; i++) {
                         var obj = {};
-                        obj.title = rtn[i].name;
-                        obj.expand = true;
+                        obj.title = rtn[i].name + '(' + rtn[i].userBo.data.length + ')';
+                        obj.expand = false;// 树默认不展开
                         obj.minWidth = 84;
                         var childrenList = [];
                         for (var j = 0; j < rtn[i].userBo.data.length; j++) {
@@ -286,6 +294,9 @@
                                 '(' +
                                 (rtn[i].userBo.data[j].position ? rtn[i].userBo.data[j].position.name : '') +
                                 ')';
+                            if (rtn[i].userBo.data[j].master) {
+                                child.masterId = rtn[i].userBo.data[j].master.id
+                            }
                             childrenList.push(child);
                         }
                         obj.children = childrenList;
@@ -303,6 +314,7 @@
                         this.userInfo.type = 'employee';
                         this.userInfo.positionCode = this.userInfo.position.code;
                         delete this.userInfo.position;
+                        delete this.userInfo.master;
                         this.$post('/admin/user/save', this.userInfo, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
@@ -318,6 +330,11 @@
             getPositonList () {
                 this.$get('/admin/user/position/page', {}, response => {
                     this.positionList = response.data.data;
+                });
+            },
+            getMasterList (hospitalId) {
+                this.$get('/admin/user/page?hospitalId=' + hospitalId, {}, response => {
+                    this.masterList = response.data.data;
                 });
             }
         },
