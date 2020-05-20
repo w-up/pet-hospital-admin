@@ -89,7 +89,7 @@
                   </Select>
                 </FormItem>
                 <FormItem label="密码" prop="password">
-                  <Input v-model="userInfo.password" placeholder="请输入" />
+                  <Input v-model="userInfo.password" placeholder="请输入" type="password" password/>
                 </FormItem>
                 <FormItem label="备注" prop="count" label-for="count">
                   <Input v-model="userInfo.remark" type="textarea" placeholder="请输入" />
