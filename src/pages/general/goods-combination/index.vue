@@ -38,7 +38,7 @@
               <Button type="primary" @click="openEditCombi">修改</Button>
             </Col>
             <Col span="8" class="ivu-text-center">
-              <Button type="error">删除</Button>
+              <Button type="error" @click="removeModal=true">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -52,13 +52,13 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
-              <Table border :columns="combiDetailColumns" :data="combiDetailData"></Table>
+              <Table ref="goodsTable" border :columns="combiDetailColumns" :data="combiDetailData"></Table>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-left">
               <Button type="warning" @click="handleAddGoodsModal">+组合/修改</Button>
-              <Button type="error">删除</Button>
+              <Button type="error" @click="removeGoods">删除</Button>
             </Col>
           </Row>
         </Card>
@@ -73,6 +73,9 @@
         </FormItem>
       </Form>
     </Modal>
+    <Modal title="删除" v-model="removeModal" @on-ok="handleRemove">
+      <div>确认删除吗？</div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -81,6 +84,7 @@
         components: { addGoods },
         data () {
             return {
+                removeModal: false,
                 isloadinglist: true,
                 tabObj: {},
                 currentTabName: '',
@@ -392,6 +396,49 @@
             };
         },
         methods: {
+            handleRemove () {
+                if (!this.currentGoodsData.id) {
+                    this.$Message.error('请选择需要删除的数据');
+                    return false;
+                }
+                this.$get(
+                    '/admin/goods/combination/remove/' + this.currentGoodsData.id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getLeftGoodsList();
+                    }
+                );
+            },
+            removeGoods () {
+                var selectIds = this.$refs.goodsTable.getSelection();
+                var ids = [];
+                if (selectIds.length > 0) {
+                    selectIds.forEach(element => {
+                        ids.push(element.id);
+                    });
+                    this.$get(
+                        '/admin/goods/combination/detail/remove',
+                        { ids: ids },
+                        response => {
+                            this.$Message.info('删除成功');
+                            this.getCombiDetailList();
+                        }
+                    );
+                } else {
+                    this.$Message.error('请选择数据');
+                }
+            },
+            removeGoodsInSon (ids) {
+                this.$get(
+                    '/admin/goods/combination/detail/remove',
+                    { ids: ids },
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getCombiDetailList();
+                    }
+                );
+            },
             switchList (item) {
                 this.currentGoodsData = JSON.parse(JSON.stringify(item))
                 this.getCombiDetailList()
@@ -483,6 +530,7 @@
                 if (list.length > 0) {
                     for (var i = 0; i < list.length; i++) {
                         var obj = {}
+                        obj.id = list[i].id ? list[i].id : ''
                         obj.combinationId = this.currentGoodsData.id
                         obj.goodsId = list[i].goodsId
                         obj.num = list[i].num
@@ -511,7 +559,7 @@
                     this.$Message.error('左侧商品组合列表无数据');
                     return false
                 }
-                this.combiDetailData = []
+                // this.combiDetailData = []
                 this.$refs.addGoods.handleAddGoodsModal();
             },
             handelReload () {

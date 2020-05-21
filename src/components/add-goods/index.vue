@@ -285,7 +285,11 @@
             },
             removeSelect () {
                 var selectIds = this.$refs.addGoodsTable.getSelection();
+                var delIds = []
                 selectIds.forEach(element => {
+                    if (element.id) {
+                        delIds.push(element.id)
+                    }
                     let arr = []
                     if (this.isFormCombi) {
                         arr = this.goodsList.map(item => item.goodsId);
@@ -295,10 +299,12 @@
                         this.goodsList.splice(arr.indexOf(element.id), 1);
                     }
                 });
+                if (delIds.length > 0 && isFormCombi) {
+                    this.$parent.removeGoodsInSon(delIds)
+                }
             },
             addGoods () {
                 this.addGoodsModal = false;
-                console.log(this.goodsList)
                 this.$parent.getGoodsList(this.goodsList);
             }
         }
