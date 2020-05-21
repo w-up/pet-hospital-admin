@@ -299,7 +299,7 @@
                         this.goodsList.splice(arr.indexOf(element.id), 1);
                     }
                 });
-                if (delIds.length > 0 && isFormCombi) {
+                if (delIds.length > 0 && this.isFormCombi) {
                     this.$parent.removeGoodsInSon(delIds)
                 }
             },
