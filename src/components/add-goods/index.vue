@@ -132,6 +132,7 @@
                     {
                         title: '操作',
                         minWidth: 84,
+                        fixed: 'right',
                         render: (h, params) => {
                             return h('div', [
                                 h(
