@@ -1050,10 +1050,11 @@
             },
             handleAddGoodsModal () {
                 // 父组件需要调用
-                this.$refs.addGoodsForm.resetFields();
+                // this.$refs.addGoodsForm.resetFields();
                 this.addGoodsForm.id = '';
-                this.addGoodsModal = true;
                 this.showTab = null
+                this.addType = 'goods'
+                this.addGoodsModal = true;
             },
             handleEditPackageModal (id) {
                 this.getGoodsDetail(id);
