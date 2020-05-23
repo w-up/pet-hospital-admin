@@ -118,6 +118,20 @@
                           </Col>
                         </Col>
                         <Col span="7">
+                           <FormItem label="所属大区" prop="districtId">
+                              <Select v-model="data.districtId">
+                      <Option
+                        v-for="(it, index) in districtList"
+                        :key="index"
+                        :value="it.id"
+                      >{{ it.name }}</Option>
+                    </Select>
+                          </FormItem>
+                        </Col>
+                           <Col span="17">
+                        <p style="color:white">nothing</p>
+                        </Col>
+                        <Col span="7">
                           <FormItem label="地址" prop="country">
                             <Select v-model="data.country" placeholder="请选择">
                               <Option value="0">中国</Option>
@@ -142,8 +156,8 @@
                           </FormItem>
                         </Col>
                         <Col span="6">
-                          <FormItem label prop="district" :label-width="0">
-                            <Select v-model="data.district" placeholder="请选择">
+                          <FormItem label prop="area" :label-width="0">
+                            <Select v-model="data.area" placeholder="请选择">
                               <Option value="0">黄浦区</Option>
                               <Option value="1">美国</Option>
                             </Select>
@@ -310,7 +324,8 @@
                     country: '',
                     province: '',
                     city: '',
-                    district: '',
+                    area: '',
+                    districtId: '',
                     addressDetail: '',
                     licenseUrl: '',
                     idCardFrontUrl: '',
@@ -347,7 +362,8 @@
                     addressDetail: [
                         { max: 200, message: '详细地址不得超过200个字符', trigger: 'change' }
                     ]
-                }
+                },
+                districtList: []
             };
         },
         computed: {
@@ -375,6 +391,11 @@
                     this.currentId = response.data.id
                 });
             },
+            getDistrictList () {
+                this.$get('/admin/district/page', {}, response => {
+                    this.districtList = response.data.data;
+                });
+            },
             getHospitalList () {
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalListData = response.data.data;
@@ -399,11 +420,10 @@
                                 this.$Message.info('保存成功');
                                 this.getHospitalList();
                             }
-                            this.loading = false;
                         });
                     } else {
-                        this.loading = false;
                     }
+                    this.loading = false;
                 });
             },
             handleFileFormatErr (file) {
@@ -496,13 +516,11 @@
         },
         created () {
             this.token = util.cookies.get('token');
-            console.log(this.token);
-            console.log(this.$store.state.admin.user.resource);
-            console.log(this.$store.state.admin.user.headers);
         },
         mounted () {
             this.getHispitalDetail();
             this.getHospitalList();
+            this.getDistrictList();
         }
     };
 </script>
