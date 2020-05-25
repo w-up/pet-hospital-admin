@@ -527,6 +527,8 @@
             handleAdd () {
                 this.$refs.marketingForm.resetFields();
                 this.marketingForm.id = ''
+                this.goodsList = []
+                this.joinHospitals = []
             },
             getDateRange (e) {
                 if (e != null && e.length > 1) {
