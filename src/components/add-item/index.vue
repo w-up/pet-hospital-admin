@@ -1258,34 +1258,74 @@
             getPetSpeciesList () {
                 this.$get('/admin/pet/species/search', { limit: 100 }, response => {
                     this.petSpeciesList = response.data;
+
+                    this.addGoodsDosageForm.goodsDosageList = [];
+
+                    let arr = this.addGoodsDosageForm.goodsDosageList.map(
+                        item => item.speciesId
+                    );
+                    this.petSpeciesList.forEach(element => {
+                        if (arr.indexOf(element.id) === -1) {
+                            this.addGoodsDosageForm.goodsDosageList.push({
+                                id: '',
+                                goodsId: this.addGoodsForm.id,
+                                speciesId: element.id,
+                                speciesName: element.name,
+                                consume: '',
+                                upperLimit: '',
+                                lowerLimit: ''
+                            });
+                        }
+                    });
                 });
             },
             // 获取商品用法列表
             getGoodsDosageList () {
-                this.$get(
-                    '/admin/goods/dosage/search',
-                    { limit: 100, goodsId: this.addGoodsForm.id },
-                    response => {
-                        this.addGoodsDosageForm.goodsDosageList = response.data;
+                if (this.addGoodsForm.id) {
+                    this.$get(
+                        '/admin/goods/dosage/search',
+                        { limit: 100, goodsId: this.addGoodsForm.id },
+                        response => {
+                            this.addGoodsDosageForm.goodsDosageList = response.data;
 
-                        let arr = this.addGoodsDosageForm.goodsDosageList.map(
-                            item => item.speciesId
-                        );
-                        this.petSpeciesList.forEach(element => {
-                            if (arr.indexOf(element.id) === -1) {
-                                this.addGoodsDosageForm.goodsDosageList.push({
-                                    id: '',
-                                    goodsId: this.addGoodsForm.id,
-                                    speciesId: element.id,
-                                    speciesName: element.name,
-                                    consume: '',
-                                    upperLimit: '',
-                                    lowerLimit: ''
-                                });
-                            }
-                        });
-                    }
-                );
+                            let arr = this.addGoodsDosageForm.goodsDosageList.map(
+                                item => item.speciesId
+                            );
+                            this.petSpeciesList.forEach(element => {
+                                if (arr.indexOf(element.id) === -1) {
+                                    this.addGoodsDosageForm.goodsDosageList.push({
+                                        id: '',
+                                        goodsId: this.addGoodsForm.id,
+                                        speciesId: element.id,
+                                        speciesName: element.name,
+                                        consume: '',
+                                        upperLimit: '',
+                                        lowerLimit: ''
+                                    });
+                                }
+                            });
+                        }
+                    );
+                } else {
+                    this.addGoodsDosageForm.goodsDosageList = []
+
+                    let arr = this.addGoodsDosageForm.goodsDosageList.map(
+                        item => item.speciesId
+                    );
+                    this.petSpeciesList.forEach(element => {
+                        if (arr.indexOf(element.id) === -1) {
+                            this.addGoodsDosageForm.goodsDosageList.push({
+                                id: '',
+                                goodsId: this.addGoodsForm.id,
+                                speciesId: element.id,
+                                speciesName: element.name,
+                                consume: '',
+                                upperLimit: '',
+                                lowerLimit: ''
+                            });
+                        }
+                    });
+                }
             },
             // 删除处方用法
             deleteUsage (id) {
@@ -1595,11 +1635,11 @@
         },
         watch: {
             'addGoodsForm.id': function (newVal, oldVal) {
+                this.getGoodsDosageList(); // 商品用法
                 if (oldVal !== newVal && newVal != null && newVal !== '') {
                     // 编辑/添加完赋值时
                     this.getGoodsSupplierList(); // 商品来源
                     this.getGoodsExpiryDateList(); // 有效期
-                    this.getGoodsDosageList(); // 商品用法
                 }
             }
         }
