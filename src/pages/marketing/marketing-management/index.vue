@@ -241,6 +241,15 @@
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Table border :columns="goodsColumnsParent" :data="goodsList"></Table>
+                   <div class="ivu-mt ivu-text-right">
+          <Page
+            :total="total"
+            :show-elevator="total/10>9"
+            :pageSize="10"
+            @on-change="getCheckList"
+            :current.sync="current"
+          />
+        </div>
               </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
@@ -337,10 +346,13 @@
                 }
             };
             return {
+                total: 0,
+                current: 1,
                 marketingList: [],
                 goodsColumnsParent: [
                     {
                         title: '序号',
+                        minWidth: 84,
                         type: 'index'
                     },
                     {
