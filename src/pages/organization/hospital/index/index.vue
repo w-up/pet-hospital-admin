@@ -57,7 +57,7 @@
         <Card>
           <Row type="flex" justify="center" align="top" class-name="module-title-wrapper">
             <Col span="24">
-              <span class="module-title">医院信息</span>
+              <span class="module-title">医院信息（注：上传文件大小最大为10M）</span>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
