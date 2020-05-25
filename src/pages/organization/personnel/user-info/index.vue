@@ -148,7 +148,9 @@
                     position: {
                         code: ''
                     },
-                    master: '张三'
+                    master: '',
+                    code: '',
+                    password: ''
                 },
                 columns1: [
                     {
@@ -297,6 +299,18 @@
                             if (rtn[i].userBo.data[j].master) {
                                 child.masterId = rtn[i].userBo.data[j].master.id
                             }
+                            if (localStorage.currentUserIdForUserInfo && localStorage.currentUserIdForUserInfo === rtn[i].userBo.data[j].id) {
+                                child.selected = true
+                                obj.expand = true
+
+                                this.userInfo = child
+                                this.getMasterList(child.hospitalId)
+                                if (!this.userInfo.position) {
+                                    this.userInfo.position = {
+                                        code: ''
+                                    }
+                                }
+                            }
                             childrenList.push(child);
                         }
                         obj.children = childrenList;
@@ -318,6 +332,7 @@
                         this.$post('/admin/user/save', this.userInfo, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
+                                localStorage.currentUserIdForUserInfo = this.userInfo.id
                                 this.reload()// 调用局部刷新方法
                             } else {
                                 this.$Message.error(response.message);
