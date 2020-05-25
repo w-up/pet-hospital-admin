@@ -25,7 +25,12 @@
                     <p>
                       医院名称：{{ item.name }}
                       <span style="margin-left: 7px">
-                        <Button size="small" type="success" @click="enableHispital(item.id)" v-if="item.status&&item.status.code==='termination'">启用</Button>
+                        <Button
+                          size="small"
+                          type="success"
+                          @click="enableHispital(item.id)"
+                          v-if="item.status&&item.status.code==='termination'"
+                        >启用</Button>
                       </span>
                     </p>
                     <p>院长：{{ item.contactor }}</p>
@@ -100,7 +105,7 @@
                         </Col>
                         <Col span="24">
                           <Col span="2" class="ivu-text-right ivu-text-item">
-                              <Checkbox v-model="data.ifShortMessage"></Checkbox>
+                            <Checkbox v-model="data.ifShortMessage"></Checkbox>
                           </Col>
                           <Col span="12">
                             <FormItem label="短信医院名称">
@@ -118,18 +123,18 @@
                           </Col>
                         </Col>
                         <Col span="7">
-                           <FormItem label="所属大区" prop="districtId">
-                              <Select v-model="data.districtId">
-                      <Option
-                        v-for="(it, index) in districtList"
-                        :key="index"
-                        :value="it.id"
-                      >{{ it.name }}</Option>
-                    </Select>
+                          <FormItem label="所属大区" prop="districtId">
+                            <Select v-model="data.districtId">
+                              <Option
+                                v-for="(it, index) in districtList"
+                                :key="index"
+                                :value="it.id"
+                              >{{ it.name }}</Option>
+                            </Select>
                           </FormItem>
                         </Col>
-                           <Col span="17">
-                        <p style="color:white">nothing</p>
+                        <Col span="17">
+                          <p style="color:white">nothing</p>
                         </Col>
                         <Col span="7">
                           <FormItem label="地址" prop="country">
@@ -233,6 +238,23 @@
                             </Upload>
                           </FormItem>
                         </Col>
+                        <Col span="24">
+                          <FormItem label="其他附件信息" class="hospital-img">
+                            <Upload
+                              ref="otherFileUrl"
+                              :action="resource"
+                              :headers="headers"
+                              :max-size="1024*10"
+                              :default-file-list="otherFileList"
+                              :on-success="handleOtherUrlSuccess"
+                              :on-exceeded-size="handleFileSizeErr"
+                              :on-remove="handleOtherUrlRemove"
+                              :on-preview="handleDownload"
+                            >
+                              <Button type="success">上传</Button>
+                            </Upload>
+                          </FormItem>
+                        </Col>
                       </Row>
                     </Col>
                     <Col span="4" class="ivu-text-center">
@@ -273,22 +295,24 @@
         </Card>
       </Col>
     </Row>
-     <Modal title="删除" v-model="removeModal" @on-ok="removeHospita">
+    <Modal title="删除" v-model="removeModal" @on-ok="removeHospita">
       <div>确认删除吗？</div>
     </Modal>
-        <Modal title="停用大区" v-model="disableModal" @on-ok="disableHospital">
+    <Modal title="停用大区" v-model="disableModal" @on-ok="disableHospital">
       <div>确认停用吗？</div>
     </Modal>
   </div>
 </template>
 <script>
-    import rules from '@/api/rules.js'
+    import rules from '@/api/rules.js';
     import util from '@/libs/util';
+    var FileSaver = require('file-saver');
     export default {
         name: 'list-table-list',
         inject: ['reload'],
         data () {
             return {
+                otherFileList: [],
                 removeModal: false,
                 disableModal: false,
                 currentId: '',
@@ -357,7 +381,10 @@
                     ],
                     managerTel: [
                         { required: true, message: '请输入院长电话', trigger: 'blur' },
-                        { validator: rules.FormValidate.Form().validateMobile, trigger: 'blur' }
+                        {
+                            validator: rules.FormValidate.Form().validateMobile,
+                            trigger: 'blur'
+                        }
                     ],
                     addressDetail: [
                         { max: 200, message: '详细地址不得超过200个字符', trigger: 'change' }
@@ -376,19 +403,25 @@
         },
         methods: {
             showHospital (item) {
-                this.data = JSON.parse(JSON.stringify(item))
+                this.data = JSON.parse(JSON.stringify(item));
                 this.$refs.licenseUrl.clearFiles();
                 this.$refs.logoUrl.clearFiles();
                 this.$refs.idCardFrontUrl.clearFiles();
                 this.$refs.idCardBackUrl.clearFiles();
+                this.$refs.otherFileUrl.clearFiles();
+                this.setOtherUrl(this.data);
             },
             addHospital () {
                 this.data = {};
+                this.data.names = [];
+                this.data.fileUrls = [];
+                this.otherFileList = [];
             },
             getHispitalDetail () {
                 this.$get('/admin/hospital/myhospital', {}, response => {
                     this.data = response.data;
-                    this.currentId = response.data.id
+                    this.setOtherUrl(this.data);
+                    this.currentId = response.data.id;
                 });
             },
             getDistrictList () {
@@ -399,12 +432,15 @@
             getHospitalList () {
                 this.$get('/admin/hospital/page', {}, response => {
                     this.hospitalListData = response.data.data;
-                    if (this.currentId == null || this.currentId === '') {
-                        this.currentId =
-                            this.hospitalListData && this.hospitalListData[0].id;
+                    if (
+                        (this.currentId == null || this.currentId === '') &&
+                        this.hospitalListData.length > 0
+                    ) {
+                        this.currentId = this.hospitalListData && this.hospitalListData[0].id;
                         this.data = JSON.parse(
                             JSON.stringify(this.hospitalListData && this.hospitalListData[0])
                         );
+                        this.setOtherUrl(this.data);
                     }
                 });
             },
@@ -412,11 +448,20 @@
                 this.$refs.form.validate(valid => {
                     this.loading = true;
                     if (valid) {
-                        delete this.data.status
+                        delete this.data.status;
+                        if (this.data.fileDetails) {
+                            delete this.data.fileDetails;
+                        }
+                        if (this.data.names && this.data.names.length === 0) {
+                            this.data.names = null;
+                        }
+                        if (this.data.fileUrls && this.data.fileUrls.length === 0) {
+                            this.data.fileUrls = null;
+                        }
                         this.$post('/admin/hospital/save', this.data, response => {
                             if (response.success) {
-                                this.currentId = response.data.id
-                                this.data.id = response.data.id
+                                this.currentId = response.data.id;
+                                this.data.id = response.data.id;
                                 this.$Message.info('保存成功');
                                 this.getHospitalList();
                             }
@@ -441,28 +486,35 @@
             },
             handleLicenseUrlSuccess (response, file, fileList) {
                 this.data.licenseUrl = response.data;
-                console.log(this.data.licenseUrl);
             },
             handleBeforeLicenseUrlUpload () {
                 this.$refs.licenseUrl.clearFiles();
             },
+            handleOtherUrlSuccess (response, file, fileList) {
+                this.data.names.push(file.name);
+                this.data.fileUrls.push(response.data);
+            },
+            handleOtherUrlRemove (file, fileList) {
+                this.data.names.splice(this.data.names.indexOf(file.name), 1);
+                this.data.fileUrls.splice(
+                    this.data.fileUrls.indexOf(file.url || file.response.data),
+                    1
+                );
+            },
             handleLogoUrlSuccess (response, file, fileList) {
                 this.data.logoUrl = response.data;
-                console.log(this.data.logoUrl);
             },
             handleBeforeLogoUrlUpload () {
                 this.$refs.logoUrl.clearFiles();
             },
             handleIdCardFrontUrlSuccess (response, file, fileList) {
                 this.data.idCardFrontUrl = response.data;
-                console.log(this.data.idCardFrontUrl);
             },
             handleBeforeIdCardFrontUrlUpload () {
                 this.$refs.idCardFrontUrl.clearFiles();
             },
             handleIdCardBackUrlSuccess (response, file, fileList) {
                 this.data.idCardBackUrl = response.data;
-                console.log(this.data.idCardBackUrl);
             },
             handleBeforeIdCardBackUrlUpload () {
                 this.$refs.idCardBackUrl.clearFiles();
@@ -475,15 +527,11 @@
                 this.removeModal = true;
             },
             removeHospita () {
-                this.$get(
-                    '/admin/hospital/remove/' + this.currentId,
-                    {},
-                    response => {
-                        this.$Message.info('删除成功');
-                        this.currentId = ''
-                        this.getHospitalList()
-                    }
-                );
+                this.$get('/admin/hospital/remove/' + this.currentId, {}, response => {
+                    this.$Message.info('删除成功');
+                    this.currentId = '';
+                    this.getHospitalList();
+                });
             },
             handleDisableHospital () {
                 if (this.currentId == null || this.currentId === '') {
@@ -493,25 +541,53 @@
                 this.disableModal = true;
             },
             disableHospital () {
-                this.$post('/admin/hospital/save', { id: this.currentId, status: 'termination' }, response => {
-                    if (response.success) {
-                        this.$Message.info('停用成功');
-                        this.getHospitalList();
+                this.$post(
+                    '/admin/hospital/save',
+                    { id: this.currentId, status: 'termination' },
+                    response => {
+                        if (response.success) {
+                            this.$Message.info('停用成功');
+                            this.getHospitalList();
+                        }
                     }
-                });
+                );
             },
             enableHispital (id) {
-                this.$post('/admin/hospital/save', { id: id, status: 'actived' }, response => {
-                    if (response.success) {
-                        this.$Message.info('启用成功');
-                        this.getHospitalList();
+                this.$post(
+                    '/admin/hospital/save',
+                    { id: id, status: 'actived' },
+                    response => {
+                        if (response.success) {
+                            this.$Message.info('启用成功');
+                            this.getHospitalList();
+                        }
                     }
-                });
+                );
             },
             getCurrentHospitalDetail () {
                 this.$get('/admin/hospital/detail/' + this.currentId, {}, response => {
-                    this.data = response.data
+                    this.data = response.data;
+                    this.setOtherUrl(this.data);
                 });
+            },
+            setOtherUrl () {
+                this.otherFileList = [];
+                this.data.names = [];
+                this.data.fileUrls = [];
+                if (this.data.fileDetails && this.data.fileDetails.length > 0) {
+                    for (var i = 0; i < this.data.fileDetails.length; i++) {
+                        var obj = {};
+                        obj.name = this.data.fileDetails[i].name;
+                        obj.url = this.data.fileDetails[i].fileUrl;
+                        this.otherFileList.push(obj);
+
+                        this.data.names.push(this.data.fileDetails[i].name);
+                        this.data.fileUrls.push(this.data.fileDetails[i].fileUrl);
+                    }
+                }
+            },
+            handleDownload (file) {
+                FileSaver.saveAs(file.url || file.response.data, '111');
             }
         },
         created () {
@@ -545,7 +621,7 @@
   height: 570px;
   overflow: auto;
 }
-.ivu-text-item{
+.ivu-text-item {
   height: 34px;
   line-height: 34px;
 }
