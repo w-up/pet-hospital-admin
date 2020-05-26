@@ -59,10 +59,16 @@
                   <Input v-model="addGoodsForm.specification" />
                 </FormItem>
               </Col>
-              <Col span="24">
+              <Col span="12">
                 <FormItem label="库存下限" prop="lowestLimit">
                   <Input value="0" v-width="200" v-model="addGoodsForm.lowestLimit" />
                   <span style="color:#ccc;padding-left:12px">库存量低于下限，系统自动提醒</span>
+                </FormItem>
+              </Col>
+              <Col span="12">
+                <FormItem label="库存上限" prop="upperLimit">
+                  <Input value="0" v-width="200" v-model="addGoodsForm.upperLimit" />
+                  <span style="color:#ccc;padding-left:12px">库存量高于上限，系统自动提醒</span>
                 </FormItem>
               </Col>
               <Col span="24" style="padding-left:40px">
@@ -266,7 +272,7 @@
             </TabPane>
             <TabPane label="商品说明" name="pane5" tab="pane">
               <Form ref="form5" :model="addGoodsForm" :rules="addGoodsFormRules" class="myform">
-                <FormItem class="lb0" prop="description">
+                <FormItem class="lb0">
                   <Input type="textarea" v-model="addGoodsForm.description" :rows="6" />
                 </FormItem>
               </Form>
@@ -326,7 +332,7 @@
                 </FormItem>
               </Col>
               <Col span="12">
-                <FormItem label="套餐说明" prop="description">
+                <FormItem label="套餐说明">
                   <Input v-model="addPackagesForm.description" />
                 </FormItem>
               </Col>
@@ -903,6 +909,7 @@
                     factory: '',
                     specification: '',
                     lowestLimit: '0',
+                    upperLimit: '0',
                     takeDiscount: '',
                     partakeDiscount: '',
                     countInventory: '',
@@ -925,15 +932,13 @@
                 addGoodsFormRules: {
                     name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
                     lowestLimit: [{ validator: validateLimit, trigger: 'blur' }],
+                    upperLimit: [{ validator: validateLimit, trigger: 'blur' }],
                     price: [{ validator: validateNumber, trigger: 'blur' }],
                     lowestPrice: [{ validator: validateNumber, trigger: 'blur' }],
                     purchasePrice: [{ validator: validateNumber, trigger: 'blur' }],
                     wholesalePrice: [{ validator: validateNumber, trigger: 'blur' }],
                     vipPrice: [{ validator: validateNumber, trigger: 'blur' }],
                     integralRequired: [{ validator: validateLimit, trigger: 'blur' }],
-                    description: [
-                        { required: true, message: '请输入商品说明', trigger: 'blur' }
-                    ],
                     remindDays: [{ validator: validateLimit, trigger: 'blur' }]
                 },
                 addType: 'goods', // 添加时选中的的类型
