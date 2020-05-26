@@ -241,16 +241,16 @@
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24">
               <Table border :columns="goodsColumnsParent" :data="goodsList"></Table>
-                   <div class="ivu-mt ivu-text-right">
-          <Page
-            :total="total"
-            :show-elevator="total/10>9"
-            :pageSize="30"
-            @on-change="getMarketingDetailGoodsList"
-            :current.sync="current"
-          />
-        </div>
-              </Col>
+              <div class="ivu-mt ivu-text-right">
+                <Page
+                  :total="total"
+                  :show-elevator="total/10>9"
+                  :pageSize="30"
+                  @on-change="getMarketingDetailGoodsList"
+                  :current.sync="current"
+                />
+              </div>
+            </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
@@ -485,10 +485,10 @@
                         title: '操作',
                         minWidth: 84,
                         render: (h, params) => {
-                            let flag = false
+                            let flag = false;
                             let arr = this.joinHospitals.map(item => item.id);
                             if (arr.indexOf(params.row.id) > -1) {
-                                flag = true
+                                flag = true;
                             }
                             return h('div', [
                                 h(
@@ -503,7 +503,7 @@
                                         },
                                         on: {
                                             click: () => {
-                                                this.joinHospitals.push(params.row)
+                                                this.joinHospitals.push(params.row);
                                             }
                                         }
                                     },
@@ -521,7 +521,7 @@
                                         },
                                         on: {
                                             click: () => {
-                                                this.joinHospitals.splice(arr.indexOf(params.row.id), 1)
+                                                this.joinHospitals.splice(arr.indexOf(params.row.id), 1);
                                             }
                                         }
                                     },
@@ -538,9 +538,9 @@
         methods: {
             handleAdd () {
                 this.$refs.marketingForm.resetFields();
-                this.marketingForm.id = ''
-                this.goodsList = []
-                this.joinHospitals = []
+                this.marketingForm.id = '';
+                this.goodsList = [];
+                this.joinHospitals = [];
             },
             getDateRange (e) {
                 if (e != null && e.length > 1) {
@@ -550,39 +550,43 @@
                 }
             },
             getChild (data, selectedNode) {
-                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
+                this.$set(selectedNode, 'expand', !selectedNode.expand); // 点击节点文字展开收起
                 if (data && data.length > 0) {
                     var obj = JSON.parse(JSON.stringify(data[0]));
                     obj.type = obj.type && obj.type.code;
                     obj.status = obj.status && obj.status.code;
                     this.marketingForm = obj;
-                    this.joinHospitals = obj.joinHospitals || []
+                    this.joinHospitals = obj.joinHospitals || [];
                     if (this.marketingForm.id) {
-                        this.getMarketingDetailGoodsList()
+                        this.getMarketingDetailGoodsList();
                     } else {
-                        this.goodsList = []
-                        this.total = 0
+                        this.goodsList = [];
+                        this.total = 0;
                     }
                 } else {
-                    this.marketingForm.id = ''
+                    this.marketingForm.id = '';
                 }
             },
             getMarketingDetailGoodsList () {
                 if (this.current === 1) {
-                    this.$get('/admin/general/marketing/detail/' + this.marketingForm.id, {}, response => {
-                        this.goodsList = response.data.goodsPage.data
-                        this.total = response.data.goodsPage.totalElements
-                    })
+                    this.$get(
+                        '/admin/general/marketing/detail/' + this.marketingForm.id,
+                        {},
+                        response => {
+                            this.goodsList = response.data.goodsPage.data;
+                            this.total = response.data.goodsPage.totalElements;
+                        }
+                    );
                 } else {
                     var data = {
                         id: this.marketingForm.id,
                         pageNumber: this.current - 1,
                         pageSize: 30
-                    }
+                    };
                     this.$get('/admin/general/marketing/detail/goods', data, response => {
-                        this.goodsList = response.data.data
-                        this.total = response.data.totalElements
-                    })
+                        this.goodsList = response.data.data;
+                        this.total = response.data.totalElements;
+                    });
                 }
             },
             startDateChange (e) {
@@ -672,13 +676,13 @@
                     );
                 }
 
-                this.marketingForm.joinHospitalIds = []
+                this.marketingForm.joinHospitalIds = [];
                 this.joinHospitals.forEach(element => {
-                    this.marketingForm.joinHospitalIds.push(element.id)
+                    this.marketingForm.joinHospitalIds.push(element.id);
                 });
-                this.marketingForm.goodsIds = []
+                this.marketingForm.goodsIds = [];
                 this.goodsList.forEach(element => {
-                    this.marketingForm.goodsIds.push(element.id)
+                    this.marketingForm.goodsIds.push(element.id);
                 });
                 this.$refs.marketingForm.validate(valid => {
                     if (valid) {
@@ -740,11 +744,9 @@
                 this.$refs.addGoods.handleAddGoodsModal();
             },
             getGoodsList (list) {
-                this.goodsList = list
+                this.goodsList = list;
             },
-            handelReload () {
-
-            }
+            handelReload () {}
         },
         mounted () {
             this.getMarketingList();
