@@ -55,6 +55,9 @@
             <Col span="24" class="mtb10">
               <Checkbox v-model="settingForm.isLowerLimitStockRemind">库存下限报警</Checkbox>
             </Col>
+            <Col span="24" class="mtb10">
+              <Checkbox v-model="settingForm.isUpperLimitStockRemind">库存上限报警</Checkbox>
+            </Col>
             <Col span="24">
               <Checkbox v-model="settingForm.isLowestPriceRemind">最低售价提醒(当实际销售价格低于最低售价时报警提醒)</Checkbox>
             </Col>
@@ -88,8 +91,8 @@
                 });
             },
             getSetting () {
-                this.$get('/admin/general/remind/setting/page', {}, response => {
-                    this.settingForm = response.data.data[response.data.data.length - 1]
+                this.$get('/admin/general/remind/setting/info', {}, response => {
+                    this.settingForm = response.data
                 });
             }
         },
