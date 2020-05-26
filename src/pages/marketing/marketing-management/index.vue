@@ -245,8 +245,8 @@
           <Page
             :total="total"
             :show-elevator="total/10>9"
-            :pageSize="10"
-            @on-change="getCheckList"
+            :pageSize="30"
+            @on-change="getMarketingDetailGoodsList"
             :current.sync="current"
           />
         </div>
@@ -557,9 +557,32 @@
                     obj.status = obj.status && obj.status.code;
                     this.marketingForm = obj;
                     this.joinHospitals = obj.joinHospitals || []
-                    this.goodsList = obj.goods || []
+                    if (this.marketingForm.id) {
+                        this.getMarketingDetailGoodsList()
+                    } else {
+                        this.goodsList = []
+                        this.total = 0
+                    }
                 } else {
                     this.marketingForm.id = ''
+                }
+            },
+            getMarketingDetailGoodsList () {
+                if (this.current === 1) {
+                    this.$get('/admin/general/marketing/detail/' + this.marketingForm.id, {}, response => {
+                        this.goodsList = response.data.goodsPage.data
+                        this.total = response.data.goodsPage.totalElements
+                    })
+                } else {
+                    var data = {
+                        id: this.marketingForm.id,
+                        pageNumber: this.current - 1,
+                        pageSize: 30
+                    }
+                    this.$get('/admin/general/marketing/detail/goods', data, response => {
+                        this.goodsList = response.data.data
+                        this.total = response.data.totalElements
+                    })
                 }
             },
             startDateChange (e) {
