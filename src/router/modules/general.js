@@ -188,6 +188,15 @@ export default {
                 title: '提醒设置'
             },
             component: () => import('@/pages/general/reminder-setting')
+        },
+        {
+            path: 'acquire-way',
+            name: `${pre}acquire-way`,
+            meta: {
+                ...meta,
+                title: '了解途径'
+            },
+            component: () => import('@/pages/general/acquire-way')
         }
     ]
 };

@@ -79,6 +79,10 @@ export default {
         {
             path: `${pre}reminder-setting`,
             title: '提醒设置'
+        },
+        {
+            path: `${pre}acquire-way`,
+            title: '了解途径'
         }
         // {
         //     path: `${pre}module`,
