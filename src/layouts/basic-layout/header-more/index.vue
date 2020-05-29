@@ -5,7 +5,6 @@
       <div class="api" slot="content">
         <p class="contentP martb6" @click="helpCenter">帮助中心</p>
         <p class="contentP" @click="feedBack">意见反馈</p>
-        <p class="contentP martb6">退出账户</p>
       </div>
     </Poptip>
     <Modal v-model="helpCenterModal" class="newsModal" width="600px">
