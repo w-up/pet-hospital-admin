@@ -587,7 +587,7 @@
                 }
             },
             handleDownload (file) {
-                FileSaver.saveAs(file.url || file.response.data, '111');
+                FileSaver.saveAs(file.url || file.response.data, file.name);
             }
         },
         created () {
