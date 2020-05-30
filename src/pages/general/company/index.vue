@@ -25,7 +25,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
-              <Button type="error" >删除</Button>
+              <Button type="error" @click="removeModal=true">删除</Button>
             </Col>
             <Col span="12" class="ivu-text-right">
               <Button type="primary" @click="addUnti">+单位</Button>
@@ -79,12 +79,15 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
-              <Button type="success" @click="handleSubmit">{{isAdd?'添加':'编辑'}}</Button>
+              <Button type="success" @click="handleSubmit">{{isAdd?'添加':'保存'}}</Button>
             </Col>
           </Row>
         </Card>
       </Col>
     </Row>
+    <Modal title="删除" v-model="removeModal" @on-ok="handleRemove">
+      <div>确认删除吗？</div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -92,6 +95,7 @@
         name: 'list-table-list',
         data () {
             return {
+                removeModal: false,
                 isAdd: false,
                 loadingList: true,
                 nameLike: '',
@@ -165,6 +169,20 @@
                 this.data = {}
                 this.isAdd = true
                 this.currentId = ''
+            },
+            handleRemove () {
+                if (!this.data.id) {
+                    this.$Message.error('请选择数据')
+                    return false
+                }
+                this.$get(
+                    '/admin/general/contact/unit/remove/' + this.data.id,
+                    {},
+                    response => {
+                        this.$Message.info('删除成功');
+                        this.getUnitList();
+                    }
+                )
             },
             handleSubmit () {
                 this.$refs.form.validate(valid => {
