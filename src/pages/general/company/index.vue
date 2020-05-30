@@ -25,7 +25,7 @@
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
             <Col span="12" class="ivu-text-left">
-              <Button type="error" @click="removeModal=true">删除</Button>
+              <Button type="error" @click="clickRemove">删除</Button>
             </Col>
             <Col span="12" class="ivu-text-right">
               <Button type="primary" @click="addUnti">+单位</Button>
@@ -169,6 +169,13 @@
                 this.data = {}
                 this.isAdd = true
                 this.currentId = ''
+            },
+            clickRemove () {
+                if (!this.data.id) {
+                    this.$Message.error('请选择数据')
+                    return false
+                }
+                this.removeModal = true
             },
             handleRemove () {
                 if (!this.data.id) {
