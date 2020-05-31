@@ -580,8 +580,8 @@
                 } else {
                     var data = {
                         id: this.marketingForm.id,
-                        pageNo: this.current - 1,
-                        pageSize: 30
+                        goodsPageNo: this.current - 1,
+                        goodsPageSize: 30
                     };
                     this.$get('/admin/general/marketing/detail/goods', data, response => {
                         this.goodsList = response.data.data;
