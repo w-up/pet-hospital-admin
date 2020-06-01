@@ -27,6 +27,11 @@
               <Tree :data="treeOfUserData" @on-select-change="getChild"></Tree>
             </Col>
           </Row>
+              <Row :gutter="24" type="flex" justify="end" class="mtb15">
+            <Col span="24" class="ivu-text-center">
+              <Button type="primary" @click="handleUserinfoAdd">+新增员工</Button>
+            </Col>
+          </Row>
         </Card>
       </Col>
       <Col span="18" class="box">
@@ -60,7 +65,7 @@
               </Upload>
             </Col>
             <Col span="12">
-              <Form ref="editForm" :model="userInfo" :rules="rules" :label-width="100">
+              <Form ref="editForm" :model="userInfo" :rules="rules" :label-width="120">
                 <FormItem label="姓名" prop="name">
                   <Input v-model="userInfo.name" placeholder="必填" />
                 </FormItem>
@@ -73,10 +78,22 @@
                     >{{ it.name }}</Option>
                   </Select>
                 </FormItem>
+                <FormItem label="所属医院">
+                  <Select v-model="userInfo.hospitalId" placeholder="请选择" >
+                    <Option
+                      v-for="(it, index) in hospitalList"
+                      :key="index"
+                      :value="it.id"
+                    >{{ it.name }}</Option>
+                  </Select>
+                </FormItem>
                 <FormItem label="电话" prop="mobile">
                   <Input v-model="userInfo.mobile" placeholder="请输入" />
                 </FormItem>
-                <FormItem label="执业兽医师号" prop="count" label-for="count">
+                   <FormItem label="密码" prop="password">
+                  <Input v-model="userInfo.password" placeholder="请输入" type="password" password />
+                </FormItem>
+                <FormItem label="执业兽医师号" prop="code">
                   <Input v-model="userInfo.code" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="授业恩师" prop="master">
@@ -88,10 +105,7 @@
                     >{{ it.name }}</Option>
                   </Select>
                 </FormItem>
-                <FormItem label="密码" prop="password">
-                  <Input v-model="userInfo.password" placeholder="请输入" type="password" password/>
-                </FormItem>
-                <FormItem label="备注" prop="count" label-for="count">
+                <FormItem label="备注">
                   <Input v-model="userInfo.remark" type="textarea" placeholder="请输入" />
                 </FormItem>
               </Form>
@@ -106,7 +120,7 @@
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
-              <Button type="primary" @click="handleUserinfoEdit">编辑</Button>
+              <Button type="primary" @click="handleUserinfoSave" :disabled="currentHospitalId===''&&!this.userInfo.id?true:false">{{isAdd?'添加':'保存'}}</Button>
             </Col>
           </Row>
         </Card>
@@ -120,6 +134,7 @@
         inject: ['reload'], // 注入App里的reload方法
         data () {
             return {
+                hospitalList: [],
                 masterList: [],
                 treeOfUserData: [],
                 resource: this.$store.state.admin.user.resource,
@@ -136,7 +151,7 @@
                             trigger: 'change'
                         }
                     ],
-                    code: [{ required: true, message: '执业兽医师号', trigger: 'blur' }],
+                    code: [{ required: true, message: '请输入执业兽医师号', trigger: 'blur' }],
                     remark: [
                         { max: 200, message: '备注不得超过200个字符', trigger: 'change' }
                     ]
@@ -144,14 +159,11 @@
                 positionList: [],
                 currentId: '',
                 userInfo: {
-                    portrait: '',
                     position: {
                         code: ''
-                    },
-                    master: '',
-                    code: '',
-                    password: ''
+                    }
                 },
+                isAdd: true,
                 columns1: [
                     {
                         title: '模块',
@@ -208,6 +220,7 @@
                         }
                     }
                 ],
+                currentHospitalId: '',
                 data1: [
                     {
                         module: '顾客中心',
@@ -245,11 +258,35 @@
         methods: {
             getChild (data, selectedNode) {
                 this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
-                this.userInfo = data[0]
-                this.getMasterList(data[0].hospitalId)
-                if (!this.userInfo.position) {
-                    this.userInfo.position = {
-                        code: ''
+                if (data && data.length > 0) {
+                    if (selectedNode.treeType === 'hospital') {
+                        this.currentHospitalId = selectedNode.id
+                        this.userInfo = {
+                            position: {
+                                code: ''
+                            },
+                            hospitalId: selectedNode.id
+                        }
+                        this.getMasterList(selectedNode.id)
+                        this.isAdd = true
+                    }
+                    if (selectedNode.treeType === 'user') {
+                        this.currentHospitalId = ''
+                        this.userInfo = selectedNode
+                        this.getMasterList(selectedNode.hospitalId)
+                        if (!this.userInfo.position) {
+                            this.userInfo.position = {
+                                code: ''
+                            }
+                        }
+                        this.isAdd = false
+                    }
+                } else { // 取消选中
+                    this.currentHospitalId = ''
+                    this.userInfo = {
+                        position: {
+                            code: ''
+                        }
                     }
                 }
             },
@@ -282,16 +319,20 @@
                 this.$get('/admin/user/hospital/page', data, response => {
                     this.treeOfUserData = []
                     var rtn = response.data.data;
+                    this.hospitalList = response.data.data
                     // 处理左侧树数据
                     for (var i = 0; i < rtn.length; i++) {
                         var obj = {};
                         obj.title = rtn[i].name + '(' + rtn[i].userBo.data.length + ')';
+                        obj.id = rtn[i].id
+                        obj.treeType = 'hospital'
                         obj.expand = false;// 树默认不展开
                         obj.minWidth = 84;
                         var childrenList = [];
                         for (var j = 0; j < rtn[i].userBo.data.length; j++) {
                             var child = {};
                             child = rtn[i].userBo.data[j]
+                            child.treeType = 'user'
                             child.title = rtn[i].userBo.data[j].name +
                                 '(' +
                                 (rtn[i].userBo.data[j].position ? rtn[i].userBo.data[j].position.name : '') +
@@ -300,6 +341,7 @@
                                 child.masterId = rtn[i].userBo.data[j].master.id
                             }
                             if (localStorage.currentUserIdForUserInfo && localStorage.currentUserIdForUserInfo === rtn[i].userBo.data[j].id) {
+                                this.isAdd = false
                                 child.selected = true
                                 obj.expand = true
 
@@ -318,9 +360,13 @@
                     }
                 });
             },
-            handleUserinfoEdit () {
-                if (!this.userInfo.id) {
-                    this.$Message.error('请选择左侧树');
+            handleUserinfoSave () {
+                if (this.isAdd && this.currentHospitalId === '') {
+                    this.$Message.error('请选择左侧医院');
+                    return false
+                }
+                if (!this.isAdd && !this.userInfo.id) {
+                    this.$Message.error('请选择左侧员工');
                     return false
                 }
                 this.$refs.editForm.validate(valid => {
@@ -333,6 +379,7 @@
                             if (response.success) {
                                 this.$Message.info('保存成功');
                                 localStorage.currentUserIdForUserInfo = this.userInfo.id
+                                this.isAdd = false
                                 this.reload()// 调用局部刷新方法
                             } else {
                                 this.$Message.error(response.message);
@@ -341,6 +388,19 @@
                     } else {
                     }
                 });
+            },
+            handleUserinfoAdd () {
+                if (this.currentHospitalId === '') {
+                    this.$Message.error('请选择左侧医院');
+                    return false
+                }
+                this.userInfo = {
+                    position: {
+                        code: ''
+                    },
+                    hospitalId: this.currentHospitalId
+                }
+                this.isAdd = true
             },
             getPositonList () {
                 this.$get('/admin/user/position/page', {}, response => {
