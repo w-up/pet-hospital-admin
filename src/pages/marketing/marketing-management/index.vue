@@ -40,7 +40,7 @@
           </Row>
           <Row class="mtb15">
             <Col span="24">
-              <Tree :data="marketingList" @on-select-change="getChild"></Tree>
+              <Tree :data="marketingList" @on-select-change="getChild" :render="renderContent"></Tree>
             </Col>
           </Row>
           <Row :gutter="16" type="flex" justify="end" class="mtb15">
@@ -536,6 +536,35 @@
             };
         },
         methods: {
+            renderContent (h, { root, node, data }) {
+                return h(
+                    'span',
+                    {
+                        style: {
+                            display: 'inline-block',
+                            width: '100%'
+                        }
+                    },
+                    [
+                        h('span', [
+                            h(
+                                'span',
+                                {
+                                    style: {
+                                        marginRight: '8px',
+                                        cursor: 'pointer'
+                                    },
+                                    on: {
+                                        click: () => {
+                                        }
+                                    }
+                                },
+                                data.name
+                            )
+                        ])
+                    ]
+                )
+            },
             handleAdd () {
                 this.$refs.marketingForm.resetFields();
                 this.marketingForm.id = '';
@@ -608,46 +637,32 @@
                 this.$set(this.marketingForm, 'endDate', e);
             },
             getMarketingList () {
-                this.$get('/admin/general/marketing/page', this.search, response => {
-                    var rtn = response.data.data;
+                this.$get('/admin/general/marketing/group', this.search, response => {
+                    var rtn = response.data;
                     // 处理左侧树数据
                     var obj = {};
-                    obj.title = '全部';
+                    obj.name = '全部';
                     obj.expand = true;
                     var childrenList = [];
 
                     var noStartList = [];
                     var processingList = [];
-                    var finishedList = []; // 已结束包括时间结束和已终止的
-                    for (var i = 0; i < rtn.length; i++) {
-                        rtn[i].title = rtn[i].name;
-                        if (rtn[i].status.code === 'termination') {
-                            finishedList.push(rtn[i]);
-                        } else {
-                            var startTime = new Date(rtn[i].startDate).getTime();
-                            var endTime = new Date(rtn[i].endDate).getTime();
-                            var curTime = new Date().getTime();
-                            if (endTime <= curTime) {
-                                noStartList.push(rtn[i]);
-                            } else if (startTime <= curTime && endTime >= curTime) {
-                                processingList.push(rtn[i]);
-                            } else if (startTime > curTime) {
-                                finishedList.push(rtn[i]);
-                            }
-                        }
-                    }
+                    var finishedList = [];
+                    noStartList = rtn.marketings[0].marketings
+                    processingList = rtn.marketings[1].marketings
+                    finishedList = rtn.marketings[2].marketings
                     childrenList.push({
-                        title: '未开始',
+                        name: '未开始',
                         expand: true,
                         children: noStartList
                     });
                     childrenList.push({
-                        title: '进行中',
+                        name: '进行中',
                         expand: true,
                         children: processingList
                     });
                     childrenList.push({
-                        title: '已结束',
+                        name: '已结束',
                         expand: true,
                         children: finishedList
                     });
