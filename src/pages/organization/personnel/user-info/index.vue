@@ -27,7 +27,7 @@
               <Tree :data="treeOfUserData" @on-select-change="getChild"></Tree>
             </Col>
           </Row>
-              <Row :gutter="24" type="flex" justify="end" class="mtb15">
+          <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-center">
               <Button type="primary" @click="handleUserinfoAdd">+新增员工</Button>
             </Col>
@@ -66,6 +66,15 @@
             </Col>
             <Col span="12">
               <Form ref="editForm" :model="userInfo" :rules="rules" :label-width="120">
+                <FormItem label="所属医院">
+                  <Select v-model="userInfo.hospitalId" placeholder="请选择">
+                    <Option
+                      v-for="(it, index) in hospitalList"
+                      :key="index"
+                      :value="it.id"
+                    >{{ it.name }}</Option>
+                  </Select>
+                </FormItem>
                 <FormItem label="姓名" prop="name">
                   <Input v-model="userInfo.name" placeholder="必填" />
                 </FormItem>
@@ -78,26 +87,22 @@
                     >{{ it.name }}</Option>
                   </Select>
                 </FormItem>
-                <FormItem label="所属医院">
-                  <Select v-model="userInfo.hospitalId" placeholder="请选择" >
-                    <Option
-                      v-for="(it, index) in hospitalList"
-                      :key="index"
-                      :value="it.id"
-                    >{{ it.name }}</Option>
-                  </Select>
-                </FormItem>
                 <FormItem label="电话" prop="mobile">
                   <Input v-model="userInfo.mobile" placeholder="请输入" />
                 </FormItem>
-                   <FormItem label="密码" prop="password">
+                <FormItem label="密码" prop="password">
                   <Input v-model="userInfo.password" placeholder="请输入" type="password" password />
                 </FormItem>
                 <FormItem label="执业兽医师号" prop="code">
                   <Input v-model="userInfo.code" placeholder="请输入" />
                 </FormItem>
                 <FormItem label="授业恩师" prop="master">
-                  <Select v-model="userInfo.masterId" :label-in-value='true' placeholder="请选择" @on-change="setMasterName">
+                  <Select
+                    v-model="userInfo.masterId"
+                    :label-in-value="true"
+                    placeholder="请选择"
+                    @on-change="setMasterName"
+                  >
                     <Option
                       v-for="(it, index) in masterList"
                       :key="index"
@@ -120,7 +125,11 @@
           </Row>
           <Row :gutter="24" type="flex" justify="end" class="mtb15">
             <Col span="24" class="ivu-text-right">
-              <Button type="primary" @click="handleUserinfoSave" :disabled="currentHospitalId===''&&!this.userInfo.id?true:false">{{isAdd?'添加':'保存'}}</Button>
+              <Button
+                type="primary"
+                @click="handleUserinfoSave"
+                :disabled="currentHospitalId===''&&!this.userInfo.id?true:false"
+              >{{isAdd?'添加':'保存'}}</Button>
             </Col>
           </Row>
         </Card>
@@ -151,7 +160,9 @@
                             trigger: 'change'
                         }
                     ],
-                    code: [{ required: true, message: '请输入执业兽医师号', trigger: 'blur' }],
+                    code: [
+                        { required: true, message: '请输入执业兽医师号', trigger: 'blur' }
+                    ],
                     remark: [
                         { max: 200, message: '备注不得超过200个字符', trigger: 'change' }
                     ]
@@ -257,41 +268,42 @@
         },
         methods: {
             getChild (data, selectedNode) {
-                this.$set(selectedNode, 'expand', !selectedNode.expand)// 点击节点文字展开收起
+                this.$set(selectedNode, 'expand', !selectedNode.expand); // 点击节点文字展开收起
                 if (data && data.length > 0) {
                     if (selectedNode.treeType === 'hospital') {
-                        this.currentHospitalId = selectedNode.id
+                        this.currentHospitalId = selectedNode.id;
                         this.userInfo = {
                             position: {
                                 code: ''
                             },
                             hospitalId: selectedNode.id
-                        }
-                        this.getMasterList(selectedNode.id)
-                        this.isAdd = true
+                        };
+                        this.getMasterList(selectedNode.id);
+                        this.isAdd = true;
                     }
                     if (selectedNode.treeType === 'user') {
-                        this.currentHospitalId = ''
-                        this.userInfo = selectedNode
-                        this.getMasterList(selectedNode.hospitalId)
+                        this.currentHospitalId = '';
+                        this.userInfo = selectedNode;
+                        this.getMasterList(selectedNode.hospitalId);
                         if (!this.userInfo.position) {
                             this.userInfo.position = {
                                 code: ''
-                            }
+                            };
                         }
-                        this.isAdd = false
+                        this.isAdd = false;
                     }
-                } else { // 取消选中
-                    this.currentHospitalId = ''
+                } else {
+                    // 取消选中
+                    this.currentHospitalId = '';
                     this.userInfo = {
                         position: {
                             code: ''
                         }
-                    }
+                    };
                 }
             },
             setMasterName (obj) {
-                this.userInfo.masterName = obj.label
+                this.userInfo.masterName = obj.label;
             },
             handleHeaderUrlSuccess (response, file, fileList) {
                 this.$set(this.userInfo, 'portrait', response.data);
@@ -317,40 +329,46 @@
                     searchKey: this.searchKey
                 };
                 this.$get('/admin/user/hospital/page', data, response => {
-                    this.treeOfUserData = []
+                    this.treeOfUserData = [];
                     var rtn = response.data.data;
-                    this.hospitalList = response.data.data
+                    this.hospitalList = response.data.data;
                     // 处理左侧树数据
                     for (var i = 0; i < rtn.length; i++) {
                         var obj = {};
                         obj.title = rtn[i].name + '(' + rtn[i].userBo.data.length + ')';
-                        obj.id = rtn[i].id
-                        obj.treeType = 'hospital'
-                        obj.expand = false;// 树默认不展开
+                        obj.id = rtn[i].id;
+                        obj.treeType = 'hospital';
+                        obj.expand = false; // 树默认不展开
                         obj.minWidth = 84;
                         var childrenList = [];
                         for (var j = 0; j < rtn[i].userBo.data.length; j++) {
                             var child = {};
-                            child = rtn[i].userBo.data[j]
-                            child.treeType = 'user'
-                            child.title = rtn[i].userBo.data[j].name +
+                            child = rtn[i].userBo.data[j];
+                            child.treeType = 'user';
+                            child.title =
+                                rtn[i].userBo.data[j].name +
                                 '(' +
-                                (rtn[i].userBo.data[j].position ? rtn[i].userBo.data[j].position.name : '') +
+                                (rtn[i].userBo.data[j].position
+                                    ? rtn[i].userBo.data[j].position.name
+                                : '') +
                                 ')';
                             if (rtn[i].userBo.data[j].master) {
-                                child.masterId = rtn[i].userBo.data[j].master.id
+                                child.masterId = rtn[i].userBo.data[j].master.id;
                             }
-                            if (localStorage.currentUserIdForUserInfo && localStorage.currentUserIdForUserInfo === rtn[i].userBo.data[j].id) {
-                                this.isAdd = false
-                                child.selected = true
-                                obj.expand = true
+                            if (
+                                localStorage.currentUserIdForUserInfo &&
+                                localStorage.currentUserIdForUserInfo === rtn[i].userBo.data[j].id
+                            ) {
+                                this.isAdd = false;
+                                child.selected = true;
+                                obj.expand = true;
 
-                                this.userInfo = child
-                                this.getMasterList(child.hospitalId)
+                                this.userInfo = child;
+                                this.getMasterList(child.hospitalId);
                                 if (!this.userInfo.position) {
                                     this.userInfo.position = {
                                         code: ''
-                                    }
+                                    };
                                 }
                             }
                             childrenList.push(child);
@@ -363,11 +381,11 @@
             handleUserinfoSave () {
                 if (this.isAdd && this.currentHospitalId === '') {
                     this.$Message.error('请选择左侧医院');
-                    return false
+                    return false;
                 }
                 if (!this.isAdd && !this.userInfo.id) {
                     this.$Message.error('请选择左侧员工');
-                    return false
+                    return false;
                 }
                 this.$refs.editForm.validate(valid => {
                     if (valid) {
@@ -378,9 +396,9 @@
                         this.$post('/admin/user/save', this.userInfo, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
-                                localStorage.currentUserIdForUserInfo = this.userInfo.id
-                                this.isAdd = false
-                                this.reload()// 调用局部刷新方法
+                                localStorage.currentUserIdForUserInfo = this.userInfo.id;
+                                this.isAdd = false;
+                                this.reload(); // 调用局部刷新方法
                             } else {
                                 this.$Message.error(response.message);
                             }
@@ -392,15 +410,15 @@
             handleUserinfoAdd () {
                 if (this.currentHospitalId === '') {
                     this.$Message.error('请选择左侧医院');
-                    return false
+                    return false;
                 }
                 this.userInfo = {
                     position: {
                         code: ''
                     },
                     hospitalId: this.currentHospitalId
-                }
-                this.isAdd = true
+                };
+                this.isAdd = true;
             },
             getPositonList () {
                 this.$get('/admin/user/position/page', {}, response => {
