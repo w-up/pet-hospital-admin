@@ -80,7 +80,7 @@
     import iTabs from './tabs';
     import iCopyright from '@/components/copyright';
 
-    import { mapState, mapGetters, mapMutations } from 'vuex';
+    import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
     import Setting from '@/setting';
 
     import { requestAnimation } from '@/libs/util';
@@ -231,9 +231,18 @@
             }
         },
         methods: {
+            ...mapActions('admin/account', [
+                'logout'
+            ]),
             getHispitalDetail () {
                 this.$get('/admin/hospital/myhospital', {}, response => {
-                    this.hospitalName = response.data.name;
+                    if (!response.data.adminType) {
+                        this.$Message.error('请登录医院端')
+                        this.logout({
+                        })
+                        return false
+                    }
+                    this.hospitalName = response.data.name
                 })
             },
             ...mapMutations('admin/layout', ['updateMenuCollapse']),
