@@ -79,7 +79,7 @@
                   <Input v-model="userInfo.name" placeholder="必填" />
                 </FormItem>
                 <FormItem label="职位" prop="position" label-for="position">
-                  <Select v-model="userInfo.position.code" placeholder="请选择" element-id="position">
+                  <Select v-model="userInfo.positionCode" placeholder="请选择" element-id="position">
                     <Option
                       v-for="(it, index) in positionList"
                       :key="index"
@@ -170,9 +170,6 @@
                 positionList: [],
                 currentId: '',
                 userInfo: {
-                    position: {
-                        code: ''
-                    }
                 },
                 isAdd: true,
                 columns1: [
@@ -273,9 +270,6 @@
                     if (selectedNode.treeType === 'hospital') {
                         this.currentHospitalId = selectedNode.id;
                         this.userInfo = {
-                            position: {
-                                code: ''
-                            },
                             hospitalId: selectedNode.id
                         };
                         this.getMasterList(selectedNode.id);
@@ -285,20 +279,12 @@
                         this.currentHospitalId = '';
                         this.userInfo = selectedNode;
                         this.getMasterList(selectedNode.hospitalId);
-                        if (!this.userInfo.position) {
-                            this.userInfo.position = {
-                                code: ''
-                            };
-                        }
                         this.isAdd = false;
                     }
                 } else {
                     // 取消选中
                     this.currentHospitalId = '';
                     this.userInfo = {
-                        position: {
-                            code: ''
-                        }
                     };
                 }
             },
@@ -342,6 +328,16 @@
                         obj.minWidth = 84;
                         var childrenList = [];
                         for (var j = 0; j < rtn[i].userBo.data.length; j++) {
+                            if (rtn[i].userBo.data[j].position) {
+                                rtn[i].userBo.data[j].positionCode = rtn[i].userBo.data[j].position.code
+                            } else {
+                                rtn[i].userBo.data[j].positionCode = ''
+                            }
+                            if (rtn[i].userBo.data[j].master) {
+                                rtn[i].userBo.data[j].masterId = rtn[i].userBo.data[j].master.id
+                            } else {
+                                rtn[i].userBo.data[j].masterId = ''
+                            }
                             var child = {};
                             child = rtn[i].userBo.data[j];
                             child.treeType = 'user';
@@ -365,11 +361,6 @@
 
                                 this.userInfo = child;
                                 this.getMasterList(child.hospitalId);
-                                if (!this.userInfo.position) {
-                                    this.userInfo.position = {
-                                        code: ''
-                                    };
-                                }
                             }
                             childrenList.push(child);
                         }
@@ -390,9 +381,8 @@
                 this.$refs.editForm.validate(valid => {
                     if (valid) {
                         this.userInfo.type = 'employee';
-                        this.userInfo.positionCode = this.userInfo.position.code;
-                        delete this.userInfo.position;
-                        delete this.userInfo.master;
+                        delete this.userInfo.position
+                        delete this.userInfo.master
                         this.$post('/admin/user/save', this.userInfo, response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
@@ -413,9 +403,6 @@
                     return false;
                 }
                 this.userInfo = {
-                    position: {
-                        code: ''
-                    },
                     hospitalId: this.currentHospitalId
                 };
                 this.isAdd = true;
