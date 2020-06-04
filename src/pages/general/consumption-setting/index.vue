@@ -311,7 +311,6 @@
 </template>
 <script>
     import addItem from '@/components/add-item';
-    // import { listToTree } from '@/libs/util';
     export default {
         components: { addItem },
         data () {
@@ -1368,17 +1367,6 @@
                     nameLike: this.nameLike
                 };
                 this.$get('/admin/goods/category/search', data, response => {
-                    // let parentId =
-                    //     response.data &&
-                    //     response.data.length > 0 &&
-                    //     response.data[0].parentId;
-                    // var treeData = listToTree(response.data, parentId);
-                    // // 转成树后需要重新处理渲染按钮
-                    // treeData.forEach(element => {
-                    //     this.renderTreeButton(element);
-                    // });
-                    // this.goodsCategoryTreeData = treeData;
-                    // console.log(treeData)
                     var data = this._.groupBy(response.data, 'type.name');
                     this.goodsCategoryTreeData = [
                     ];
@@ -1723,7 +1711,7 @@
   margin-bottom: 12px;
 }
 .treeHeight {
-  height: 520px;
+  height: 570px;
   overflow: auto;
 }
 </style>
