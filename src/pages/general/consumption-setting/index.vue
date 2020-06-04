@@ -1,30 +1,17 @@
 <template>
   <div>
     <Card>
-      <Tabs v-model="type" @on-click="changeType">
-        <TabPane label="挂号" name="registration"></TabPane>
-        <TabPane label="处方" name="prescription"></TabPane>
-        <TabPane label="检验" name="check"></TabPane>
-        <TabPane label="处置" name="handle"></TabPane>
-        <TabPane label="手术" name="operation"></TabPane>
-        <TabPane label="住院" name="hospitalization"></TabPane>
-        <TabPane label="疫苗驱虫" name="vaccine"></TabPane>
-        <TabPane label="美容" name="beauty"></TabPane>
-        <TabPane label="商品" name="goods"></TabPane>
-        <TabPane label="寄养" name="foster"></TabPane>
-        <TabPane label="影像检验" name="imageCheck"></TabPane>
-      </Tabs>
       <Row>
         <Col span="6">
           <Card>
             <Row class-name="module-title-wrapper">
-              <Col span="4">
+              <Col span="24">
                 <span class="module-title">目录</span>
               </Col>
-              <Col span="20" class="ivu-text-right">
+              <!-- <Col span="20" class="ivu-text-right">
                 <Button type="warning">剪切</Button>
                 <Button type="info">粘贴</Button>
-              </Col>
+              </Col> -->
             </Row>
             <Row :gutter="16" type="flex" justify="end" class="mtb15">
               <Col span="24">
@@ -41,7 +28,7 @@
                 <Tree
                   ref="goodsCategoryTree"
                   :data="goodsCategoryTreeData"
-                  class="set-width mytree"
+                  class="set-width mytree treeHeight"
                   @on-select-change="getChild"
                 ></Tree>
               </Col>
@@ -65,7 +52,7 @@
               <Col span="18">
                 <span
                   class="module-title"
-                >{{addGoodsCategoryForm.name&&addGoodsCategoryForm.name||currentTabName}}</span>
+                >商品列表</span>
               </Col>
               <Col span="6">
                 <Input
@@ -324,7 +311,7 @@
 </template>
 <script>
     import addItem from '@/components/add-item';
-    import { listToTree } from '@/libs/util';
+    // import { listToTree } from '@/libs/util';
     export default {
         components: { addItem },
         data () {
@@ -1322,20 +1309,6 @@
                 selectIds: [],
                 nameLike: '', // 搜索商品类别名称
                 keywords: '', // 搜索商品关键字
-                currentTabName: '挂号',
-                tabObj: {
-                    registration: '挂号',
-                    prescription: '处方',
-                    check: '检验',
-                    handle: '处置',
-                    operation: '手术',
-                    hospitalization: '住院',
-                    vaccine: '疫苗驱虫',
-                    beauty: '美容',
-                    goods: '商品',
-                    foster: '寄养',
-                    imageCheck: '影像检验'
-                },
                 showAddCheckItemModal: false,
                 checkTypeListData: []
             };
@@ -1366,17 +1339,12 @@
             showSystemHint () {
                 this.systemHintModal = true;
             },
-            // 切换tab类型
-            changeType (name) {
-                this.currentTabName = this.tabObj[name];
-                this.getGoodsCategoryList();
-                this.getGoodsList();
-            },
             // 点击树
             getChild (data, selectedNode) {
                 this.$set(selectedNode, 'expand', !selectedNode.expand); // 点击节点文字展开收起
                 if (data && data.length > 0) {
                     this.treeId = data[0].id;
+                    this.type = data[0].type
                     var obj = JSON.parse(JSON.stringify(data[0]));
                     this.addGoodsCategoryForm = this._.mapValues(obj, function (o) {
                         if (typeof o === 'object') {
@@ -1389,6 +1357,7 @@
                         obj.partakeDiscount && obj.partakeDiscount.toString();
                 } else {
                     this.treeId = '';
+                    this.type = ''
                 }
                 this.getGoodsList();
             },
@@ -1396,20 +1365,37 @@
             getGoodsCategoryList () {
                 var data = {
                     limit: 100,
-                    nameLike: this.nameLike,
-                    type: this.type
+                    nameLike: this.nameLike
                 };
                 this.$get('/admin/goods/category/search', data, response => {
-                    let parentId =
-                        response.data &&
-                        response.data.length > 0 &&
-                        response.data[0].parentId;
-                    var treeData = listToTree(response.data, parentId);
-                    // 转成树后需要重新处理渲染按钮
-                    treeData.forEach(element => {
-                        this.renderTreeButton(element);
-                    });
-                    this.goodsCategoryTreeData = treeData;
+                    // let parentId =
+                    //     response.data &&
+                    //     response.data.length > 0 &&
+                    //     response.data[0].parentId;
+                    // var treeData = listToTree(response.data, parentId);
+                    // // 转成树后需要重新处理渲染按钮
+                    // treeData.forEach(element => {
+                    //     this.renderTreeButton(element);
+                    // });
+                    // this.goodsCategoryTreeData = treeData;
+                    // console.log(treeData)
+                    var data = this._.groupBy(response.data, 'type.name');
+                    this.goodsCategoryTreeData = [
+                    ];
+                    let vm = this
+                    for (let key in data) {
+                        var obj = {};
+                        obj.title = key;
+                        obj.expand = true;
+                        obj.children = data[key];
+                        obj.children.forEach(element => {
+                            element.title = element.name;
+                            element.type = element.type.code;
+                            obj.type = element.type;
+                            vm.renderTreeButton(element);
+                        });
+                        this.goodsCategoryTreeData.push(obj);
+                    }
                 });
             },
             renderTreeButton (element) {
@@ -1663,7 +1649,6 @@
                     }
                 }
                 this.checkData = data;
-                console.log(data);
             },
             singleAdd (element) {
                 let arr = this.selectCheckItemData.map(item => item.id);
@@ -1736,6 +1721,10 @@
   border-bottom: 1px solid #ddd;
   padding-bottom: 15px;
   margin-bottom: 12px;
+}
+.treeHeight {
+  height: 520px;
+  overflow: auto;
 }
 </style>
 <style lang="less">
