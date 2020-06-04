@@ -1448,7 +1448,7 @@
                                             on: {
                                                 click: e => {
                                                     e.stopPropagation();
-                                                    this.getChild([element]);
+                                                    this.getChild([element], element);
                                                     this.showChangeGoodsCategoryModal();
                                                 }
                                             }

@@ -365,8 +365,8 @@
         </TabPane>
       </Tabs>
       <div slot="footer">
-        <Button type="success" v-if="addType=='goods'" @click="saveGoods(false)">保存</Button>
-        <Button type="success" v-if="addType=='packages'" @click="savePackages">保存</Button>
+        <Button type="success" v-if="addType=='goods'" @click="saveGoods(false)">保存并关闭</Button>
+        <Button type="success" v-if="addType=='packages'" @click="savePackages">保存并关闭</Button>
         <Button
           type="info"
           v-if="addType=='goods'&&goodsTabPane!='pane6'"
@@ -1084,7 +1084,6 @@
             saveGoods (next) {
                 this.addGoodsForm.type = this.type;
                 this.addGoodsForm.categoryId = this.categoryId;
-                console.log(this.addGoodsForm);
                 var flag = true;
                 this.$refs.addGoodsForm.validate(valid => {
                     if (valid) {
@@ -1173,6 +1172,10 @@
                             'pane' +
                             (parseInt(curpane.substring(curpane.length - 1, curpane.length)) +
                             1);
+                    } else {
+                        // 需要调用父组件方法
+                        this.$parent.getGoodsList()
+                        this.addGoodsModal = false
                     }
                 }
             },
@@ -1204,6 +1207,9 @@
                         response => {
                             if (response.success) {
                                 this.$Message.info('保存成功');
+                                // 需要调用父组件方法
+                                this.$parent.getGoodsList();
+                                this.addGoodsModal = false
                             } else {
                                 this.$Message.error(response.message);
                             }
