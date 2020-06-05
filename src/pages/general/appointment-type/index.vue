@@ -13,8 +13,8 @@
         <FormItem label="预约类型名称"  prop="name">
           <Input style="width: 150px" v-model="appointmentForm.name"/>
         </FormItem>
-        <FormItem label="预约类型代码"  prop="name">
-          <Input style="width: 150px" v-model="appointmentForm.key"/>
+        <FormItem label="预约类型代码"  prop="code">
+          <Input style="width: 150px" v-model="appointmentForm.code"/>
         </FormItem>
       </Form>
     </Modal>
@@ -34,7 +34,7 @@
                     name: [
                         { required: true, message: '请输入预约类型名称', trigger: 'blur' }
                     ],
-                    key: [
+                    code: [
                         { required: true, message: '请输入预约类型代码', trigger: 'blur' }
                     ]
                 },
@@ -48,7 +48,7 @@
                     {
                         title: '类型代码',
                         minWidth: 84,
-                        key: 'key'
+                        key: 'code'
                     },
                     {
                         title: '操作',
@@ -119,7 +119,7 @@
                 this.isEdit = true
                 this.$refs.createAppointmentForm.resetFields()
                 this.appointmentForm.name = rowData.name
-                this.appointmentForm.key = rowData.key
+                this.appointmentForm.code = rowData.code
                 this.appointmentForm.id = rowData.id
                 this.showAppointmentModal = true
             },
@@ -128,7 +128,7 @@
                 this.$refs.createAppointmentForm.resetFields()
                 this.appointmentForm = {
                     name: '',
-                    key: '',
+                    code: '',
                     id: ''
                 }
                 this.showAppointmentModal = true

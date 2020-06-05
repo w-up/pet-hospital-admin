@@ -13,8 +13,8 @@
         <FormItem label="诊疗科目"  prop="name">
           <Input style="width: 150px" v-model="subjectForm.name"/>
         </FormItem>
-        <FormItem label="诊疗科目代码"  prop="key">
-          <Input style="width: 150px" v-model="subjectForm.key"/>
+        <FormItem label="诊疗科目代码"  prop="code">
+          <Input style="width: 150px" v-model="subjectForm.code"/>
         </FormItem>
       </Form>
     </Modal>
@@ -34,7 +34,7 @@
                     name: [
                         { required: true, message: '请输入诊疗科目', trigger: 'blur' }
                     ],
-                    key: [
+                    code: [
                         { required: true, message: '请输入诊疗科目代码', trigger: 'blur' }
                     ]
                 },
@@ -48,7 +48,7 @@
                     {
                         title: '类型代码',
                         minWidth: 84,
-                        key: 'key'
+                        key: 'code'
                     },
                     {
                         title: '操作',
@@ -121,7 +121,7 @@
                 this.isEdit = true
                 this.$refs.createSubjectForm.resetFields()
                 this.subjectForm.name = rowData.name
-                this.subjectForm.key = rowData.key
+                this.subjectForm.code = rowData.code
                 this.subjectForm.id = rowData.id
                 this.showSubjectModal = true
             },
@@ -130,7 +130,7 @@
                 this.$refs.createSubjectForm.resetFields()
                 this.subjectForm = {
                     name: '',
-                    key: '',
+                    code: '',
                     id: ''
                 }
                 this.showSubjectModal = true
