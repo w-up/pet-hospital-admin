@@ -18,12 +18,16 @@
         </FormItem>
       </Form>
     </Modal>
+      <Modal title="删除" v-model="removeModal" @on-ok="handleDelRecord">
+      <div>确认删除吗？</div>
+    </Modal>
   </div>
 </template>
 <script>
     export default {
         data () {
             return {
+                removeModal: false,
                 isEdit: false,
                 appointmentForm: {
                     name: '',
@@ -81,7 +85,10 @@
                                             marginLeft: '10px'
                                         },
                                         on: {
-                                            click: () => {}
+                                            click: () => {
+                                                this.removeModal = true
+                                                this.needDelId = params.row.id
+                                            }
                                         }
                                     },
                                     '删除'
@@ -90,11 +97,21 @@
                         }
                     }
                 ],
+                needDelId: '',
                 appointmentData: [
                 ]
             };
         },
         methods: {
+            // 删除
+            handleDelRecord () {
+                this.$get('/admin/appointment/type/remove/' + this.needDelId, {}, response => {
+                    if (response.success) {
+                        this.$Message.info('删除成功')
+                        this.getSubjectList()
+                    }
+                });
+            },
             getAppointmentList () {
                 this.$get('/admin/appointment/type/page', {}, response => {
                     this.appointmentData = response.data.data
