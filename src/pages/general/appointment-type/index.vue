@@ -108,7 +108,7 @@
                 this.$get('/admin/appointment/type/remove/' + this.needDelId, {}, response => {
                     if (response.success) {
                         this.$Message.info('删除成功')
-                        this.getSubjectList()
+                        this.getAppointmentList()
                     }
                 });
             },
