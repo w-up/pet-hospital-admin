@@ -1762,7 +1762,15 @@
   width: calc(100% - 11px);
   width: -webkit-calc(100% - 11px);
   width: -moz-calc(100% - 11px);
-  padding: 0;
+  padding: 0 3px;
+  height: 30px;
+  line-height: 30px;
+}
+.set-width.ivu-tree ul li {
+    margin: 2px 0;
+}
+.set-width .btn-tree{
+    margin: 3px 0;
 }
 .importDataFormItem {
   margin-bottom: 0;
