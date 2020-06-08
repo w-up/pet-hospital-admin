@@ -1509,9 +1509,17 @@
                     '/admin/goods/category/remove/' + this.addGoodsCategoryForm.id,
                     {},
                     response => {
-                        this.$Message.info('删除成功');
-                        this.getGoodsCategoryList();
-                        this.removeModal = false;
+                        if (response.success) {
+                            if (response.data.code === '500') {
+                                this.$Message.error(response.data.message);
+                            } else {
+                                this.$Message.info('删除成功');
+                                this.getGoodsCategoryList();
+                                this.removeModal = false;
+                            }
+                        } else {
+                            this.$Message.error(response.message);
+                        }
                     }
                 );
             },
